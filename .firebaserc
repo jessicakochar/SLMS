@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "slms-d0f32"
+  },
+  "targets": {
+    "slms-d0f32": {
+      "hosting": {
+        "argon-dashboard-angular": [
+          "slms-d0f32"
+        ]
+      }
+    }
+  }
+}
