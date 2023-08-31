@@ -8,6 +8,7 @@ import {
   deleteDoc,
   query,
   onSnapshot,
+  Timestamp,
 } from "@angular/fire/firestore";
 import { TagsModel } from "../../utils/TagsModel";
 import { TAGS_COLLECTION } from "../../utils/constants";
@@ -64,12 +65,18 @@ export class TagsComponent implements OnInit {
     if (obj === null) {
       this.tagsForm = this.fb.group({
         tagID: [doc(collection(this.db.firestore, TAGS_COLLECTION)).id],
-        name: [null]
+        name: [null],
+        description: [null],
+        active: [true],
+        createdOn: [Timestamp.now()],
       });
     } else {
       this.tagsForm = this.fb.group({
         tagID: [obj.tagID],
-        name: [obj.name]
+        name: [obj.name],
+        description: [obj.description],
+        active: [obj.active],
+        createdOn: [obj.createdOn],
       });
     }
   }

@@ -8,7 +8,9 @@ declare interface RouteInfo {
   class: string;
 }
 export const ROUTES: RouteInfo[] = [
+  { path: '/user-profile', title: 'Admin Users', icon: 'fas fa-user text-primary', class: '' },
   { path: '/dashboard', title: 'Dashboard', icon: 'fas fa-chart-line text-primary', class: '' },
+  { path: '/catalogue', title: 'Catalogue', icon: 'fas fa-book text-primary', class: '' },
   { path: '/books', title: 'Manage Books', icon: 'fas fa-book text-primary', class: '' },
   { path: '/members', title: 'Manage Members', icon: 'fas fa-users text-primary', class: '' },
   { path: '/plans', title: 'Edit Membership Plans', icon: 'fas fa-money-check text-primary', class: '' },

@@ -21,6 +21,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { AuthService } from './services/auth.service';
 import { DbService } from './services/db.service';
 import { ToastrModule } from 'ngx-toastr';
+// import { CatalogueComponent } from './pages/catalogue/catalogue.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { ToastrModule } from 'ngx-toastr';
   declarations: [
     AppComponent,
     AdminLayoutComponent,
-    AuthLayoutComponent
+    AuthLayoutComponent,
+    // CatalogueComponent
   ],
   providers: [AuthService, DbService],
   bootstrap: [AppComponent]

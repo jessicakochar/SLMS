@@ -2,15 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TagsModel } from 'src/app/utils/TagsModel';
-import {
-  collection,
-  doc,
-  setDoc,
-  Firestore,
-  deleteDoc,
-  query,
-  onSnapshot,
-} from "@angular/fire/firestore";
+import { collection, doc, setDoc, Firestore, deleteDoc, query, onSnapshot } from "@angular/fire/firestore";
 import { DbService } from 'src/app/services/db.service';
 import { ToastrService } from 'ngx-toastr';
 import { TAGS_COLLECTION } from 'src/app/utils/constants';

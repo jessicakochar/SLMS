@@ -13,10 +13,12 @@ import { IssueListComponent } from 'src/app/pages/issue-list/issue-list.componen
 import { NewIssueComponent } from 'src/app/pages/new-issue/new-issue.component';
 import { PlansComponent } from 'src/app/pages/plans/plans.component';
 import { MembersComponent } from 'src/app/pages/members/members.component';
+import { CatalogueComponent } from 'src/app/pages/catalogue/catalogue.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
     { path: 'user-profile', component: UserProfileComponent },
+    { path: 'catalogue', component: CatalogueComponent },
     { path: 'tables', component: TablesComponent },
     { path: 'icons', component: IconsComponent },
     { path: 'maps', component: MapsComponent },
@@ -28,4 +30,5 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'issueList', component: IssueListComponent },
     { path: 'tags', component: TagsComponent },
     { path: 'config', component: ConfigComponent },
+
 ];

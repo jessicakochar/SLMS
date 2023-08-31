@@ -4,7 +4,7 @@ export class AdminModel {
   adminId: string;
   name: string;
   email: string;
-  // password: string;
+  password: string;
   status: boolean;
   roles: any;
   createdOn: Timestamp;

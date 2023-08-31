@@ -1,17 +1,10 @@
 import { Subscription } from 'rxjs';
 import { ChangeDetectorRef, Component, OnInit, NgZone } from "@angular/core";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
-import {
-  collection,
-  doc,
-  Firestore,
-  deleteDoc,
-  query,
-  onSnapshot,
-} from "@angular/fire/firestore";
-import { PlanModel } from "../../utils/PlanModel";
+import { collection, doc, Firestore, deleteDoc, query, onSnapshot } from "@angular/fire/firestore";
+import { SubscriptionModel } from "../../utils/subscriptionModel";
 import { PLANS_COLLECTION } from "../../utils/constants";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { DbService } from "src/app/services/db.service";
 import { setDoc } from "@angular/fire/firestore";
 import { ToastrService } from "ngx-toastr";
@@ -24,10 +17,10 @@ import { ToastrService } from "ngx-toastr";
 export class PlansComponent implements OnInit {
 
   closeResult: string;
-  plansList: PlanModel[] = [];
+  plansList: SubscriptionModel[] = [];
   loader: boolean = false;
-  plansSub: Subscription;
-  plansModel: PlanModel
+  subscriptionsSub: Subscription;
+  plansModel: SubscriptionModel
 
   plansForm: FormGroup;
 
@@ -44,7 +37,7 @@ export class PlansComponent implements OnInit {
 
   ngOnInit(): void {
     this.db.getPlansList();
-    this.plansSub = this.db.plansSub.subscribe((list) => {
+    this.subscriptionsSub = this.db.subscriptionsSub.subscribe((list) => {
       if (list.length !== 0) {
         this.plansList = [...list];
       }
@@ -52,7 +45,7 @@ export class PlansComponent implements OnInit {
     console.log(this.plansList)
   }
 
-  addNewPlanModal(modalRef: any, obj: PlanModel = null) {
+  addNewPlanModal(modalRef: any, obj: SubscriptionModel = null) {
     this.modalService.open(modalRef, { size: "md", centered: false });
     this.initializeForm(obj);
   }
@@ -61,14 +54,19 @@ export class PlansComponent implements OnInit {
     this.modalService.open(content, { size: "sm", centered: false });
   }
 
-  initializeForm(obj: PlanModel = null) {
+  initializeForm(obj: SubscriptionModel = null) {
     if (obj === null) {
       this.plansForm = this.fb.group({
         planID: [doc(collection(this.db.firestore, PLANS_COLLECTION)).id],
         name: [null],
         maxBooks: [null],
         issuePeriod: [null],
-        price: [null]
+        price: [null],
+        validity: [null],
+        descriptionTitle: [null],
+        description: [null],
+        // description: this.fb.array([this.createDescriptionItem()]),
+
       });
     } else {
       this.plansForm = this.fb.group({
@@ -76,12 +74,16 @@ export class PlansComponent implements OnInit {
         name: [obj.name],
         maxBooks: [obj.maxBooks],
         issuePeriod: [obj.issuePeriod],
-        price: [obj.price]
+        price: [obj.price],
+        validity: [obj.validity],
+        descriptionTitle: [obj.descriptionTitle],
+        description: [obj.description],
+        // description: this.fb.array(obj.description.map((desc: DescriptionModel) => this.createDescriptionItem(desc))),
       });
     }
   }
 
-  openDeleteModal(modal, tagsModal: PlanModel) {
+  openDeleteModal(modal, tagsModal: SubscriptionModel) {
     this.modalService.open(modal, { size: "sm" });
     this.plansModel = tagsModal;
   }
@@ -104,8 +106,9 @@ export class PlansComponent implements OnInit {
 
   async saveToFirestore() {
     this.loader = true;
-    let values: PlanModel = { ...this.plansForm.value };
+    let values: SubscriptionModel = { ...this.plansForm.value };
     let docRef = doc(collection(this.db.firestore, PLANS_COLLECTION), values.planID);
+    console.log("form", values);
     setDoc(docRef, { ...values }, { merge: true })
       .then(() => {
         this.loader = false;
@@ -117,5 +120,28 @@ export class PlansComponent implements OnInit {
         this.toast.warning("Something went wrong! Please try again.", "");
       });
   }
+
+  // addDescriptionItem() {
+  //   const descriptionArray = this.plansForm.get('description') as FormArray;
+  //   descriptionArray.push(this.createDescriptionItem());
+  // }
+
+  // removeDescriptionItem(index: number) {
+  //   const descriptionArray = this.plansForm.get('description') as FormArray;
+  //   descriptionArray.removeAt(index);
+  // }
+
+
+  // createDescriptionItem(desc: DescriptionModel = null): FormGroup {
+  //   if (desc === null) {
+  //     desc = new DescriptionModel();
+  //   }
+  //   return this.fb.group({
+  //     title: [desc.title || null],
+  //     description: [desc.description || null],
+  //     // summary: [desc.summary],
+  //   });
+  // }
+
 
 }
