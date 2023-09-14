@@ -7,17 +7,21 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
 import { Component, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { NgbModal, NgbTypeahead, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, OperatorFunction, Subject, Subscription, Observable, filter, merge, map } from 'rxjs';
-import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, query, orderBy, startAt, endAt, where } from '@angular/fire/firestore';
+import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, query as firestoreQuery, orderBy, startAt, endAt, where, query, getDocs } from '@angular/fire/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
 import { privateDecrypt } from 'crypto';
+// import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
 
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
-  styleUrls: ['./books.component.scss']
+  styleUrls: ['./books.component.scss'],
+  //   providers: [
+  //     NgbTabset
+  // ]
 })
 export class BooksComponent implements OnInit {
   tagControl = new FormControl();
@@ -30,6 +34,7 @@ export class BooksComponent implements OnInit {
   // From DB Service - All Tags
   tagsList: TagsModel[] = [];
   tempTagList: TagsModel[] = [];
+  selectedTags: string[] = [];
 
   catalogueList: Catalogue[] = [];
   tempTypeList: Catalogue[] = [];
@@ -44,6 +49,8 @@ export class BooksComponent implements OnInit {
   bookModal: BookModel;
   booksList: BookModel[] = [];
   booksSub: Subscription;
+  tempBookList: BookModel[] = [];
+
   tagsSub: Subscription;
   catalogueSub: Subscription;
   b: boolean;
@@ -51,8 +58,28 @@ export class BooksComponent implements OnInit {
   tempFile: any = null;
   canWrite: boolean;
 
-  searchText: string = '';
+  searchTitle: string = '';
+  searchIsbn: string = '';
+  nameSearchText: string = "";
+  nameSearchForm: FormGroup;
+  isbnSearchForm: FormGroup;
+  isbnSearchText: string = "";
+  searchSignal: number = -1;
+  alphaSearchText: string = "";
+  viewAllMode: boolean = false;
   filteredData: BookModel[] = [];
+  branchId: string = "";
+  selectedAlphabet: string = '';
+  selectedTitle: string = '';
+  selectedISBN: string = '';
+  bookTitleArray: string[];
+
+  characters: string[] = Array(26).fill(97).map((ele, idx) => String.fromCharCode(ele + idx));
+
+  searchForm = new FormGroup({
+    param: new FormControl(''),
+  });
+
 
   constructor(
     private db: DbService,
@@ -65,12 +92,14 @@ export class BooksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.canWrite = this.db.canWriteCheck() || false;
+
     this.db.getBooks();
     this.booksSub = this.db.booksSub.subscribe((list) => {
       if (list.length !== 0) {
         this.booksList = [...list];
       }
+      this.tempBookList = [...this.booksList];
+      this.filteredData = [...this.booksList];
     })
 
     this.db.getTagsList();
@@ -97,33 +126,39 @@ export class BooksComponent implements OnInit {
   removeFromCatalogue(idx: number) {
     let catalogue = this.inputType.splice(idx, 1)[0];
     this.catalogueList = this.tempTypeList.filter(x => !this.inputType.some(e => e.catalogueId === x.catalogueId))
-    // var index = this.inputTags.indexOf(tag);
-    // if (index !== -1) {
-    //   this.inputTags.splice(index, 1);
-    //   this.tags.push(tag)
-    // }
   }
 
   removeFromTags(idx: number) {
     let tagModel = this.inputTags.splice(idx, 1)[0];
     this.tagsList = this.tempTagList.filter(x => !this.inputTags.some(e => e.tagID === x.tagID))
-    // var index = this.inputTags.indexOf(tag);
-    // if (index !== -1) {
-    //   this.inputTags.splice(index, 1);
-    //   this.tags.push(tag)
-    // }
   }
 
-  public addTag(e): void {
-    let tagValue: string = String(e.target.value);
-    if (tagValue.length === 0) return;
+  // public addTag(e): void {
+  //   let tagValue: string = String(e.target.value);
+  //   if (tagValue.length === 0) return;
 
-    let tagModel: TagsModel = this.tagsList.find(x => x.name === tagValue);
-    if (this.inputTags.some(x => x.tagID === tagModel.tagID)) return;
-    this.inputTags.push({ ...tagModel });
-    this.tagsList = this.tempTagList.filter(x => !this.inputTags.some(e => e.tagID === x.tagID))
+  //   let tagModel: TagsModel = this.tagsList.find(x => x.name === tagValue);
+  //   if (this.inputTags.some(x => x.tagID === tagModel.tagID)) return;
+  //   this.inputTags.push({ ...tagModel });
+  //   this.tagsList = this.tempTagList.filter(x => !this.inputTags.some(e => e.tagID === x.tagID))
+  //   this.tagControl.reset();
+  // }
+
+  public addTag(tag: TagsModel): void {
+    if (!tag) return;
+
+    if (this.inputTags.some(x => x.tagID === tag.tagID)) return;
+
+    this.inputTags.push({ ...tag });
+    this.tagsList = this.tagsList.filter(x => x.tagID !== tag.tagID);
     this.tagControl.reset();
   }
+
+  public isTagSelected(tag: TagsModel): boolean {
+    return this.inputTags.some(x => x.tagID === tag.tagID);
+  }
+
+
 
   public addType(e): void {
     let catalogueValue: string = String(e.target.value);
@@ -145,6 +180,7 @@ export class BooksComponent implements OnInit {
       this.bookForm = this.fb.group({
         docId: [doc(collection(this.db.firestore, BOOKS_COLLECTION)).id],
         fileType: [0],
+        createdOn: [Timestamp.now()],
         url: [null],
         title: [null],
         author: [null],
@@ -162,9 +198,11 @@ export class BooksComponent implements OnInit {
       this.bookForm = this.fb.group({
         docId: [obj.docId],
         fileType: [obj.fileType],
+        createdOn: [obj.createdOn],
         url: [obj.url],
         title: [obj.title],
         author: [obj.author],
+        bookTitleArray: [[]],
         // tags: [obj.tags],
         isbn: [obj.isbn],
         available: [obj.available],
@@ -219,6 +257,14 @@ export class BooksComponent implements OnInit {
       values.url = await getDownloadURL(FileRef);
     }
 
+    const bookTitle = values.title.toLowerCase();
+    const bookTitleArray = [];
+    for (let i = 1; i <= bookTitle.length; i++) {
+      bookTitleArray.push(bookTitle.substring(0, i));
+    }
+
+    values.bookTitleArray = bookTitleArray;
+
     let docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), values.docId);
     setDoc(docRef, { ...values }, { merge: true })
       .then(() => {
@@ -239,30 +285,6 @@ export class BooksComponent implements OnInit {
     this.modalService.open(modal, { size: "sm" });
     this.bookModal = imageModal;
   }
-
-  // async deleteBook() {
-  //   this.loader = true;
-  //   if (this.bookModal.url != "") {
-  //     let storageRef = ref(this.db.storage, this.bookModal.url);
-  //     await deleteObject(storageRef);
-  //   }
-
-  //   let docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), this.bookModal.docId);
-  //   deleteDoc(docRef)
-  //     .then(() => {
-  //       let idx = this.booksList.findIndex(x => x.docId === this.bookModal.docId);
-  //       this.booksList.slice(idx, 1);
-
-  //       this.modalService.dismissAll();
-  //       this.toast.show("Book Deleted Successfully !");
-  //       this.loader = false
-  //     }, (error) => {
-  //       // console.log(error);
-  //       this.loader = false
-  //       this.toast.warning("Something went wrong! Please try again.");
-  //     }
-  //     );
-  // }
 
   async deleteBook() {
     this.loader = true;
@@ -304,47 +326,37 @@ export class BooksComponent implements OnInit {
     if (this.booksSub !== undefined) this.booksSub.unsubscribe();
   }
 
-  // getBooksListWhere(condition: string, param: any) {
-  //   let collectionRef = collection(this.fireStore, BOOKS_COLLECTION);
-  //   let queryRef: any;
-
-  //   if (condition === "nameLowercase") {
-  //     queryRef = query(
-  //       collectionRef,
-  //       orderBy(condition),
-  //       startAt(param),
-  //       endAt(param + '\uf8ff')
-  //     );
-  //   } else {
-  //     queryRef = query(
-  //       collectionRef,
-  //       where(condition, "==", param),
-  //       orderBy("name")
-  //     );
-  //   }
-
-  //   onSnapshot(queryRef, (value) => {
-  //     const books = value.docs.map(e => e.data() as BookModel);
-  //     this.booksSub.next(books); // Emit values to the subject
-  //     this.b = true;
-  //   }, (error) => {
-  //     console.log(error);
-  //   });
+  // filterData(): void {
+  //   this.filteredData = this.booksList.filter(book =>
+  //     book.title.toLowerCase().includes(this.searchText.toLowerCase()) ||
+  //     // book.tags.some(tag => tag.name.toLowerCase().includes(this.searchText.toLowerCase())) ||
+  //     // book.author.toLowerCase().includes(this.searchText.toLowerCase()) ||
+  //     book.isbn.toLowerCase().includes(this.searchText.toLowerCase())
+  //   );
+  //   console.log(this.filteredData);
+  // }
+  // onSearchChange(): void {
+  //   this.filterData();
   // }
 
-  filterData(): void {
-    this.filteredData = this.booksList
-      .filter(book => book.title.toLowerCase().includes(this.searchText.toLowerCase()));
-    console.log(this.filteredData);
-
-    console.log("not working");
+  filterBooksByAlphabet(alphabet: string) {
+    this.selectedAlphabet = alphabet;
+    this.db.booksRetrievedBool = false
+    this.db.getBooks(alphabet);
   }
 
-  onSearchChange(): void {
-    this.filterData();
+  filterBooksByTitle() {
+    this.selectedTitle = this.searchForm.controls.param.value;
+    this.db.booksRetrievedBool = false
+    this.db.getBooksByTitle(this.searchForm.controls.param.value);
+    this.filterBooksByISBN()
   }
 
-
+  filterBooksByISBN() {
+    this.selectedISBN = this.searchForm.controls.param.value;
+    this.db.booksRetrievedBool = false
+    this.db.getBooksByISBN(this.searchForm.controls.param.value);
+  }
 
 
 }

@@ -1,3 +1,123 @@
-<div class="header bg-green pb-8 pt-5 pt-md-8">
+<div class="header pb-8 pt-5 pt-md-8">
   <div class="container-fluid"></div>
+</div>
+
+<div class="container-fluid mt--8">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <form [formGroup]="searchForm">
+            <div class="row">
+              <!-- Phone Number Input -->
+              <div class="col-md-6 form-group">
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" placeholder="Enter Phone Number" formControlName="phoneNumber"
+                  class="form-control">
+              </div>
+
+              <!-- Select Book Input -->
+              <div class="col-md-6 form-group">
+                <label for="searchQuery">Select Book:</label>
+                <input type="text" class="form-control custom-input" placeholder="Enter ISBN" formControlName="param" />
+              </div>
+            </div>
+
+            <!-- Search Button -->
+            <div class="row justify-content-center mt-3">
+              <div class="col-auto">
+                <button type="button" class="btn btn-primary" (click)="filterBooksByISBN()">Search</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h2>Select Books</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Sr. No.</th>
+                  <th scope="col">Title</th>
+                  <!-- <th scope="col">Author</th> -->
+                  <!-- <th scope="col">Tags</th> -->
+                  <!-- <th scope="col">Price</th> -->
+                  <th scope="col">ISBN</th>
+                  <!-- <th scope="col">Available</th> -->
+                  <!-- <th scope="col">Issued</th> -->
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let book of filteredData; let i = index">
+                  <td class="font-weight-light">{{ i + 1 }}</td>
+                  <td class="font-weight-bold">{{ book.title }}</td>
+                  <!-- <td class="font-weight-bold">{{ book.author }}</td> -->
+
+                  <td class="font-weight-bold">{{ book.isbn }}</td>
+                  <!-- <td>{{ book.available }}</td> -->
+                  <!-- <td>{{ book.issued }}</td> -->
+                  <td>
+                    <!-- <a [href]="book.url" [title]="'Cover Image of ' + book.title" class="btn btn-sm btn-outline-dark" target="_blank">View Cover Image</a> -->
+                    <button class="btn btn-sm btn-dark" (click)="issueBook(book)">Issue Book</button>
+                    <!-- <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, book)">Delete</button> -->
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="card">
+        <div class="card-header">
+          <h2>Issued Books</h2>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table align-items-center table-flush">
+              <!-- Table Header for Table 2 -->
+              <!-- Add your table headers for the second table here -->
+              <thead class="thead-light">
+                <tr>
+                  <!-- <th scope="col">Parameter</th> -->
+                  <th scope="col">S.No.</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">ISBN</th>
+                </tr>
+              </thead>
+              <!-- Table Body for Table 2 -->
+              <tbody>
+                <!-- Use *ngFor to loop through your data and generate rows for Table 2 -->
+                <!-- Replace the placeholders with your actual data -->
+                <tr *ngFor="let book of issuedBooksList; let i = index">
+                  <!-- <td>{{ "parameter" }}</td> -->
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ book.title }}</td>
+                  <td>{{ book.isbn }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="submit" class="btn btn-primary" (click)="saveDataToFirestore()">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>

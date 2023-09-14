@@ -1,0 +1,22 @@
+.container {
+    max-width: 900px;
+    /* Adjust the max-width as needed */
+    margin: 0 auto;
+    /* Center the container horizontally */
+    padding: 20px;
+    /* Add padding to the container */
+    border: 1px solid #ccc;
+    /* Add a border for visual separation */
+    border-radius: 5px;
+    /* Add rounded corners if desired */
+    background-color: #f9f9f9;
+    /* Set a background color */
+
+    // You can add more styles or nested selectors if needed
+}
+
+/* form.component.css */
+.custom-input {
+    height: 45px;
+    /* Adjust the height as needed */
+}

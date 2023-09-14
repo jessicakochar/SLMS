@@ -1,438 +1,374 @@
-<div class="header bg-green pb-8 pt-5 pt-md-8">
-  <div class="container-fluid">
-    <div class="header-body">
-      <!-- Card stats -->
-      <div class="row">
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">
-                    Books Available
-                  </h5>
-                  <span class="h2 font-weight-bold mb-0">350</span>
-                </div>
-                <div class="col-auto">
-                  <div
-                    class="icon icon-shape bg-danger text-white rounded-circle shadow"
-                  >
-                    <i class="fas fa-book"></i>
-                  </div>
-                </div>
-              </div>
-              <!-- <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-success mr-2"
-                  ><i class="fa fa-arrow-up"></i> 3.48%</span
-                >
-                <span class="text-nowrap">Since last month</span>
-              </p> -->
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">
-                    Books in inventory
-                  </h5>
-                  <span class="h2 font-weight-bold mb-0">2,356</span>
-                </div>
-                <div class="col-auto">
-                  <div
-                    class="icon icon-shape bg-warning text-white rounded-circle shadow"
-                  >
-                    <i class="fas fa-warehouse"></i>
-                  </div>
-                </div>
-              </div>
-              <!-- <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-danger mr-2"
-                  ><i class="fas fa-arrow-down"></i> 3.48%</span
-                >
-                <span class="text-nowrap">Since last week</span>
-              </p> -->
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row">
-                <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">
-                    Books Issued
-                  </h5>
-                  <span class="h2 font-weight-bold mb-0">924</span>
-                </div>
-                <div class="col-auto">
-                  <div
-                    class="icon icon-shape bg-yellow text-white rounded-circle shadow"
-                  >
-                    <i class="fas fa-users"></i>
-                  </div>
-                </div>
-              </div>
-              <!-- <p class="mt-3 mb-0 text-muted text-sm">
-                <span class="text-warning mr-2"
-                  ><i class="fas fa-arrow-down"></i> 1.10%</span
-                >
-                <span class="text-nowrap">Since yesterday</span>
-              </p> -->
-            </div>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6">
-          <div class="card card-stats mb-4 mb-xl-0">
-            <div class="card-body">
-              <div class="row" style="align-items: center; text-align: center">
-                <div class="col">
-                  <span class="h2 font-weight-bold mb-0">Add New Book</span>
-                </div>
-                <div class="col-auto">
-                  <button
-                    class="btn icon-shape bg-info text-white rounded-circle shadow"
-                    (click)="openBooksModal(content, null)"
-                    type="button"
-                  >
-                    <i class="fas fa-plus"></i>
-                  </button>
-                </div>
-              </div>
-              <!-- <p class="mt-3 mb-0 text-muted text-sm">
-                  <span class="text-success mr-2"
-                    ><i class="fa fa-arrow-up"></i> 3.48%</span
-                  >
-                  <span class="text-nowrap">Since last month</span>
-                </p> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="header pb-8 pt-5 pt-md-8 ">
+  <div class="container-fluid"></div>
 </div>
-<div class="container-fluid mt--7">
+
+<div class="container-fluid mt--8">
   <div class="mb-5 mb-xl-0">
     <div class="card shadow">
       <div class="card-header border-0">
+        <div class="d-flex flex-column">
+          <h3 class="m-0">Books ({{booksList.length || 0}})</h3>
+          <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+                {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+        </div>
         <div class="row align-items-center">
-          <div class="col">
-            <form>
-              <div class="form-row">
-                <div class="col-xl-3">
-                  <select class="custom-select custom-select-sm">
-                    <option selected>Sort by</option>
-                    <option value="1">A-Z</option>
-                    <option value="2">Z-A</option>
-                    <option value="3">Price</option>
-                  </select>
-                </div>
-                <div class="col-xl-3">
-                  <select class="custom-select custom-select-sm">
-                    <option selected>Filter</option>
-                    <option value="1">Title</option>
-                    <option value="2">Author</option>
-                    <option value="3">ISBN</option>
-                  </select>
-                </div>
-              </div>
-            </form>
-          </div>
           <div class="col d-flex justify-content-end align-items-center">
-            <form>
+            <form [formGroup]="searchForm">
               <div class="form-row">
-                <div class="col-xl-4">
-                  <select class="custom-select custom-select-sm">
-                    <option selected>Search by</option>
-                    <option value="1">Title</option>
-                    <option value="2">Author</option>
-                    <option value="3">ISBN</option>
-                  </select>
-                </div>
+
                 <div class="col-xl-5">
-                  <input
-                    type="text"
-                    class="form-control form-control-sm"
-                    placeholder="Enter keyword"
-                    [(ngModel)]="searchText"
-                    (ngModelChange)="onSearchChange()"
-                  />
+                  <input type="text" class="form-control form-control-sm" placeholder="Title or ISBN"
+                    formControlName="param" />
                 </div>
                 <div class="col-auto">
-                  <button type="submit" class="btn btn-sm btn-primary" (click)="filterData()">
-                    Search
+                  <button type="submit" class="btn btn-sm btn-primary" (click)="filterBooksByTitle()">
+                    Search Book
+                  </button>
+                  <button type="submit" class="btn btn-sm btn-primary" (click)="openBooksModal(content, null)">
+                    Add New
                   </button>
                 </div>
               </div>
             </form>
           </div>
         </div>
-      </div>
-      <div class="table-responsive">
-        <!-- Projects table -->
-        <table class="table align-items-center table-flush">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Sr. No.</th>
-              <th scope="col">Title</th>
-              <th scope="col">Author</th>
-              <th scope="col">Tags</th>
-              <th scope="col">Price</th>
-              <th scope="col">ISBN</th>
-              <th scope="col">Available</th>
-              <th scope="col">Issued</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let book of booksList; let i = index">
-              <td class="font-weight-light">{{ i + 1 }}</td>
-              <td class="font-weight-bold">{{ book.title }}</td>
-              <td class="font-weight-bold">{{ book.author }}</td>
-              <td>
-                <h4 class="m-0 d-flex flex-wrap" style="gap: 4px 2px">
-                  <span
-                    class="badge badge-pill badge-primary"
-                    *ngFor="let tag of book.tags"
+        <div class="row mt-3">
+          <!-- <div class="col-12 col-sm-6">
+              <form [formGroup]="nameSearchForm" class="d-flex justify-content-between align-items-end"
+                (ngSubmit)="onSearchChange(nameSearchForm)" ngNativeValidate>
+                <div class="form-group col m-0 p-0 mr-2">
+                  <h5>Name search</h5>
+                  <div class="input-group input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="fas fa-align-left"></i>
+                      </span>
+                    </div>
+                    <input class="form-control form-control-sm" style="padding-left: 8px;" placeholder=""
+                      formControlName="name" type="text" required />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">
+                  Search
+                </button>
+
+              </form>
+            </div>
+            <div class="col-12 col-sm-6">
+              <form [formGroup]="isbnSearchForm" class="d-flex justify-content-between align-items-end"
+                (ngSubmit)="onSearchChange(isbnSearchForm)" ngNativeValidate>˝
+                <div class="form-group col m-0 p-0 mr-2">
+                  <h5>Mobile search</h5>
+                  <div class="input-group input-group-alternative">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="fas fa-align-left"></i>
+                      </span>
+                    </div>
+                    <input class="form-control form-control-sm" style="padding-left: 8px;" placeholder=""
+                      formControlName="mobile" type="text" required />
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">
+                  Search
+                </button>
+              </form>
+            </div> -->
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <h4>Alphabet Search</h4>
+          </div>
+          <div class="col-12">
+            <ul ngbNav #nav="ngbNav" class="nav-tabs nav-fill">
+              <li *ngFor="let char of characters" [ngbNavItem]="char">
+                <a ngbNavLink (click)="filterBooksByAlphabet(char)">{{ char | uppercase }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Sr. No.</th>
+                <th scope="col">Title</th>
+                <th scope="col">Author</th>
+                <th scope="col">Tags</th>
+                <th scope="col">Price</th>
+                <th scope="col">ISBN</th>
+                <th scope="col">Available</th>
+                <th scope="col">Issued</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- <tr *ngFor="let book of booksList; let i = index">
+                <td class="font-weight-light">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ book.title }}</td>
+                <td class="font-weight-bold">{{ book.author }}</td>
+                <td>
+                  <h4 class="m-0 d-flex flex-wrap" style="gap: 4px 2px">
+                    <span
+                      class="badge badge-pill badge-primary"
+                      *ngFor="let tag of book.tags"
+                    >
+                      {{ tag.name }}
+                    </span>
+                  </h4>
+                </td>
+                <td class="font-weight-bold">
+                  {{ book.price | currency : "INR" : "symbol" : "1.0" }}
+                </td>
+                <td class="font-weight-bold">{{ book.isbn }}</td>
+                <td>{{ book.available }}</td>
+                <td>{{ book.issued }}</td>
+                <td>
+                  <a
+                    [href]="book.url"
+                    [title]="'Cover Image of ' + book.title"
+                    class="btn btn-sm btn-outline-dark"
+                    target="_blank"
+                    >View Cover Image</a
                   >
-                    {{ tag.name }}
-                  </span>
-                </h4>
-              </td>
-              <td class="font-weight-bold">
-                {{ book.price | currency : "INR" : "symbol" : "1.0" }}
-              </td>
-              <td class="font-weight-bold">{{ book.isbn }}</td>
-              <td>{{ book.available }}</td>
-              <td>{{ book.issued }}</td>
-              <td>
-                <a
-                  [href]="book.url"
-                  [title]="'Cover Image of ' + book.title"
-                  class="btn btn-sm btn-outline-dark"
-                  target="_blank"
-                  >View Cover Image</a
-                >
-                <button
-                  class="btn btn-sm btn-dark"
-                  (click)="openBooksModal(content, book)"
-                >
-                  Edit
-                </button>
-                <button
-                  class="btn btn-sm btn-danger"
-                  (click)="this.openDeleteModal(deleteModal, book)"
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <button
+                    class="btn btn-sm btn-dark"
+                    (click)="openBooksModal(content, book)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="this.openDeleteModal(deleteModal, book)"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr> -->
+              <!-- Update the *ngFor loop to use filteredData -->
+              <!-- <tr *ngFor="let book of booksList; let i = index">
+                
+                <td class="font-weight-light">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ book.title }}</td>
+                <td class="font-weight-bold">{{ book.author }}</td>
+                <td>
+                  <h4 class="m-0 d-flex flex-wrap" style="gap: 4px 2px">
+                    <span class="badge badge-pill badge-primary" *ngFor="let tag of book.tags">
+                      {{ tag.name }}
+                    </span>
+                  </h4>
+                </td>
+                <td class="font-weight-bold">
+                  {{ book.price | currency : "INR" : "symbol" : "1.0" }}
+                </td>
+                <td class="font-weight-bold">{{ book.isbn }}</td>
+                <td>{{ book.available }}</td>
+                <td>{{ book.issued }}</td>
+                <td>
+                  <a [href]="book.url" [title]="'Cover Image of ' + book.title" class="btn btn-sm btn-outline-dark" target="_blank">View Cover Image</a>
+                  <button class="btn btn-sm btn-dark" (click)="openBooksModal(content, book)">Edit</button>
+                  <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, book)">Delete</button>
+                </td>
+              </tr> -->
+              <tr *ngFor="let book of filteredData; let i = index">
+                <td class="font-weight-light">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ book.title }}</td>
+                <td class="font-weight-bold">{{ book.author }}</td>
+                <td>
+                  <h4 class="m-0 d-flex flex-wrap" style="gap: 4px 2px">
+                    <span class="badge badge-pill badge-primary" *ngFor="let tag of book.tags">
+                      {{ tag.name }}
+                    </span>
+                  </h4>
+                </td>
+                <td class="font-weight-bold">
+                  {{ book.price | currency : "INR" : "symbol" : "1.0" }}
+                </td>
+                <td class="font-weight-bold">{{ book.isbn }}</td>
+                <td>{{ book.available }}</td>
+                <td>{{ book.issued }}</td>
+                <td>
+                  <a [href]="book.url" [title]="'Cover Image of ' + book.title" class="btn btn-sm btn-outline-dark"
+                    target="_blank">View Cover Image</a>
+                  <button class="btn btn-sm btn-dark" (click)="openBooksModal(content, book)">Edit</button>
+                  <button class="btn btn-sm btn-danger"
+                    (click)="this.openDeleteModal(deleteModal, book)">Delete</button>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h1 class="modal-title" style="margin: 0 auto">Add Book</h1>
-    <!-- <button
-      type="button"
-      class="btn btn-sm icon-shape shadow-none"
-      aria-label="Close"
-      (click)="modal.dismiss('Cross click')"
-    >
-      <i class="bi bi-x-circle-fill"></i>
-    </button> -->
-  </div>
-  <div class="modal-body">
-    <form
-      [formGroup]="bookForm"
-      (keydown.enter)="$event.preventDefault()"
-      (ngSubmit)="saveToFirestore()"
-    >
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label>Title</label>
-          <input type="text" class="form-control" formControlName="title" />
-        </div>
-        <div class="form-group col-md-6">
-          <label for="author">Author</label>
-          <input type="text" class="form-control" formControlName="author" />
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="cover">Cover Image</label>
-        <div class="custom-file">
-          <input
-            type="file"
-            class="custom-file-input"
-            aria-describedby="inputGroupFileAddon01"
-            id="customFile"
-            (change)="checkImageType($event.target.files)"
-          />
-          <label class="custom-file-label" for="cover"
-            ><span *ngIf="tempFile === null">Choose Image File</span>
-            <span class="text-limit" *ngIf="tempFile !== null">{{
-              tempFile.name
-            }}</span></label
-          >
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-4">
-          <label for="isbn">ISBN</label>
-          <input type="text" class="form-control" formControlName="isbn" />
-        </div>
-        <div class="form-group col-md-4">
-          <label for="available">Quantity</label>
-          <input
-            type="number"
-            class="form-control"
-            formControlName="available"
-          />
-        </div>
-        <div class="form-group col-md-4">
-          <label for="price">Price</label>
-          <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">₹</span>
-            </div>
-            <input type="number" class="form-control" formControlName="price" />
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h1 class="modal-title" style="margin: 0 auto">Add Book</h1>
+      <!-- <button
+        type="button"
+        class="btn btn-sm icon-shape shadow-none"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <i class="bi bi-x-circle-fill"></i>
+      </button> -->
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="bookForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label>Title</label>
+            <input type="text" class="form-control" formControlName="title" />
+          </div>
+          <div class="form-group col-md-6">
+            <label for="author">Author</label>
+            <input type="text" class="form-control" formControlName="author" />
           </div>
         </div>
-      </div>
+        <div class="form-group">
+          <label for="cover">Cover Image</label>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" aria-describedby="inputGroupFileAddon01" id="customFile"
+              (change)="checkImageType($event.target.files)" />
+            <label class="custom-file-label" for="cover"><span *ngIf="tempFile === null">Choose Image File</span>
+              <span class="text-limit" *ngIf="tempFile !== null">{{
+                tempFile.name
+                }}</span></label>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="isbn">ISBN</label>
+            <input type="text" class="form-control" formControlName="isbn" />
+          </div>
+          <div class="form-group col-md-4">
+            <label for="available">Quantity</label>
+            <input type="number" class="form-control" formControlName="available" />
+          </div>
+          <div class="form-group col-md-4">
+            <label for="price">Price</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">₹</span>
+              </div>
+              <input type="number" class="form-control" formControlName="price" />
+            </div>
+          </div>
+        </div>
 
-      <!-- <div class="form-group">
-        <label for="inputAddress1">Type of Book</label>
-        <select
-          class="form-control"
-          [formControl]="typeControl"
-          (change)="addType($event)"
-        >
-          <option value="" disabled selected>Select a type</option>
-          <option
-            *ngFor="let catalogue of catalogueList"
-            [value]="catalogue?.name"
+        <!-- <div class="form-group">
+          <label for="inputAddress1">Type of Book</label>
+          <select
+            class="form-control"
+            [formControl]="typeControl"
+            (change)="addType($event)"
           >
-            {{ catalogue?.name }}
-          </option>
-        </select>
-      </div> -->
-      <div class="form-group">
-        <label for="type">Type</label>
-        <select
-          id="type"
-          class="form-control"
-          formControlName="type"
-        >
-          <option *ngFor="let type of tempTypeList" [ngValue]="type">{{ type.name }}</option>
-        </select>
-      </div>
-      <!-- <div class="form-row">
-        <button
-          class="btn btn-sm btn-dark btn-outline-dark mr-2"
-          *ngFor="let catalogue of catalogueList ; index as idx"
-          type="button"
-          (click)="this.removeFromCatalogue(idx)"
-        >
-          {{ catalogue?.name || "" }}
-          <i class="fas fa-times"></i>
-        </button>
-      </div> -->
+            <option value="" disabled selected>Select a type</option>
+            <option
+              *ngFor="let catalogue of catalogueList"
+              [value]="catalogue?.name"
+            >
+              {{ catalogue?.name }}
+            </option>
+          </select>
+        </div> -->
+        <div class="form-group">
+          <label for="type">Type</label>
+          <select id="type" class="form-control" formControlName="type">
+            <option *ngFor="let type of tempTypeList" [ngValue]="type">{{ type.name }}</option>
+          </select>
+        </div>
+        <!-- <div class="form-row">
+          <button
+            class="btn btn-sm btn-dark btn-outline-dark mr-2"
+            *ngFor="let catalogue of catalogueList ; index as idx"
+            type="button"
+            (click)="this.removeFromCatalogue(idx)"
+          >
+            {{ catalogue?.name || "" }}
+            <i class="fas fa-times"></i>
+          </button>
+        </div> -->
 
-      <div class="form-group">
-        <label for="inputAddress2">Tags</label>
-        <input
-          type="text"
-          class="form-control"
-          list="tags"
-          [formControl]="tagControl"
-          (keyup.enter)="addTag($event)"
-          (change)="addTag($event)"
-        />
-        <datalist id="tags">
-          <option
-            *ngFor="let tag of tagsList"
-            [value]="tag?.name || ''"
-          ></option>
-        </datalist>
-      </div>
-      
-      <div class="form-row">
-        <button
-          class="btn btn-sm btn-dark btn-outline-dark mr-2"
-          *ngFor="let tag of inputTags; index as idx"
-          type="button"
-          (click)="this.removeFromTags(idx)"
-        >
-          {{ tag?.name || "" }}
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-      <div style="float: right">
-        <button
-          type="button"
-          class="btn btn-danger btn-sm"
-          (click)="modal.close('Close click')"
-        >
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-dark btn-sm">Save</button>
-      </div>
-    </form>
-  </div>
-  <!-- <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-danger"
-      (click)="modal.close('Close click')"
-    >
-      Close
-    </button>
-  </div> -->
-</ng-template>
+        <!-- <div class="form-group">
+          <label for="inputAddress2">Tags</label>
+          <input
+            type="text"
+            class="form-control"
+            list="tags"
+            [formControl]="tagControl"
+            (keyup.enter)="addTag($event)"
+            (change)="addTag($event)"
+          />
+          <datalist id="tags">
+            <option
+              *ngFor="let tag of tagsList"
+              [value]="tag?.name || ''"
+            ></option>
+          </datalist>
+        </div> -->
 
-<ng-template #deleteModal let-modal>
-  <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete this book?</h4>
-    <button
-      type="button"
-      class="close"
-      aria-label="Close"
-      id="closeModal"
-      #closeModal
-      (click)="modal.dismiss('Cross click')"
-    >
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-sm btn-default float-right mr-2"
-      (click)="modal.dismiss('Cross click')"
-    >
-      NO
-    </button>
-    <button
-      type="submit"
-      class="btn btn-sm btn-danger float-right mr-2"
-      (click)="deleteBook()"
-      [disabled]="loader"
-    >
-      YES
-      <span *ngIf="loader">&nbsp;</span>
-      <div
-        *ngIf="loader"
-        class="spinner-border spinner-border-sm text-white"
-        role="status"
+        <div class="form-group">
+          <label for="inputAddress2">Tags</label>
+          <!-- Remove the input and datalist -->
+        </div>
+
+        <div class="form-row">
+          <button class="btn btn-sm btn-dark btn-outline-dark mr-2" *ngFor="let tag of tagsList; let idx = index"
+            type="button" [class.selected]="isTagSelected(tag)" (click)="addTag(tag)">
+            {{ tag.name || "" }}
+          </button>
+        </div>
+
+
+
+        <div class="form-row">
+          <button class="btn btn-sm btn-dark btn-outline-dark mr-2" *ngFor="let tag of inputTags; index as idx"
+            type="button" (click)="this.removeFromTags(idx)">
+            {{ tag?.name || "" }}
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div style="float: right">
+          <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-dark btn-sm">Save</button>
+        </div>
+      </form>
+    </div>
+    <!-- <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="modal.close('Close click')"
       >
-        <span class="sr-only">Loading...</span>
-      </div>
-    </button>
-  </div>
-</ng-template>
+        Close
+      </button>
+    </div> -->
+  </ng-template>
+
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to delete this book?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteBook()" [disabled]="loader">
+        YES
+        <span *ngIf="loader">&nbsp;</span>
+        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </ng-template>
+  <!-- </div> -->

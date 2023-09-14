@@ -14,6 +14,7 @@ import { NewIssueComponent } from 'src/app/pages/new-issue/new-issue.component';
 import { PlansComponent } from 'src/app/pages/plans/plans.component';
 import { MembersComponent } from 'src/app/pages/members/members.component';
 import { CatalogueComponent } from 'src/app/pages/catalogue/catalogue.component';
+import { UserHistoryComponent } from 'src/app/pages/user-history/user-history.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
@@ -25,6 +26,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'books', component: BooksComponent },
     { path: 'staff', component: StaffComponent },
     { path: 'members', component: MembersComponent },
+    { path: 'userHistory', component: UserHistoryComponent },
     { path: 'plans', component: PlansComponent },
     { path: 'newIssue', component: NewIssueComponent },
     { path: 'issueList', component: IssueListComponent },

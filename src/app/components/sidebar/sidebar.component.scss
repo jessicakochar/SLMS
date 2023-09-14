@@ -1,0 +1,30 @@
+/* In your component's SCSS file */
+.custom-navbar {
+    background-color: rgb(255, 255, 255);
+    color: white;
+
+    /* Example: Style for the links inside the navbar */
+    a.nav-link {
+        color: rgb(0, 0, 0);
+        text-decoration: none;
+
+        &:hover {
+            color: #777373;
+            /* Change the hover color if desired */
+        }
+
+
+    }
+
+    /* Example: Style for the active link */
+    a.nav-link.active {
+        background-color: #828485;
+        /* Change the active link background color if desired */
+        color: white;
+
+        // .icon {
+        //     color: rgb(117, 163, 135);
+        //     /* Change the icon color to blue */
+        // }
+    }
+}

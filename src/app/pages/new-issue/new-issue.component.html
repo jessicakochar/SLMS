@@ -1,1 +1,123 @@
-<p>new-issue works!</p>
+<div class="header pb-8 pt-5 pt-md-8">
+  <div class="container-fluid"></div>
+</div>
+
+<div class="container-fluid mt--8">
+  <!-- <div class="header-body"> -->
+  <!-- Card stats -->
+  <!-- <div class="row">
+      <div class="col-xl-3 col-lg-6">
+        <div class="card card-stats mb-4 mb-xl-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">
+                  Total Books
+                </h5>
+                <span class="h2 font-weight-bold mb-0">{{booksList.length || 0}}</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-6">
+        <div class="card card-stats mb-4 mb-xl-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">
+                  Issued Books
+                </h5>
+                <span class="h2 font-weight-bold mb-0">2,356</span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-6">
+        <div class="card card-stats mb-4 mb-xl-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">
+                  Users
+                </h5>
+                <span class="h2 font-weight-bold mb-0">4</span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-6">
+        <div class="card card-stats mb-4 mb-xl-0">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <h5 class="card-title text-uppercase text-muted mb-0">
+                  Catalogue
+                </h5>
+                <span class="h2 font-weight-bold mb-0">{{catalogueList.length || 0}}</span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div> -->
+  <!-- </div> -->
+  <!-- </div> -->
+  <!-- <div class="container-fluid mt--2"> -->
+
+
+  <!-- <div class="row mt-5"> -->
+  <div class="mb-5 mb-xl-0">
+    <div class="card shadow">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col">
+            <h3 class="mb-0">Issued Books</h3>
+          </div>
+          <div class="col text-right">
+            <button type="submit" (click)="navigateToIssueList()" class="btn btn-sm btn-dark">
+              New Issue
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <!-- Projects table -->
+        <table class="table align-items-center table-flush">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">User name</th>
+              <th scope="col">phone</th>
+              <th scope="col">book issued</th>
+
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let member of memberModelList;">
+              <th scope="row">{{ member.name }}</th>
+              <td>{{ member.phone }}</td>
+              <td>
+                <ul>
+                  <li *ngFor="let subItem of member.subcollectionData">
+                    {{ subItem.title }}
+                  </li>
+                </ul>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!-- </div> -->
+</div>

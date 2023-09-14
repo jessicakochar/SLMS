@@ -1,0 +1,63 @@
+<div class="header pb-8 pt-5 pt-md-8">
+  <div class="container-fluid"></div>
+</div>
+
+<div class="container-fluid mt--8 w-50">
+  <ng-container *ngIf="!userData; else userDataContent">
+    <!-- Show the form when userData is not available -->
+    <div class="mb-5 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <h2 class="mb-0">Enter Mobile Number</h2>
+        </div>
+        <div class="card-body text-center">
+          <form (submit)="searchUserData()">
+            <div class="form-group">
+              <br>
+              <input type="text" class="form-control" [(ngModel)]="phoneNumber" placeholder="Enter mobile number">
+            </div>
+            <button type="submit" class="btn btn-dark">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Display user data in a card when matched -->
+  <ng-template #userDataContent>
+    <div class="containconatier-fluid mt--7">
+      <div class="mb-5 mb-xl-0">
+        <div class="card">
+          <div class="card-header">
+            <h3>User Data</h3>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Name:</h5>
+                <p>{{ userData.name }}</p>
+              </div>
+              <div class="col-md-6">
+                <h5>Email:</h5>
+                <p>{{ userData.email }}</p>
+              </div>
+              <div class="col-md-6">
+                <h5>Phone:</h5>
+                <p>{{ userData.phone }}</p>
+              </div>
+              <div class="col-md-6">
+                <h5>Age:</h5>
+                <p>{{ userData.age }}</p>
+              </div>
+              <!-- Add more fields as needed -->
+            </div>
+            <div class="text-center mb-4">
+              <button class="btn btn-primary" (click)="exportMemberToCSV()">Download</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
+<!-- </div> -->

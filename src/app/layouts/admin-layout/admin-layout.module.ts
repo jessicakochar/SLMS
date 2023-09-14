@@ -22,6 +22,7 @@ import { ConfigComponent } from '../../pages/config/config.component';
 import { TagsComponent } from '../../pages/tags/tags.component';
 // import { Catalogue } from 'src/app/utils/catalogueModel';
 import { CatalogueComponent } from 'src/app/pages/catalogue/catalogue.component';
+import { UserHistoryComponent } from 'src/app/pages/user-history/user-history.component';
 
 
 // import { ToastrModule } from 'ngx-toastr';
@@ -50,6 +51,7 @@ import { CatalogueComponent } from 'src/app/pages/catalogue/catalogue.component'
     ConfigComponent,
     TagsComponent,
     CatalogueComponent,
+    UserHistoryComponent,
   ]
 })
 

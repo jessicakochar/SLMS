@@ -1,11 +1,13 @@
-<div class="header bg-green pb-8 pt-5 pt-md-8"></div>
-<div class="container-fluid mt--7">
+<div class="header pb-8 pt-5 pt-md-8">
+  <div class="container-fluid"></div>
+</div>
+<div class="container-fluid mt--8">
   <div class="mb-5 mb-xl-0">
     <div class="card shadow">
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col">
-          <h3 class="mb-0">No. of Plans: {{ plansList.length }} </h3>
+            <h3 class="mb-0">No. of Plans: {{ plansList.length }} </h3>
           </div>
           <div class="col d-flex justify-content-end align-items-center">
             <div class="col-6">
@@ -13,11 +15,7 @@
             <form>
               <div class="form-row">
                 <div class="col-auto">
-                  <button
-                    type="submit"
-                    (click)="addNewPlanModal(content)"
-                    class="btn btn-sm btn-dark"
-                  >
+                  <button type="submit" (click)="addNewPlanModal(content)" class="btn btn-sm btn-dark">
                     Add new
                   </button>
                 </div>
@@ -49,16 +47,10 @@
                 {{ plan.price | currency : "INR" : "symbol" : "1.0" }}
               </td>
               <td>
-                <button
-                  class="btn btn-sm btn-dark"
-                  (click)="this.addNewPlanModal(content, plan)"
-                >
+                <button class="btn btn-sm btn-dark" (click)="this.addNewPlanModal(content, plan)">
                   Edit
                 </button>
-                <button
-                  class="btn btn-sm btn-danger"
-                  (click)="this.openDeleteModal(deleteModal, plan)"
-                >
+                <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, plan)">
                   Delete
                 </button>
               </td>
@@ -72,38 +64,19 @@
 <ng-template #deleteModal let-modal>
   <div class="modal-header d-flex justify-content-between align-items-center">
     <h4 class="modal-title">Are you sure want to delete this plan?</h4>
-    <button
-      type="button"
-      class="close"
-      aria-label="Close"
-      id="closeModal"
-      #closeModal
-      (click)="modal.dismiss('Cross click')"
-    >
+    <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+      (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-sm btn-default float-right mr-2"
-      (click)="modal.dismiss('Cross click')"
-    >
+    <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
       NO
     </button>
-    <button
-      type="submit"
-      class="btn btn-sm btn-danger float-right mr-2"
-      (click)="deletePlan()"
-      [disabled]="loader"
-    >
+    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deletePlan()" [disabled]="loader">
       YES
       <span *ngIf="loader">&nbsp;</span>
-      <div
-        *ngIf="loader"
-        class="spinner-border spinner-border-sm text-white"
-        role="status"
-      >
+      <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
         <span class="sr-only">Loading...</span>
       </div>
     </button>
@@ -121,16 +94,15 @@
         <input type="text" class="form-control" formControlName="name" />
       </div>
       <div class="form-group">
-        <label for="maxBooks">Book Issue Limit</label>
-        <input type="number" class="form-control" formControlName="maxBooks" />
-      </div>
-      <div class="form-group">
-        <label for="issuePeriod">Book Issue Period (in days)</label>
-        <input
-          type="number"
-          class="form-control"
-          formControlName="issuePeriod"
-        />
+        <label for="description">Description</label>
+        <div class="input-group">
+          <input type="text" class="form-control" formControlName="descriptionTitle"
+            placeholder="Enter Description Title" />
+        </div>
+        <br>
+        <div class="input-group">
+          <input type="text" class="form-control" formControlName="description" placeholder="Enter Description" />
+        </div>
       </div>
       <div class="form-group">
         <label for="price">Price (per month)</label>
@@ -142,20 +114,18 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="validity">Valdity</label>
+        <label for="validity">Plan Validity</label>
         <div class="input-group">
           <input type="number" class="form-control" formControlName="validity" />
         </div>
       </div>
       <div class="form-group">
-        <label for="description">Description</label>
-        <div class="input-group">
-          <input type="text" class="form-control" formControlName="descriptionTitle" placeholder="Enter Description Title" />
-        </div>
-        <br>
-        <div class="input-group">
-          <input type="text" class="form-control" formControlName="description" placeholder="Enter Description"/>
-        </div>
+        <label for="maxBooks">Book Issue Limit</label>
+        <input type="number" class="form-control" formControlName="maxBooks" />
+      </div>
+      <div class="form-group">
+        <label for="issuePeriod">Book Issue Period (in days)</label>
+        <input type="number" class="form-control" formControlName="issuePeriod" />
       </div>
       <!-- <div class="form-group">
         <label for="validity">Description</label>
@@ -177,22 +147,14 @@
         </div>
       </div> -->
 
-<!-- Buttons to cancel and save... -->
+      <!-- Buttons to cancel and save... -->
 
 
       <div style="float: right">
-        <button
-          type="button"
-          class="btn btn-sm btn-danger"
-          (click)="modal.close('Close click')"
-        >
+        <button type="button" class="btn btn-sm btn-danger" (click)="modal.close('Close click')">
           Cancel
         </button>
-        <button
-          type="submit"
-          class="btn btn-sm btn-dark"
-          (click)="this.saveToFirestore()"
-        >
+        <button type="submit" class="btn btn-sm btn-dark" (click)="this.saveToFirestore()">
           Save
         </button>
       </div>
