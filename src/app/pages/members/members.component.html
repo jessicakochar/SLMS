@@ -15,8 +15,8 @@
                     {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
               </div>
             </div>
-            <div class="d-flex justify-content-right">
-              <button class="btn btn-default btn-sm float-right" (click)="addNewMember(content,member)">
+            <div class="col-sm-6 p-0 text-right">
+              <button class="btn btn-default btn-sm " (click)="addNewMember(content,member)">
                 Add Member
               </button>
               <!-- <div class="col-sm-6 p-0">
@@ -136,31 +136,30 @@
       <div class="form-row">
         <label for="name">Name</label>
         <input type="text" class="form-control" formControlName="name" />
+
+        <!-- <div class="form-group col-md-6"> -->
+        <label for="age">Age</label>
+        <input type="text" class="form-control" formControlName="age">
+        <!-- </div> -->
       </div>
 
-      <div class="form-row">
+      <!-- <div class="form-row">
         <div class="form-group col-md-6">
           <label for="age">Age</label>
           <input type="text" class="form-control" formControlName="age">
         </div>
 
-        <!-- <div class="form-group col-md-6">
+      </div> -->
+
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
           <label for="subscription">Subscription</label>
-
-          <select id="subscription" class="form-control" formControlName="subscription">
-
-            <option *ngFor="let subscription of SubscriptionList" [ngValue]="subscription">{{ subscription.name }}
+          <select id="type" class="form-control" formControlName="subscription">
+            <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">{{ subscription.name }}
             </option>
           </select>
-        </div> -->
-      </div>
-
-      <div class="form-group">
-        <label for="type">Subscription</label>
-        <select id="type" class="form-control" formControlName="subscription">
-          <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">{{ subscription.name }}
-          </option>
-        </select>
+        </div>
       </div>
 
       <div class="form-row">
@@ -181,48 +180,13 @@
         </div>
       </div>
 
-      <!-- <div class="form-group">
-        <label for="inputAddress1">Type of Book</label>
-        <select
-          class="form-control"
-          [formControl]="typeControl"
-          (change)="addType($event)"
-        >
-          <option value="" disabled selected>Select a type</option>
-          <option
-            *ngFor="let catalogue of catalogueList"
-            [value]="catalogue?.name"
-          >
-            {{ catalogue?.name }}
-          </option>
-        </select>
-      </div> -->
-      <!-- <div class="form-row">
-        <button
-          class="btn btn-sm btn-dark btn-outline-dark mr-2"
-          *ngFor="let catalogue of catalogueList ; index as idx"
-          type="button"
-          (click)="this.removeFromCatalogue(idx)"
-        >
-          {{ catalogue?.name || "" }}
-          <i class="fas fa-times"></i>
-        </button>
-      </div> -->
       <div style="float: right">
-        <!-- <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
+        <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
           Cancel
-        </button> -->
+        </button>
         <button type="submit" class="btn btn-dark btn-sm">Save</button>
       </div>
     </form>
   </div>
-  <!-- <div class="modal-footer">
-    <button
-      type="button"
-      class="btn btn-danger"
-      (click)="modal.close('Close click')"
-    >
-      Close
-    </button>
-  </div> -->
+
 </ng-template>

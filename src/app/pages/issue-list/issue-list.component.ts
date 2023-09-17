@@ -1,8 +1,9 @@
 // import { query } from '@angular/animations';
 import { Component, OnInit } from '@angular/core';
-import { Firestore, addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from '@angular/fire/firestore';
+import { Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from '@angular/fire/firestore';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { privateDecrypt } from 'crypto';
+import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from 'src/app/utils/BookModel';
@@ -32,6 +33,7 @@ export class IssueListComponent implements OnInit {
     private fb: FormBuilder,
     private firestore: Firestore,
     // private af: AngularFirestore,
+    private toast: ToastrService,
   ) {
     this.searchForm = this.fb.group({
       phoneNumber: [''],
@@ -92,45 +94,93 @@ export class IssueListComponent implements OnInit {
   async saveDataToFirestore() {
     if (this.searchForm.valid) {
       const phoneNumber = this.searchForm.get('phoneNumber').value;
-      let userId = '';
+      // const validity = this.searchForm.get('validity').value;
       const userCollectionRef = collection(this.firestore, 'users');
-      const userDocRef = query(userCollectionRef, where('phone', '==', phoneNumber));
-      getDocs(userDocRef)
-        .then((response) => {
-          userId = response.docs[0].id;
+      const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+      // const validityQueryRef = query(userCollectionRef, where('validity', '==', validity));
+
+      try {
+        const userQuerySnapshot = await getDocs(userQueryRef);
+
+        if (!userQuerySnapshot.empty) {
+          const userDoc = userQuerySnapshot.docs[0];
+          const userId = userDoc.id;
+          const userName = userDoc.data().name;
+          const validity = userDoc.data().subscription.validity;
 
           const issuedBookData = this.issuedBooksList.map((book) => {
-            const { title, isbn, docId, createdOn } = book;
-            return { title, isbn, docId, createdOn };
-          })
+            const { title, isbn, docId } = book;
+            // const issueDate = Timestamp.now();
+            const issueDate = new Date();
+            const returnDate = new Date(
+              issueDate.getFullYear(),
+              issueDate.getMonth(),
+              issueDate.getDate() + validity
+            )
 
-          let docRef = doc(collection(this.db.firestore, 'users'), userId);
+            return { title, isbn, docId, issueDate, returnDate, memberId: userId, memberName: userName, phoneNumber };
+          });
+
+          const docRef = doc(collection(this.db.firestore, 'users'), userId);
           const colRef = collection(docRef, 'issuedBooks');
-          issuedBookData.forEach((book) => {
-            let docId = doc(colRef).id;
-            let bookDocRef = doc(colRef, docId);
-            // this.issuedBooksList.forEach((book) => {
-            //   let docId = doc(colRef).id
-            //   let bookDocRef = doc(colRef, docId);
 
-            setDoc(bookDocRef, { ...book, docId: docId }, { merge: true })
-              .then(() => {
-                // this.inputTags = []
-                // this.inputType = []
-                // this.loader = false;
-                // this.modalService.dismissAll();
-                // // delete this.tempFile;
-                // this.toast.success("Book Saved Successfully", "")
-              }, (error) => {
-                // console.log(error);
-                // this.loader = false;
-                // this.toast.warning("Something went wrong! Please try again.", "");
-              });
-          })
+          for (const book of issuedBookData) {
+            const docId = doc(colRef).id;
+            const bookDocRef = doc(colRef, docId);
 
-        })
+            await setDoc(bookDocRef, { ...book, docId: docId }, { merge: true });
+          }
+
+          this.toast.success("Books Saved Successfully", "");
+        } else {
+          this.toast.warning("User with this phone number not found.", "");
+        }
+      } catch (error) {
+        console.error('Error saving data to Firestore:', error);
+        this.toast.warning("Something went wrong! Please try again.", "");
+      }
     }
   }
+
+
+  // async saveDataToFirestore() {
+  //   if (this.searchForm.valid) {
+  //     const phoneNumber = this.searchForm.get('phoneNumber').value;
+  //     let userId = '';
+  //     const userCollectionRef = collection(this.firestore, 'users');
+  //     const userDocRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+  //     getDocs(userDocRef)
+  //       .then((response) => {
+  //         userId = response.docs[0].id;
+
+  //         const issuedBookData = this.issuedBooksList.map((book) => {
+  //           const { title, isbn, docId,  } = book;
+  //           const createdOn = Timestamp.now();
+
+  //           return { title, isbn, docId, createdOn };
+  //         })
+
+  //         let docRef = doc(collection(this.db.firestore, 'users'), userId);
+  //         const colRef = collection(docRef, 'issuedBooks');
+
+  //         issuedBookData.forEach((book) => {
+  //           let docId = doc(colRef).id;
+  //           let bookDocRef = doc(colRef, docId);
+  //           // this.issuedBooksList.forEach((book) => {
+  //           //   let docId = doc(colRef).id
+  //           //   let bookDocRef = doc(colRef, docId);
+
+  //           setDoc(bookDocRef, { ...book, docId: docId }, { merge: true })
+  //             .then(() => {
+  //               this.toast.success("Book Saved Successfully", "")
+  //             }, (error) => {
+  //               this.toast.warning("Something went wrong! Please try again.", "");
+  //             });
+  //         })
+
+  //       })
+  //   }
+  // }
 
 }
 
