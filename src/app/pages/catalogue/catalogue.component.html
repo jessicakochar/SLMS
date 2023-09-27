@@ -79,7 +79,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let catalogue of catalogueList; let i = index">
-              <td class="font-weight-light">{{ i + 1 }}</td>
+              <td class="font-weight-bold">{{ i + 1 }}</td>
               <td class="font-weight-bold">{{ catalogue.name }}</td>
               <td>
                 <h4>
@@ -89,7 +89,6 @@
                       }">{{ catalogue.status ? "Active" : "Inactive" }}</span>
                 </h4>
               </td>
-
               <td>{{ catalogue.createdOn?.toDate()| date: 'short' }}</td>
             </tr>
           </tbody>

@@ -103,16 +103,18 @@
               <th scope="col">phone</th>
               <th scope="col">book issued</th>
               <th scope="col">Issued Date</th>
+              <th scope="col">Due Date</th>
               <th scope="col">Return Date</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let member of memberModelList;">
-              <th scope="row">{{ member.memberName }}</th>
-              <td>{{ member.phoneNumber }}</td>
-              <td>{{ member.title }}</td>
-              <td>{{ member.issueDate?.toDate()| date: 'short' }}</td>
-              <td>{{ member.returnDate?.toDate()| date: 'short' }}</td>
+              <td class="font-weight-bold">{{ member.memberName }}</td>
+              <td class="font-weight-bold">{{ member.phoneNumber }}</td>
+              <td class="font-weight-bold">{{ member.title }}</td>
+              <td class="font-weight-bold">{{ member.issueDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
             </tr>
           </tbody>
         </table>

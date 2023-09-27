@@ -295,15 +295,15 @@
               <tr *ngFor="let admin of admins; index as idx">
                 <td>{{ idx + 1 }}</td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ admin.name }}</span>
-                    <span class="text-sm text-muted">{{ admin.mobile }}</span>
+                    <!-- <span class="text-sm text-muted">{{ admin.mobile }}</span> -->
                   </div>
                 </td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ admin.email }}</span>
-                    <span class="text-sm text-muted">{{ admin.gender | titlecase }}</span>
+                    <!-- <span class="text-sm text-muted">{{ admin.gender | titlecase }}</span> -->
                   </div>
                 </td>
                 <!-- <td>{{ admin.createdOn }}</td> -->
@@ -516,7 +516,7 @@
     </div>
     <div class="col-12 d-flex flex-column mt-2">
       <span class="text-sm text-muted">Registered On</span>
-      <h4 class="text-wrap text-sm">{{ adminModel }}</h4>
+      <h4 class="text-wrap text-sm">{{ adminModel.createdOn.toDate()| date: 'short' }}</h4>
     </div>
   </div>
 </ng-template>

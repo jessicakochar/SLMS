@@ -9,7 +9,7 @@
         text-decoration: none;
 
         &:hover {
-            color: #777373;
+            color: #1d50e8;
             /* Change the hover color if desired */
         }
 
@@ -18,13 +18,16 @@
 
     /* Example: Style for the active link */
     a.nav-link.active {
-        background-color: #828485;
+        background-color: #3c67e9;
         /* Change the active link background color if desired */
         color: white;
+    }
 
-        // .icon {
-        //     color: rgb(117, 163, 135);
-        //     /* Change the icon color to blue */
-        // }
+    .icon-color {
+        color: #2e2e2f !important;
+    }
+
+    a.nav-link.active .icon-color {
+        color: white !important;
     }
 }

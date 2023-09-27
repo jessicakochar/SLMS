@@ -109,7 +109,7 @@ export class IssueListComponent implements OnInit {
           const validity = userDoc.data().subscription.validity;
 
           const issuedBookData = this.issuedBooksList.map((book) => {
-            const { title, isbn, docId } = book;
+            const { title, isbn, docId, bookId } = book;
             // const issueDate = Timestamp.now();
             const issueDate = new Date();
             const returnDate = new Date(
@@ -118,7 +118,7 @@ export class IssueListComponent implements OnInit {
               issueDate.getDate() + validity
             )
 
-            return { title, isbn, docId, issueDate, returnDate, memberId: userId, memberName: userName, phoneNumber };
+            return { title, isbn, docId, bookId, issueDate, returnDate, memberId: userId, memberName: userName, phoneNumber };
           });
 
           const docRef = doc(collection(this.db.firestore, 'users'), userId);
@@ -130,8 +130,34 @@ export class IssueListComponent implements OnInit {
 
             await setDoc(bookDocRef, { ...book, docId: docId }, { merge: true });
           }
-
           this.toast.success("Books Saved Successfully", "");
+
+          const currentYear = new Date().getFullYear();
+          const currentMonth = new Date().getMonth() + 1;
+          const formattedMonth = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}`; // Add leading zero if necessary
+          const userStatsDocId = `${currentYear}${formattedMonth}`;
+
+          const userStatsRef = collection(doc(collection(this.db.firestore, 'users'), userId), 'userStats');
+          const userStatsDocRef = doc(userStatsRef, userStatsDocId);
+
+          const userStatsDocSnapshot = await getDoc(userStatsDocRef);
+
+          if (userStatsDocSnapshot.exists()) {
+            // If the document already exists, update its fields
+            const userStatsData = userStatsDocSnapshot.data();
+            const booksIssued = userStatsData.booksIssued + issuedBookData.length;
+            const booksReturned = userStatsData.booksReturned; // You need to calculate this
+
+            // Update the userStats document with the new values
+            await setDoc(userStatsDocRef, { booksIssued, booksReturned }, { merge: true });
+          } else {
+            // If the document doesn't exist, create a new one
+            const booksIssued = issuedBookData.length;
+            const booksReturned = 0; // Initialize with 0; you'll update it when books are returned
+
+            await setDoc(userStatsDocRef, { booksIssued, booksReturned });
+          }
+
         } else {
           this.toast.warning("User with this phone number not found.", "");
         }

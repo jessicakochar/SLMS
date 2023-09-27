@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { collection, getDocs, getFirestore } from '@angular/fire/firestore';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { DocumentData, collection, getDocs, getFirestore, query, where } from '@angular/fire/firestore';
+import { ActivatedRoute } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { DbService } from 'src/app/services/db.service';
 import { MemberModel } from 'src/app/utils/MemberModel';
 
 export class CsvFormat {
@@ -47,49 +49,134 @@ export class UserHistoryComponent implements OnInit {
   userData: MemberModel | null = null;
   userDataa: MemberModel[] = [];
   @ViewChild('userDataModal') userDataModal: any;
+  currentDate: Date = new Date();
+  // @ViewChild('submitButton') submitButton: any;
+  @ViewChild('submitButton', { read: ElementRef }) submitButton: ElementRef;
+
 
   constructor(
 
     private modalService: NgbModal,
     private toastr: ToastrService,
-
-  ) { }
+    private activatedRoute: ActivatedRoute,
+    private db: DbService,
+    // private renderer: Renderer2,
+  ) {
+    this.activatedRoute.queryParams.subscribe(params => {
+      const phoneNumber = params['phone'];
+      if (phoneNumber) {
+        this.phoneNumber = phoneNumber;
+        this.getMembers();
+      }
+    });
+  }
 
   ngOnInit(): void {
     // this.getTagsList();
     this.getMembers();
+
+    // this.activatedRoute.queryParams.subscribe(params => {
+    //   const phoneNumber = params['phone'];
+    //   if (phoneNumber) {
+    //     this.phoneNumber = phoneNumber;
+    //     this.getMembers();
+    //   }
+    // });
+
+  }
+
+  onPhoneNumberInput() {
+
+    const phoneNumber = this.phoneNumber;
+
+    if (phoneNumber && phoneNumber.length === 10) {
+      this.submitButton.nativeElement.click();
+      // this.renderer.selectRootElement('#submitButton').click();
+    }
   }
 
   async getMembers() {
     const firestore = getFirestore();
+    const memberCollectionRef = collection(firestore, 'users');
+
+    const queryRef = query(memberCollectionRef,
+      where('phone', '==', this.phoneNumber)
+    );
 
     try {
-      const memberCollectionRef = collection(firestore, 'users');
-      const memberQuerySnapshot = await getDocs(memberCollectionRef);
+      const querySnapshot = await getDocs(queryRef);
 
-      this.memberModelList = [];
+      if (!querySnapshot.empty) {
 
-      for (const memberDoc of memberQuerySnapshot.docs) {
+        const memberDoc = querySnapshot.docs[0];
         const memberData = memberDoc.data() as MemberModel;
-        this.memberModelList.push(memberData);
+
+        // Fetch data from the subcollection
+        const subCollectionQuerySnapshot = await getDocs(
+          collection(memberDoc.ref, 'issuedBooks')
+        );
+
+        memberData.subcollectionData = subCollectionQuerySnapshot.docs.map(subDoc => subDoc.data());
+
+        this.memberModelList = [memberData];
+
+        this.userData = memberData;
+        console.log('User data:', this.userData);
+      } else {
+        console.log('No user found with phone number:', this.phoneNumber);
+        this.memberModelList = [];
+        this.userData = null;
       }
-      // console.log('Admin Data:', this.memberModelList);
     } catch (error) {
       console.error('Error fetching members data:', error);
     }
   }
 
-  searchUserData() {
-    const user = this.memberModelList.find(member => member.phone === this.phoneNumber);
-    if (user) {
-      this.userData = user;
-      // this.modalService.open(this.userDataModal)
-      console.log("working");
-      // $('#userDataModal').modal('show'); // If you want to use jQuery for modal, otherwise use Angular's NgbModal
-    } else {
-      this.userData = null;
-    }
-  }
+
+  // async getMembers() {
+  //   const firestore = getFirestore();
+  //   const memberCollectionRef = collection(firestore, 'users');
+
+  //   const queryRef = query(memberCollectionRef,
+  //     where('phone', '==', this.phoneNumber)
+  //   );
+
+  //   // const queryRef = query(collection(this.db.firestore, 'users'),
+  //   //   where('phone', '==', this.phoneNumber)
+  //   // );
+  //   // const userQuerySnapshot = await getDocs(queryRef);
+
+  //   try {
+  //     const memberQuerySnapshot = await getDocs(memberCollectionRef);
+  //     this.memberModelList = [];
+
+  //     for (const memberDoc of memberQuerySnapshot.docs) {
+  //       const memberData = memberDoc.data() as MemberModel;
+  //       memberData.subcollectionData = [];
+
+  //       // Fetch data from the subcollection
+  //       const subCollectionQuerySnapshot = await getDocs(
+  //         collection(memberDoc.ref, 'issuedBooks')
+  //       );
+
+  //       subCollectionQuerySnapshot.forEach((subDoc) => {
+  //         const subDocData = subDoc.data();
+  //         memberData.subcollectionData.push(subDocData);
+  //       });
+
+  //       this.memberModelList.push(memberData);
+
+  //       if (memberData.phone === this.phoneNumber) {
+  //         this.userData = memberData;
+  //         // console.log("getting user");
+
+  //         console.log(this.userData);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching members data:', error);
+  //   }
+  // }
 
   exportToCSV(data: string, filename: string): void {
     const blob = new Blob([data], { type: 'text/csv;charset=utf-8;' });
@@ -115,7 +202,6 @@ export class UserHistoryComponent implements OnInit {
       console.warn('No user data available to export.');
     }
   }
-
 
 }
 

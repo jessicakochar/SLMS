@@ -3,6 +3,7 @@ import { Catalogue } from './catalogueModel';
 import { Timestamp } from '@angular/fire/firestore';
 
 export class BookModel {
+  bookId: string
   docId: string;
   fileType: number;
   url: string;
@@ -13,7 +14,8 @@ export class BookModel {
   catalogue: Catalogue[];
   price: number;
   isbn: string;
-  available: number;
+  total: number;
   issued: number;
+  available: number;
   createdOn: Timestamp;
 }

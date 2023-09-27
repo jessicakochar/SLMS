@@ -39,10 +39,10 @@
           </thead>
           <tbody>
             <tr *ngFor="let plan of plansList; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ plan.name }}</td>
-              <td>{{ plan.maxBooks }}</td>
-              <td>{{ plan.issuePeriod }}</td>
+              <td class="font-weight-bold">{{ i + 1 }}</td>
+              <td class="font-weight-bold">{{ plan.name }}</td>
+              <td class="font-weight-bold">{{ plan.maxBooks }}</td>
+              <td class="font-weight-bold">{{ plan.issuePeriod }}</td>
               <td class="font-weight-bold">
                 {{ plan.price | currency : "INR" : "symbol" : "1.0" }}
               </td>

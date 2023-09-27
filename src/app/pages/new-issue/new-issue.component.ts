@@ -28,7 +28,7 @@ export class NewIssueComponent implements OnInit {
   filteredData: BookModel[] = [];
   searchText: string = '';
   memberModelList: MemberModel[] = [];
-  selectedStartMonth: string = '2023-05';
+  selectedStartMonth: string = '2023-09';
 
   constructor(
     private db: DbService,

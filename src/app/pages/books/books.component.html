@@ -94,10 +94,11 @@
               <tr>
                 <th scope="col">Sr. No.</th>
                 <th scope="col">Title</th>
-                <th scope="col">Author</th>
+                <!-- <th scope="col">Author</th> -->
                 <th scope="col">Tags</th>
                 <th scope="col">Price</th>
                 <th scope="col">ISBN</th>
+                <th scope="col">Total</th>
                 <th scope="col">Available</th>
                 <th scope="col">Issued</th>
                 <th scope="col">Action</th>
@@ -173,8 +174,10 @@
               </tr> -->
               <tr *ngFor="let book of filteredData; let i = index">
                 <td class="font-weight-light">{{ i + 1 }}</td>
-                <td class="font-weight-bold">{{ book.title }}</td>
-                <td class="font-weight-bold">{{ book.author }}</td>
+                <td>
+                  <div class="font-weight-bold">{{ book.title }}</div>
+                  <div class="font-weight-light">{{ book.author }}</div>
+                </td>
                 <td>
                   <h4 class="m-0 d-flex flex-wrap" style="gap: 4px 2px">
                     <span class="badge badge-pill badge-primary" *ngFor="let tag of book.tags">
@@ -186,6 +189,7 @@
                   {{ book.price | currency : "INR" : "symbol" : "1.0" }}
                 </td>
                 <td class="font-weight-bold">{{ book.isbn }}</td>
+                <td>{{ book.total }}</td>
                 <td>{{ book.available }}</td>
                 <td>{{ book.issued }}</td>
                 <td>
@@ -196,7 +200,6 @@
                     (click)="this.openDeleteModal(deleteModal, book)">Delete</button>
                 </td>
               </tr>
-
             </tbody>
           </table>
         </div>
@@ -232,7 +235,8 @@
           <div class="custom-file">
             <input type="file" class="custom-file-input" aria-describedby="inputGroupFileAddon01" id="customFile"
               (change)="checkImageType($event.target.files)" />
-            <label class="custom-file-label" for="cover"><span *ngIf="tempFile === null">Choose Image File</span>
+            <label class="custom-file-label" for="cover">
+              <span *ngIf="tempFile === null">Choose Image File</span>
               <span class="text-limit" *ngIf="tempFile !== null">{{
                 tempFile.name
                 }}</span></label>
@@ -244,8 +248,8 @@
             <input type="text" class="form-control" formControlName="isbn" />
           </div>
           <div class="form-group col-md-4">
-            <label for="available">Quantity</label>
-            <input type="number" class="form-control" formControlName="available" />
+            <label for="total">Quantity</label>
+            <input type="number" class="form-control" formControlName="total" />
           </div>
           <div class="form-group col-md-4">
             <label for="price">Price</label>
@@ -277,7 +281,7 @@
         <div class="form-group">
           <label for="type">Type</label>
           <select id="type" class="form-control" formControlName="type">
-            <option *ngFor="let type of tempTypeList" [ngValue]="type">{{ type.name }}</option>
+            <!-- <option *ngFor="let type of tempTypeList" [ngValue]="type">{{ type.name }}</option> -->
           </select>
         </div>
         <!-- <div class="form-row">

@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TagsModel } from 'src/app/utils/TagsModel';
-import { collection, doc, setDoc, Firestore, deleteDoc, query, onSnapshot, getDocs, getFirestore, Timestamp } from "@angular/fire/firestore";
+import { collection, doc, setDoc, Firestore, deleteDoc, query, onSnapshot, getDocs, getFirestore, Timestamp, where } from "@angular/fire/firestore";
 import { DbService } from 'src/app/services/db.service';
 import { ToastrService } from 'ngx-toastr';
 import { MEMBERS_COLLECTION, TAGS_COLLECTION } from 'src/app/utils/constants';
@@ -10,6 +10,7 @@ import { User } from 'src/app/utils/user.modal';
 import { MemberModel } from 'src/app/utils/MemberModel';
 import { SubscriptionModel } from 'src/app/utils/subscriptionModel';
 import { Subscription } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-members',
@@ -32,6 +33,12 @@ export class MembersComponent implements OnInit {
   subscription: SubscriptionModel[] = [];
   loader: boolean;
 
+  // searchForm = new FormGroup({
+  //   param: new FormControl(''),
+  // });
+
+  numberParam: string = '';
+
   // tagsForm: FormGroup;
 
   constructor(
@@ -39,12 +46,47 @@ export class MembersComponent implements OnInit {
     private modalService: NgbModal,
     private fb: FormBuilder,
     private db: DbService,
-    private toast: ToastrService
-  ) { }
+    private toast: ToastrService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    // private toast
+  ) {
+    // this.searchForm = this.fb.group({
+    //   param: [''],
+    // }); 
+  }
 
   ngOnInit(): void {
     // this.getTagsList();
     this.getMembers();
+
+    // this.activatedRoute.queryParams.subscribe(params => {
+    //   const phoneNumber = params['phone'];
+    //   if (phoneNumber) {
+    //     this.numberParam = phoneNumber;
+    //   }
+    // }
+    // );
+    // this.activatedRoute.queryParams.subscribe(async (params) => {
+    //   const phoneNumber = params['phone'];
+
+    //   if (phoneNumber) {
+    //     this.numberParam = phoneNumber;
+
+    //     // Check if a user with the provided phone number exists
+    //     const userExists = await this.checkUserExists(phoneNumber);
+
+    //     if (userExists) {
+    //       // If the user exists, navigate to the desired route
+    //       this.router.navigate(['/userHistory'], {
+    //         queryParams: { phone: phoneNumber },
+    //       });
+    //     } else {
+    //       // If the user doesn't exist, you can show a message or handle it accordingly
+    //       console.log(`User with phone number ${phoneNumber} does not exist.`);
+    //     }
+    //   }
+    // });
 
     this.db.getPlansList();
     this.subscriptionSub = this.db.subscriptionsSub.subscribe((list) => {
@@ -57,6 +99,15 @@ export class MembersComponent implements OnInit {
     })
     this.subscription = this.subscriptionList;
   }
+
+  // async checkUserExists(phoneNumber: string): Promise<boolean> {
+  //   // Check if a user with the provided phone number exists
+  //   const firestore = getFirestore();
+  //   const memberCollectionRef = collection(firestore, 'users');
+  //   const queryRef = query(memberCollectionRef, where('phone', '==', phoneNumber));
+  //   const querySnapshot = await getDocs(queryRef);
+  //   return !querySnapshot.empty;
+  // }
 
   initializeForm(obj: MemberModel = null) {
     if (obj === null) {
@@ -112,6 +163,31 @@ export class MembersComponent implements OnInit {
     this.modalService.open(modalRef, { size: "md", centered: false });
     this.initializeForm(obj);
   }
+
+  onPhoneNumberChange() {
+    // Get the current value of the input field
+    const phone = this.numberParam;
+
+    // Check if the input value has 10 digits
+    if (phone.length === 10) {
+      // Find a user with the provided phone number
+      const matchingUser = this.memberModelList.find(user => user.phone === phone);
+
+      if (matchingUser) {
+        // If a user with the phone number exists, navigate to the desired route
+        this.router.navigate(['/userHistory'], {
+          queryParams: { phone: phone },
+        });
+      } else {
+        // If no user matches the phone number, you can handle it as needed
+        this.toast.error(`Member with phone number ${phone} does not exist.`, "Add new Member")
+        console.log(`User with phone number ${phone} does not exist.`);
+        // For example, you can display an error message or take another action.
+      }
+    }
+  }
+
+
 
   async saveToFirestore() {
     this.loader = true;

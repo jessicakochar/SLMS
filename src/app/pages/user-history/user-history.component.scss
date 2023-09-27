@@ -1,0 +1,22 @@
+.custom-card-width {
+    width: 100%;
+    /* Adjust the width as needed */
+    margin: 0 auto;
+    /* Center the card horizontally */
+}
+
+.container-fluid {
+    padding-left: 0;
+    /* Remove left padding */
+}
+
+
+.zoom {
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+        transform: scale(1.02);
+        box-shadow: 0px 0px 2px 2px rgb(216, 216, 216);
+    }
+}

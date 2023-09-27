@@ -7,3 +7,48 @@
 .modal-backdrop {
   z-index: auto !important;
 }
+
+.date-tag-container {
+  margin-right: 3rem;
+
+
+  @media (min-width: 768px) {
+    margin-right: 2.5rem;
+
+    .date-tag {
+      height: 4.5rem !important;
+      width: 4.5rem !important;
+      border-radius: 50%;
+      border-style: solid;
+      border-width: 31px;
+    }
+
+    .date-tag-main {
+      font-size: 1.0rem !important;
+    }
+
+    .date-tag-sub {
+      font-size: 1.0rem;
+    }
+  }
+
+  @media (min-width: 375px) {
+    margin-right: 1.5rem;
+
+    .date-tag {
+      height: 3rem;
+      width: 3rem;
+      border-radius: 50%;
+      border-style: solid;
+      border-width: 3px;
+    }
+
+    .date-tag-main {
+      font-size: 0.6rem;
+    }
+
+    .date-tag-sub {
+      font-size: 0.9rem;
+    }
+  }
+}

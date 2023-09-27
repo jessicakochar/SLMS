@@ -5,3 +5,13 @@
 .custom-input {
   background-color: rgb(0, 95, 168);
 }
+
+/* Global CSS file or your component's CSS file */
+.table-wrap-text {
+  table-layout: auto;
+  /* Use "auto" to allow the table to adapt to content */
+  word-wrap: break-word;
+  /* Enable word wrap for long words */
+  white-space: normal;
+  /* Allow text to wrap within cells */
+}

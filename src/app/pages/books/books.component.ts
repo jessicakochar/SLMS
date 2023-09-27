@@ -11,6 +11,7 @@ import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, q
 import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
 import { privateDecrypt } from 'crypto';
+import { log } from 'console';
 // import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -27,11 +28,9 @@ export class BooksComponent implements OnInit {
   tagControl = new FormControl();
   typeControl = new FormControl();
 
-  // Already Entered
   inputTags: TagsModel[] = [];
   inputType: Catalogue[] = [];
 
-  // From DB Service - All Tags
   tagsList: TagsModel[] = [];
   tempTagList: TagsModel[] = [];
   selectedTags: string[] = [];
@@ -173,12 +172,17 @@ export class BooksComponent implements OnInit {
 
 
   initializeForm(obj: BookModel = null) {
+    console.log(obj);
+    debugger;
+
     this.tempFile = null
     this.inputTags = [];
     // this.inputType = [];
     if (obj === null) {
+      console.log(1);
+
       this.bookForm = this.fb.group({
-        docId: [doc(collection(this.db.firestore, BOOKS_COLLECTION)).id],
+        bookId: [doc(collection(this.db.firestore, BOOKS_COLLECTION)).id],
         fileType: [0],
         createdOn: [Timestamp.now()],
         url: [null],
@@ -186,17 +190,19 @@ export class BooksComponent implements OnInit {
         author: [null],
         // tags: [null],
         isbn: [null],
-        available: [null],
+        total: [null],
         issued: [0],
         price: [null],
-        type: [null, Validators.required]
+        type: [null]
       });
       this.tagsList = [...this.tempTagList]
       // this.catalogueList = [...this.tempTypeList]
       this.tempTypeList = [...this.catalogueList];
     } else {
+      console.log(2);
+
       this.bookForm = this.fb.group({
-        docId: [obj.docId],
+        bookId: [obj.bookId],
         fileType: [obj.fileType],
         createdOn: [obj.createdOn],
         url: [obj.url],
@@ -205,10 +211,10 @@ export class BooksComponent implements OnInit {
         bookTitleArray: [[]],
         // tags: [obj.tags],
         isbn: [obj.isbn],
-        available: [obj.available],
+        total: [obj.total],
         issued: [obj.issued],
         price: [obj.price],
-        type: [obj.catalogue.length > 0 ? obj.catalogue[0] : null, Validators.required]
+        type: [obj.catalogue ?? null]
       });
       this.inputTags = [...obj?.tags];
       console.log(this.inputTags)

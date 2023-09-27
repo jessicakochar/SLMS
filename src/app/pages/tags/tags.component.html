@@ -6,6 +6,11 @@
     <div class="card shadow">
       <div class="card-header border-0">
         <div class="row align-items-center">
+          <div class="d-flex flex-column">
+            <h3 class="m-0">Tags ({{ tagsList.length || 0}})</h3>
+            <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+                  {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+          </div>
           <div class="col d-flex justify-content-end align-items-center">
             <form>
               <div class="form-row">
@@ -31,8 +36,8 @@
           </thead>
           <tbody>
             <tr *ngFor="let tag of tagsList; let i = index">
-              <td>{{ i + 1 }}</td>
-              <td>{{ tag.name }}</td>
+              <td class="font-weight-bold">{{ i + 1 }}</td>
+              <td class="font-weight-bold">{{ tag.name }}</td>
               <td>
                 <button class="btn btn-sm btn-dark" (click)="this.addNewTagModal(content, tag)">
                   Edit

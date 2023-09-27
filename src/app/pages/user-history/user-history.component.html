@@ -2,21 +2,22 @@
   <div class="container-fluid"></div>
 </div>
 
-<div class="container-fluid mt--8 w-50">
+<div class="container-fluid mt--8 ">
   <ng-container *ngIf="!userData; else userDataContent">
     <!-- Show the form when userData is not available -->
-    <div class="mb-5 mb-xl-0">
+    <div class="mb-5 mb-xl-0 w-50 mx-auto">
       <div class="card shadow">
         <div class="card-header border-0">
-          <h2 class="mb-0">Enter Mobile Number</h2>
+          <h2 class="mb-0 align-items-center text-center">Enter Mobile Number</h2>
         </div>
-        <div class="card-body text-center">
-          <form (submit)="searchUserData()">
+        <div class="card-body ">
+          <form (submit)="getMembers()">
             <div class="form-group">
               <br>
-              <input type="text" class="form-control" [(ngModel)]="phoneNumber" placeholder="Enter mobile number">
+              <input type="text" class="form-control" [(ngModel)]="phoneNumber" placeholder="Enter mobile number"
+                (input)="onPhoneNumberInput()">
             </div>
-            <button type="submit" class="btn btn-dark">Submit</button>
+            <button type="submit" class="btn btn-dark float-right" [hidden]="true" #submitButton></button>
           </form>
         </div>
       </div>
@@ -25,39 +26,144 @@
 
   <!-- Display user data in a card when matched -->
   <ng-template #userDataContent>
-    <div class="containconatier-fluid mt--7">
-      <div class="mb-5 mb-xl-0">
-        <div class="card">
-          <div class="card-header">
-            <h3>User Data</h3>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col-md-6">
-                <h5>Name:</h5>
-                <p>{{ userData.name }}</p>
+    <div class="container-fluid mt--8">
+      <div class="row">
+        <div class="col">
+
+          <div class="card">
+            <div class="card-header">
+              <!-- <h3>User Data</h3> -->
+              <div class="row w-100 m-0">
+                <div class="col-sm-6 p-0">
+                  <div class="d-flex flex-column">
+                    <h3 class="m-0">User Data</h3>
+                    <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+                          {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+                  </div>
+
+                </div>
+                <div class="text-right">
+                  <button class="btn btn-default btn-sm" (click)="exportMemberToCSV()">Download</button>
+                </div>
               </div>
-              <div class="col-md-6">
-                <h5>Email:</h5>
-                <p>{{ userData.email }}</p>
-              </div>
-              <div class="col-md-6">
-                <h5>Phone:</h5>
-                <p>{{ userData.phone }}</p>
-              </div>
-              <div class="col-md-6">
-                <h5>Age:</h5>
-                <p>{{ userData.age }}</p>
-              </div>
-              <!-- Add more fields as needed -->
             </div>
-            <div class="text-center mb-4">
-              <button class="btn btn-primary" (click)="exportMemberToCSV()">Download</button>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <h5>Name:</h5>
+                  <p class="font-weight-bold">{{ userData.name }}</p>
+                </div>
+                <div class="col-md-3">
+                  <h5>Email:</h5>
+                  <p class="font-weight-bold">{{ userData.email }}</p>
+                </div>
+                <div class="col-md-3">
+                  <h5>Phone:</h5>
+                  <p class="font-weight-bold">{{ userData.phone }}</p>
+                </div>
+                <div class="col-md-3">
+                  <h5>Age:</h5>
+                  <p class="font-weight-bold">{{ userData.age }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container text-center py-3 my-3">
+        <div class="">
+          <div>
+            <div class="d-flex flex-column align-items-start justify-content-start">
+              <button type="button" class="btn btn-outline-primary btn-sm">
+                Till now ({{ currentDate | date: 'dd/MM/yyyy' }})
+              </button>
+            </div>
+
+            <div class="col" *ngFor="let book of userData.subcollectionData">
+              <div class="d-flex flex-row">
+                <div class="d-inline-flex flex-column align-items-center date-tag-container">
+                  <div class="flex-grow-1 bg-primary" style="height: 2rem; width: 0.08rem;">
+                  </div>
+
+                  <div class="d-flex flex-column justify-content-center align-items-center date-tag"
+                    style="border-color: #9ae5f5; background-color: #5383ec;">
+                    <div class="text-white font-weight-bolder date-tag-main">{{ book.issueDate?.toDate()| date: 'dd'}}
+                    </div>
+                    <div class="text-white mt--2 date-tag-sub">{{ book.issueDate?.toDate() | date: 'MMM'}}</div>
+                  </div>
+                  <div class="flex-grow-1 bg-primary" style="height: 2rem; width: 0.08rem;"></div>
+                </div>
+                <div class="flex-grow-1 d-flex flex-column align-items-start my-3">
+                  <!-- <div class="text-sm" style="color: #5383ec;">{{ userData.name }}</div> -->
+                  <!-- <div class="text-sm">On: {{ book.date.toDate() | date: 'dd/MM/yyyy' }}</div> -->
+                  <div>
+                    <div class="font-weight-bold d-flex flex-row">
+                      <div>Book Issued: {{ book.title }}</div>
+                    </div>
+                    <div class="font-weight-bold d-flex flex-row">
+                      <div>Book ISBN: {{ book.isbn }}</div>
+                    </div>
+                  </div>
+
+                  <div class="text-sm text-danger">Return Date: {{ book.returnDate?.toDate()| date: 'longDate' }}</div>
+                  <!-- <div class=""> -->
+                  <!-- <div class="text-right m-1">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
+                      Details
+                    </button>
+                  </div> -->
+                  <!-- </div> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col">
+              <div class="d-flex flex-row">
+                <div class="d-inline-flex flex-column align-items-center date-tag-container">
+                  <div class="flex-grow-1 bg-primary" style="width: 0.08rem;"></div>
+                <div class="d-flex flex-column justify-content-center align-items-center date-tag"
+                  style="border-color: #9fbbf7; background-color: #5383ec;">
+                  <div class="text-white font-weight-bolder date-tag-main">26</div>
+                  <div class="text-white mt--2 date-tag-sub">Aug</div>
+                </div>
+                <div class="flex-grow-1 bg-primary" style="width: 0.08rem;"></div>
+              </div>
+              <div class="flex-grow-1 d-flex flex-column align-items-start my-3">
+                <div class="text-sm text-left" style="color: #5383ec;">
+                  Enquiry: Open by Staff 1
+                </div>
+                <div class="text-sm text-left">
+                  Interest Level: High in Course 1 Service 2
+                </div>
+                <div class="text-sm mt-2 text-left">
+                  John made enquiry On: 26, August 2023
+                </div>
+                <div class="font-weight-bold d-flex flex-row text-left">
+                  <div>Tag 1, Tag 2</div>
+                </div>
+                <div class="font-weight-bold text-sm text-left">
+                  FollowUp on 27, August 2023
+                </div>
+                <div class="">
+                  <div class="text-right m-1">
+                    <button type="button" class="btn btn-outline-primary btn-sm">
+                      Details
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+            <div class="d-flex flex-column align-items-start justify-content-start">
+              <button type="button" class="btn btn-outline-primary btn-sm">
+                Joined On ({{ userData.createdOn?.toDate() | date: 'dd/MM/yyyy' }})
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </ng-template>
+
 </div>
-<!-- </div> -->

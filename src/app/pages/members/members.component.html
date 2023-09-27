@@ -15,17 +15,14 @@
                     {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
               </div>
             </div>
+            <div class="col-xl-5">
+              <input type="text" class="form-control form-control-sm" placeholder="Enter Phone Number"
+                [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange()" />
+            </div>
             <div class="col-sm-6 p-0 text-right">
               <button class="btn btn-default btn-sm " (click)="addNewMember(content,member)">
                 Add Member
               </button>
-              <!-- <div class="col-sm-6 p-0">
-            <div class="d-flex justify-content-end">
-              <button  class="btn btn-default btn-sm float-right" (click)="openAdminModal(adminModal)">
-                Add Admin
-              </button>
-            </div>
-          </div> -->
             </div>
             <!-- <div class="col-sm-6 p-0">
               <div class="d-flex justify-content-end">
@@ -53,29 +50,34 @@
             </thead>
             <tbody>
               <tr *ngFor="let member of memberModelList; index as idx">
-                <td>{{ idx + 1 }}</td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
+                    <span>{{ idx + 1 }}</span>
+                  </div>
+                </td>
+                <!-- class="dark-bold-column">{{ idx + 1 }}</td> -->
+                <td>
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member.name }}</span>
                   </div>
                 </td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member.email }}</span>
                   </div>
                 </td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member.phone }}</span>
                   </div>
                 </td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member.age }}</span>
                   </div>
                 </td>
                 <td>
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member?.subscription?.name }}</span>
                   </div>
                 </td>
