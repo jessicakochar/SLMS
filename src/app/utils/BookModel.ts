@@ -11,11 +11,13 @@ export class BookModel {
   bookTitleArray: string[];
   author: string;
   tags: TagsModel[];
-  catalogue: Catalogue[];
+  type: Catalogue[];
   price: number;
   isbn: string;
   total: number;
   issued: number;
+  returns: number;
   available: number;
   createdOn: Timestamp;
+
 }

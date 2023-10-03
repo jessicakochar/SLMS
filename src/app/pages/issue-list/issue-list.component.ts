@@ -1,12 +1,14 @@
 // import { query } from '@angular/animations';
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, where } from '@angular/fire/firestore';
+import { FieldValue, Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, increment, getFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { privateDecrypt } from 'crypto';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from 'src/app/utils/BookModel';
+import { MemberModel } from 'src/app/utils/MemberModel';
 
 @Component({
   selector: 'app-issue-list',
@@ -26,14 +28,15 @@ export class IssueListComponent implements OnInit {
   filteredData: BookModel[] = [];
   tempBookList: BookModel[] = [];
   issuedBooksList: BookModel[] = [];
-
+  userData: MemberModel;
+  memberData: MemberModel[] = [];
 
   constructor(
     private db: DbService,
     private fb: FormBuilder,
     private firestore: Firestore,
-    // private af: AngularFirestore,
     private toast: ToastrService,
+    private formBuilder: FormBuilder,
   ) {
     this.searchForm = this.fb.group({
       phoneNumber: [''],
@@ -52,7 +55,6 @@ export class IssueListComponent implements OnInit {
     this.tempBookList = [...this.booksList];
     this.filteredData = [...this.booksList];
   }
-
 
   // initializeForm(obj: TagsModel = null) {
   //   if (obj === null) {
@@ -74,6 +76,28 @@ export class IssueListComponent implements OnInit {
   //   }
   // }
 
+  async getMember(phoneNumber: string) {
+    const firestore = getFirestore();
+
+    try {
+      const userCollectionRef = collection(firestore, 'users');
+      const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+      const userQuerySnapshot = await getDocs(userQueryRef);
+
+      if (!userQuerySnapshot.empty) {
+
+        const userData = userQuerySnapshot.docs[0].data() as MemberModel;
+        this.memberData.push(userData);
+
+        // console.log('Data:', this.memberData);
+      } else {
+        console.log('User not found with phone number:', phoneNumber);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
+
   filterBooksByISBN() {
     this.selectedISBN = this.searchForm.controls.param.value;
     this.db.booksRetrievedBool = false
@@ -92,6 +116,7 @@ export class IssueListComponent implements OnInit {
   }
 
   async saveDataToFirestore() {
+
     if (this.searchForm.valid) {
       const phoneNumber = this.searchForm.get('phoneNumber').value;
       // const validity = this.searchForm.get('validity').value;
@@ -124,12 +149,49 @@ export class IssueListComponent implements OnInit {
           const docRef = doc(collection(this.db.firestore, 'users'), userId);
           const colRef = collection(docRef, 'issuedBooks');
 
+          const datepipe = new DatePipe('en-US')
           for (const book of issuedBookData) {
             const docId = doc(colRef).id;
             const bookDocRef = doc(colRef, docId);
 
+            const today = datepipe.transform(new Date(), 'yyyyMMdd');
+
             await setDoc(bookDocRef, { ...book, docId: docId }, { merge: true });
+            await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
+              issued: increment(1)
+            })
+            await setDoc(
+              doc(this.firestore, `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
+              { issued: increment(1) },
+              { merge: true }
+            )
+
+            await setDoc(
+              doc(this.firestore, `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}/dailyBookStats/${datepipe.transform(new Date(), 'yyyyMMdd')}`),
+              { issued: increment(1) },
+              { merge: true }
+            )
+
+            await setDoc(
+              doc(this.firestore, `globalStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
+              { issued: increment(1) },
+              { merge: true }
+            );
+
+            // await setDoc(
+            //   doc(this.firestore, `globalStats/dailyStats`),
+            //   { issued: increment(1) },
+            //   { merge: true }
+            // )
+            // const bookColRef = collection(this.db.firestore, 'Books');
+            // const bookQueryRef = query(bookColRef, where('bookId', '==', book.bookId));
+            // const bookQuerySnapshot = await getDocs(bookQueryRef);
+
+            //   // Create a reference to the "bookStats" subcollection
+            //   const bookStatsRef = collection(bookDoc.ref, 'bookStats');
+            //   const bookStatsDocRef = doc(bookStatsRef, bookStatsDocId, 'bookStats');
           }
+
           this.toast.success("Books Saved Successfully", "");
 
           const currentYear = new Date().getFullYear();
@@ -148,12 +210,11 @@ export class IssueListComponent implements OnInit {
             const booksIssued = userStatsData.booksIssued + issuedBookData.length;
             const booksReturned = userStatsData.booksReturned; // You need to calculate this
 
-            // Update the userStats document with the new values
             await setDoc(userStatsDocRef, { booksIssued, booksReturned }, { merge: true });
           } else {
             // If the document doesn't exist, create a new one
             const booksIssued = issuedBookData.length;
-            const booksReturned = 0; // Initialize with 0; you'll update it when books are returned
+            const booksReturned = 0;
 
             await setDoc(userStatsDocRef, { booksIssued, booksReturned });
           }

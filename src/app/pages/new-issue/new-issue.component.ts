@@ -1,5 +1,6 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { DocumentData, Timestamp, collection, collectionGroup, doc, getDocs, getFirestore, onSnapshot, orderBy, query, setDoc, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, Timestamp, collection, collectionGroup, doc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -28,7 +29,8 @@ export class NewIssueComponent implements OnInit {
   filteredData: BookModel[] = [];
   searchText: string = '';
   memberModelList: MemberModel[] = [];
-  selectedStartMonth: string = '2023-09';
+  selectedStartMonth: string = '2023-08';
+  issuedBooksList: BookModel[] = [];
 
   constructor(
     private db: DbService,
@@ -36,6 +38,7 @@ export class NewIssueComponent implements OnInit {
     private fb: FormBuilder,
     private toast: ToastrService,
     private router: Router,
+    private firestore: Firestore,
     // private firestore: AngularFirestore,
   ) { }
   ngOnInit(): void {
@@ -120,6 +123,93 @@ export class NewIssueComponent implements OnInit {
     // })
 
   }
+
+  async returnBooks(book: BookModel) {
+
+    try {
+
+      const issuedBookData = this.issuedBooksList.map((book) => {
+        const { title, isbn, docId, bookId } = book;
+        // const issueDate = Timestamp.now();
+        const issueDate = new Date();
+        const returnDate = new Date(
+          issueDate.getFullYear(),
+          issueDate.getMonth(),
+          // issueDate.getDate() + validity
+        )
+
+        return { title, isbn, docId, bookId, issueDate, returnDate };
+      });
+
+      for (const book of issuedBookData) {
+        // const docId = doc(colRef).id;
+        // const bookDocRef = doc(colRef, docId);
+
+        // const today = datepipe.transform(new Date(), 'yyyyMMdd');
+
+        // Update the "returns" field in the "Books" collection
+        await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
+          returns: increment(1),
+        });
+
+        // Update the "returns" field in the "monthlyBookStats" collection
+        const datepipe = new DatePipe('en-US');
+        await setDoc(
+          doc(
+            this.firestore,
+            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}`
+          ),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        // Update the "returns" field in the "dailyBookStats" collection for the current date
+        const today = datepipe.transform(new Date(), 'yyyyMMdd');
+        await setDoc(
+          doc(
+            this.firestore,
+            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}/dailyBookStats/${today}`
+          ),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        // Update the "returns" field in the "globalStats" collection for the book
+        await setDoc(
+          doc(this.firestore, `globalStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        // Update the "returns" field in the "dailyStats" subcollection under "globalStats" for the current date
+        // await updateDoc(
+        //   doc(
+        //     this.firestore,
+        //     `globalStats/${book.bookId}/dailyStats/${today}`
+        //   ),
+        //   {
+        //     returns: increment(1),
+        //   }
+        // );
+
+        // You can also update the "returns" field in the issuedBooks collection for tracking
+        // ...
+      }
+
+      this.toast.success('Book returned successfully.', '');
+    } catch (error) {
+      console.error('Error returning book:', error);
+      this.toast.warning('Something went wrong! Please try again.', '');
+    }
+  }
+
+
 
   onStartMonthSelectionChange() {
     const selectedMonthValue = parseInt(this.selectedStartMonth.split('-')[1]);

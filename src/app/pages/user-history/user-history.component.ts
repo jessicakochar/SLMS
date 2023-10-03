@@ -1,36 +1,75 @@
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { DocumentData, collection, getDocs, getFirestore, query, where } from '@angular/fire/firestore';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DbService } from 'src/app/services/db.service';
+import { IssueModel } from 'src/app/utils/IssueModel';
 import { MemberModel } from 'src/app/utils/MemberModel';
+import { SubscriptionModel } from 'src/app/utils/subscriptionModel';
 
 export class CsvFormat {
+
+
   static formatPredictions(members: MemberModel[]): string {
-    const csvRows = members.map(member => {
+    const csvRows = [];
+
+    members.forEach((member) => {
       const {
         name,
         email,
         address,
         age,
         phone,
-        userId,
-        // locationInfo,
-        // weatherInfo,
+        subscription = SubscriptionModel[''],
+        subcollectionData,
+        issueBooks = IssueModel[''],
       } = member;
 
-      return (
-        `${name},` +
-        `${email},` +
-        `${address},` +
-        `${age},` +
-        `${phone},` +
-        `${userId},`
-      );
+      // Create a row for the main member data
+      const mainRow = [
+        name,
+        email,
+        address,
+        age,
+        phone,
+        subscription.name,
+        "Book Name",
+        "Issue Date",
+        "Due Date",
+
+        // subscription.issuePeriod || '',
+        //subscription.validity || '',
+      ];
+
+      // Push the main member data as a row
+      csvRows.push(mainRow.join(','));
+
+      if (subcollectionData && subcollectionData.length > 0) {
+        subcollectionData.forEach((subData) => {
+          // Create a row for each item in subcollectionData
+          const issueBooks = subData.title || ''; // Replace 'title' with the correct property name
+          const issueDate = subData.issueDate.toDate();
+          const returnDate = subData.returnDate.toDate();
+          const subRow = [
+            '', // Leave empty for the main fields
+            '',
+            '',
+            '',
+            '',
+            '',
+            issueBooks || '',
+            issueDate ? issueDate.getDate() + " " + issueDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', weekday: 'long' }) : '',
+            returnDate ? returnDate.getDate() + " " + returnDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', weekday: 'long' }) : '',
+          ];
+
+          csvRows.push(subRow.join(','));
+        });
+      }
     });
 
-    const header = 'User,Email, Address, Age, Phone, UserId';
+    const header =
+      'User, Email, Address, Age, Phone, Subscription, Book Data';
     return [header, ...csvRows].join('\n');
   }
 }
@@ -48,6 +87,8 @@ export class UserHistoryComponent implements OnInit {
   phoneNumber: string = '';
   userData: MemberModel | null = null;
   userDataa: MemberModel[] = [];
+  subscription: SubscriptionModel[] = [];
+  issuedBooks: IssueModel[] = [];
   @ViewChild('userDataModal') userDataModal: any;
   currentDate: Date = new Date();
   // @ViewChild('submitButton') submitButton: any;
@@ -60,6 +101,7 @@ export class UserHistoryComponent implements OnInit {
     private toastr: ToastrService,
     private activatedRoute: ActivatedRoute,
     private db: DbService,
+    private router: Router,
     // private renderer: Renderer2,
   ) {
     this.activatedRoute.queryParams.subscribe(params => {
@@ -132,6 +174,15 @@ export class UserHistoryComponent implements OnInit {
     }
   }
 
+  navigateToOtherUser() {
+    // $event.preventDefault();
+    this.router.navigate(['/userHistory']);
+    // this.router.navigate(['/dummy-route'], { skipLocationChange: true }).then(() => {
+
+    //   // Navigate back to the 'other-user' route
+    //   // this.router.navigate(['/other-user'], { skipLocationChange: true });
+    // });
+  }
 
   // async getMembers() {
   //   const firestore = getFirestore();
@@ -195,7 +246,9 @@ export class UserHistoryComponent implements OnInit {
 
   exportMemberToCSV(): void {
     if (this.userData) { // Check if userData is not null
-      const filename = 'user.csv';
+      const name = this.userData.name || 'unknown';
+      const filename = `user_${name}.csv`;
+      // const filename = 'user.csv';
       const csvContent = CsvFormat.formatPredictions([this.userData]); // Wrap userData in an array
       this.exportToCSV(csvContent, filename);
     } else {

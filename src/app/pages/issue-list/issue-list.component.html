@@ -5,31 +5,65 @@
 <div class="container-fluid mt--8">
   <div class="row">
     <div class="col-12">
-      <div class="card">
+      <div class="card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div class="card-header">
+          <h2>Enter Mobile Number</h2>
+        </div>
         <div class="card-body">
           <form [formGroup]="searchForm">
             <div class="row">
               <!-- Phone Number Input -->
               <div class="col-md-6 form-group">
-                <label for="phoneNumber">Phone Number:</label>
+                <!-- <label for="phoneNumber">Phone Number:</label> -->
                 <input type="text" id="phoneNumber" placeholder="Enter Phone Number" formControlName="phoneNumber"
                   class="form-control">
               </div>
-
-              <!-- Select Book Input -->
               <div class="col-md-6 form-group">
-                <label for="searchQuery">Select Book:</label>
-                <input type="text" class="form-control custom-input" placeholder="Enter ISBN" formControlName="param" />
+                <button class="btn btn-primary"
+                  (click)="getMember(searchForm.controls.phoneNumber.value)">Search</button>
               </div>
             </div>
 
             <!-- Search Button -->
-            <div class="row justify-content-center mt-3">
+            <!-- <div class="row justify-content-center mt-3">
               <div class="col-auto">
                 <button type="button" class="btn btn-primary" (click)="filterBooksByISBN()">Search</button>
               </div>
-            </div>
+            </div> -->
           </form>
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table align-items-center table-flush">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Sr. No.</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Age</th>
+                    <!-- <th scope="col">Tags</th> -->
+                    <!-- <th scope="col">Price</th> -->
+                    <!-- <th scope="col">Available</th> -->
+                    <!-- <th scope="col">Issued</th> -->
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr *ngFor="let user of memberData; let i = index">
+                    <td class="font-weight-light">{{ i + 1 }}</td>
+                    <td class="font-weight-bold">{{ user.name }}</td>
+                    <td class="font-weight-bold">{{ user.email }}</td>
+                    <td class="font-weight-bold">{{ user.phone }}</td>
+                    <td class="font-weight-bold">{{ user.age }}</td>
+                    <!-- <td class="font-weight-bold">{{ book.author }}</td> -->
+                  </tr>
+                  <!-- <p>Name: {{ userData.name }}</p> -->
+
+                </tbody>
+              </table>
+            </div>
+          </div>
 
         </div>
       </div>
@@ -37,11 +71,35 @@
   </div>
 
   <div class="row mt-3">
-    <div class="col-6">
-      <div class="card">
+    <div class="col-12">
+      <div class="card" style="box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
         <div class="card-header">
           <h2>Select Books</h2>
         </div>
+        <form [formGroup]="searchForm">
+          <div class="row">
+
+            <!-- Select Book Input -->
+            <div class="col-md-6 text-md-right mt-md-0 form-group">
+              <!-- <label for="searchQuery">Select Book:</label> -->
+              <input type="text" class="form-control custom-input" placeholder="Enter ISBN" formControlName="param" />
+            </div>
+
+            <div class="row text-right mt-3">
+              <div class="col-auto">
+                <button type="button" class="btn btn-primary" (click)="filterBooksByISBN()">Search</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <!-- <div class="row justify-content-center mt-3">
+            <div class="col-auto">
+              <button type="button" class="btn btn-primary" (click)="filterBooksByISBN()">Search</button>
+            </div>
+          </div> -->
+        </form>
+
         <div class="card-body">
           <div class="table-responsive">
             <table class="table align-items-center table-flush">
@@ -81,8 +139,10 @@
         </div>
       </div>
     </div>
-    <div class="col-6">
-      <div class="card">
+  </div>
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="card" style="box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);">
         <div class="card-header">
           <h2>Issued Books</h2>
         </div>

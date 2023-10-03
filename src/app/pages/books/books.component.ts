@@ -11,7 +11,6 @@ import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, q
 import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
 import { privateDecrypt } from 'crypto';
-import { log } from 'console';
 // import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -172,15 +171,10 @@ export class BooksComponent implements OnInit {
 
 
   initializeForm(obj: BookModel = null) {
-    console.log(obj);
-    debugger;
-
     this.tempFile = null
     this.inputTags = [];
     // this.inputType = [];
     if (obj === null) {
-      console.log(1);
-
       this.bookForm = this.fb.group({
         bookId: [doc(collection(this.db.firestore, BOOKS_COLLECTION)).id],
         fileType: [0],
@@ -198,9 +192,8 @@ export class BooksComponent implements OnInit {
       this.tagsList = [...this.tempTagList]
       // this.catalogueList = [...this.tempTypeList]
       this.tempTypeList = [...this.catalogueList];
+      // this.bookForm.patchValue({ type: [] });
     } else {
-      console.log(2);
-
       this.bookForm = this.fb.group({
         bookId: [obj.bookId],
         fileType: [obj.fileType],
@@ -214,19 +207,22 @@ export class BooksComponent implements OnInit {
         total: [obj.total],
         issued: [obj.issued],
         price: [obj.price],
-        type: [obj.catalogue ?? null]
+        // type: [obj.catalogue.length > 0 ? obj.catalogue[0] : null]
+        type: [obj.type ?? null]
       });
+      // this.bookForm.patchValue({ type: obj.catalogue ?? [] });
       this.inputTags = [...obj?.tags];
       console.log(this.inputTags)
       // this.inputType = [...obj?.catalogue];
       // console.log(this.inputType)
       this.tagsList = this.tempTagList.filter(x => !this.inputTags.some(e => e.tagID === x.tagID))
       // this.catalogueList = this.tempTypeList.filter(x => !this.inputType.some(e => e.catalogueId === x.catalogueId))
-      this.tempTypeList = this.catalogueList.filter(
-        type => !obj.catalogue.some(selectedType => selectedType.catalogueId === type.catalogueId)
-      );
 
     }
+  }
+
+  compareWithCatalogueId(c1: Catalogue, c2: Catalogue) {
+    return c1 && c2 && c1.catalogueId === c2.catalogueId;
   }
 
   checkImageType(files) {
@@ -265,13 +261,22 @@ export class BooksComponent implements OnInit {
 
     const bookTitle = values.title.toLowerCase();
     const bookTitleArray = [];
+
+    bookTitleArray.push(...bookTitle.split(" ").flatMap(word => {
+      const wordArray = [];
+      for (let i = 1; i <= word.length; i++) {
+        wordArray.push(word.substring(0, i));
+      }
+      return wordArray;
+    }));
+
     for (let i = 1; i <= bookTitle.length; i++) {
       bookTitleArray.push(bookTitle.substring(0, i));
     }
 
     values.bookTitleArray = bookTitleArray;
 
-    let docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), values.docId);
+    let docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), values.bookId);
     setDoc(docRef, { ...values }, { merge: true })
       .then(() => {
         this.inputTags = []

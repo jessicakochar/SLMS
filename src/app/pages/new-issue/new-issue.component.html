@@ -104,7 +104,8 @@
               <th scope="col">book issued</th>
               <th scope="col">Issued Date</th>
               <th scope="col">Due Date</th>
-              <th scope="col">Return Date</th>
+              <!-- <th scope="col">Return Date</th> -->
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -114,7 +115,10 @@
               <td class="font-weight-bold">{{ member.title }}</td>
               <td class="font-weight-bold">{{ member.issueDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
               <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
-              <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <!-- <td class="f ont-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td> -->
+              <td>
+                <button class="btn btn-sm btn-danger" (click)="returnBooks()">Return</button>
+              </td>
             </tr>
           </tbody>
         </table>

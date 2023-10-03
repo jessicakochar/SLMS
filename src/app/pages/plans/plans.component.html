@@ -90,11 +90,11 @@
   <div class="modal-body">
     <form [formGroup]="this.plansForm">
       <div class="form-group">
-        <label for="name">Plan Name</label>
+        <label for="name" class="text-sm">Plan Name</label>
         <input type="text" class="form-control" formControlName="name" />
       </div>
       <div class="form-group">
-        <label for="description">Description</label>
+        <label for="description" class="text-sm">Description</label>
         <div class="input-group">
           <input type="text" class="form-control" formControlName="descriptionTitle"
             placeholder="Enter Description Title" />
@@ -104,29 +104,37 @@
           <input type="text" class="form-control" formControlName="description" placeholder="Enter Description" />
         </div>
       </div>
-      <div class="form-group">
-        <label for="price">Price (per month)</label>
-        <div class="input-group">
-          <div class="input-group-prepend">
-            <span class="input-group-text">₹</span>
+
+      <div class="form-row">
+        <div class="form-group m-0 col-6">
+          <label for="price" class="text-sm">Price (per month)</label>
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text">₹</span>
+            </div>
+            <input type="number" class="form-control" formControlName="price" />
           </div>
-          <input type="number" class="form-control" formControlName="price" />
+        </div>
+        <div class="form-group m-0 col-6">
+          <div class="form-group">
+            <label for="validity" class="text-sm">Plan Validity</label>
+            <div class="input-group">
+              <input type="number" class="form-control" formControlName="validity" />
+            </div>
+          </div>
         </div>
       </div>
-      <div class="form-group">
-        <label for="validity">Plan Validity</label>
-        <div class="input-group">
-          <input type="number" class="form-control" formControlName="validity" />
+
+      <div class="form-row">
+        <div class="form-group m-0 col-6">
+          <label for="maxBooks" class="text-sm">Book Issue Limit</label>
+          <input type="number" class="form-control" formControlName="maxBooks" />
         </div>
-      </div>
-      <div class="form-group">
-        <label for="maxBooks">Book Issue Limit</label>
-        <input type="number" class="form-control" formControlName="maxBooks" />
-      </div>
-      <div class="form-group">
-        <label for="issuePeriod">Book Issue Period (in days)</label>
-        <input type="number" class="form-control" formControlName="issuePeriod" />
-      </div>
+        <div class="form-group m-0 col-6">
+          <label for="issuePeriod" class="text-sm">Book Issue Period (in days)</label>
+          <input type="number" class="form-control" formControlName="issuePeriod" />
+        </div>
+      </div><br>
       <!-- <div class="form-group">
         <label for="validity">Description</label>
         <div class="input-group">
@@ -160,4 +168,5 @@
       </div>
     </form>
   </div>
+
 </ng-template>
