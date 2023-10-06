@@ -1,5 +1,6 @@
+import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { DocumentData, collection, getDocs, getFirestore, query, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, collection, doc, getDocs, getFirestore, increment, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -37,12 +38,7 @@ export class CsvFormat {
         "Book Name",
         "Issue Date",
         "Due Date",
-
-        // subscription.issuePeriod || '',
-        //subscription.validity || '',
       ];
-
-      // Push the main member data as a row
       csvRows.push(mainRow.join(','));
 
       if (subcollectionData && subcollectionData.length > 0) {
@@ -52,7 +48,7 @@ export class CsvFormat {
           const issueDate = subData.issueDate.toDate();
           const returnDate = subData.returnDate.toDate();
           const subRow = [
-            '', // Leave empty for the main fields
+            '',
             '',
             '',
             '',
@@ -93,6 +89,7 @@ export class UserHistoryComponent implements OnInit {
   currentDate: Date = new Date();
   // @ViewChild('submitButton') submitButton: any;
   @ViewChild('submitButton', { read: ElementRef }) submitButton: ElementRef;
+  // bookReturned: boolean = false;
 
 
   constructor(
@@ -101,6 +98,7 @@ export class UserHistoryComponent implements OnInit {
     private toastr: ToastrService,
     private activatedRoute: ActivatedRoute,
     private db: DbService,
+    private firestore: Firestore,
     private router: Router,
     // private renderer: Renderer2,
   ) {
@@ -138,6 +136,11 @@ export class UserHistoryComponent implements OnInit {
   }
 
   async getMembers() {
+
+    if (!this.phoneNumber || this.phoneNumber.length < 10) {
+      // Check if the phoneNumber is not provided or is incomplete
+      return;
+    }
     const firestore = getFirestore();
     const memberCollectionRef = collection(firestore, 'users');
 
@@ -161,10 +164,10 @@ export class UserHistoryComponent implements OnInit {
         memberData.subcollectionData = subCollectionQuerySnapshot.docs.map(subDoc => subDoc.data());
 
         this.memberModelList = [memberData];
-
         this.userData = memberData;
         console.log('User data:', this.userData);
       } else {
+        this.toastr.warning("No member found", "Add new Member");
         console.log('No user found with phone number:', this.phoneNumber);
         this.memberModelList = [];
         this.userData = null;
@@ -175,13 +178,99 @@ export class UserHistoryComponent implements OnInit {
   }
 
   navigateToOtherUser() {
-    // $event.preventDefault();
-    this.router.navigate(['/userHistory']);
-    // this.router.navigate(['/dummy-route'], { skipLocationChange: true }).then(() => {
+    this.router.navigate(['/dummy-route'], { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/search-user'], { skipLocationChange: true });
+    });
+  }
 
-    //   // Navigate back to the 'other-user' route
-    //   // this.router.navigate(['/other-user'], { skipLocationChange: true });
-    // });
+  async returnBooks(book: any) {
+
+    try {
+      if (!book.returnDate) {
+        await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
+          issued: increment(-1),
+        });
+
+        book.bookReturned = true;
+
+        // Set the returnDate property for the specific book to the current date
+        book.returnDate = new Date();
+
+        await setDoc(
+          doc(this.firestore, `users/${book.memberId}/issuedBooks/${book.docId}`
+          ),
+          {
+            returnDate: book.returnDate,
+          },
+          {
+            merge: true
+          }
+        );
+
+        // Update the "returns" field in the "monthlyBookStats" collection
+        const datepipe = new DatePipe('en-US');
+        await setDoc(
+          doc(
+            this.firestore,
+            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}`
+          ),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        // Update the "returns" field in the "dailyBookStats" collection for the current date
+        const today = datepipe.transform(new Date(), 'yyyyMMdd');
+        await setDoc(
+          doc(
+            this.firestore,
+            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}/dailyBookStats/${today}`
+          ),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        await setDoc(
+          doc(
+            this.firestore,
+            `users/${book.memberId}/userStats/${datepipe.transform(new Date(), 'yyyyMM')}`
+          ),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+
+        // Update the "returns" field in the "globalStats" collection for the book
+        await setDoc(
+          doc(this.firestore, `globalStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
+          {
+            returns: increment(1),
+          },
+          { merge: true }
+        );
+        book.bookReturned = true;
+      } else {
+        this.toastr.info('Book is already returned.', '');
+      }
+      // Update the "returns" field in the "dailyStats" subcollection under "globalStats" for the current date
+      // await updateDoc(
+      //   doc(
+      //     this.firestore,
+      //     `globalStats/${book.bookId}/dailyStats/${today}`
+      //   ),
+      //   {
+      //     returns: increment(1),
+      //   }
+      // );
+      this.toastr.success('Book returned successfully.', '');
+    } catch (error) {
+      console.error('Error returning book:', error);
+      this.toastr.warning('Something went wrong! Please try again.', '');
+    }
   }
 
   // async getMembers() {

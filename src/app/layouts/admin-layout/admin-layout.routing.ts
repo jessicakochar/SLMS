@@ -32,5 +32,6 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'issueList', component: IssueListComponent },
     { path: 'tags', component: TagsComponent },
     { path: 'config', component: ConfigComponent },
+    { path: 'search-user', component: UserHistoryComponent }
 
 ];

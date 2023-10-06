@@ -137,13 +137,13 @@ export class IssueListComponent implements OnInit {
             const { title, isbn, docId, bookId } = book;
             // const issueDate = Timestamp.now();
             const issueDate = new Date();
-            const returnDate = new Date(
+            const dueDate = new Date(
               issueDate.getFullYear(),
               issueDate.getMonth(),
               issueDate.getDate() + validity
             )
 
-            return { title, isbn, docId, bookId, issueDate, returnDate, memberId: userId, memberName: userName, phoneNumber };
+            return { title, isbn, docId, bookId, issueDate, dueDate, memberId: userId, memberName: userName, phoneNumber };
           });
 
           const docRef = doc(collection(this.db.firestore, 'users'), userId);
@@ -208,15 +208,15 @@ export class IssueListComponent implements OnInit {
             // If the document already exists, update its fields
             const userStatsData = userStatsDocSnapshot.data();
             const booksIssued = userStatsData.booksIssued + issuedBookData.length;
-            const booksReturned = userStatsData.booksReturned; // You need to calculate this
+            // const booksReturned = userStatsData.booksReturned; // You need to calculate this
 
-            await setDoc(userStatsDocRef, { booksIssued, booksReturned }, { merge: true });
+            await setDoc(userStatsDocRef, { booksIssued }, { merge: true });
           } else {
             // If the document doesn't exist, create a new one
             const booksIssued = issuedBookData.length;
-            const booksReturned = 0;
+            // const booksReturned = 0;
 
-            await setDoc(userStatsDocRef, { booksIssued, booksReturned });
+            await setDoc(userStatsDocRef, { booksIssued });
           }
 
         } else {

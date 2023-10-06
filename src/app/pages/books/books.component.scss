@@ -15,3 +15,15 @@
   white-space: normal;
   /* Allow text to wrap within cells */
 }
+
+.modal-backdrop {
+  z-index: auto !important;
+}
+
+.custom-input {
+  background-color: rgb(0, 95, 168);
+}
+
+.vertical-spacing {
+  margin-bottom: 10px;
+}

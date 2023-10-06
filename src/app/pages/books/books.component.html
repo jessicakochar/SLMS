@@ -315,18 +315,17 @@
         </div>
 
         <div class="form-row">
-          <button class="btn btn-sm btn-dark btn-outline-dark mr-2" *ngFor="let tag of tagsList; let idx = index"
-            type="button" [class.selected]="isTagSelected(tag)" (click)="addTag(tag)">
-            {{ tag.name || "" }}
+          <button class="btn btn-sm btn-dark btn-outline-dark mr-2 vertical-spacing"
+            *ngFor="let tag of tagsList; let idx = index" type="button" [class.selected]="isTagSelected(tag)"
+            (click)="addTag(tag)">
+            {{ tag.name || " " }}
           </button>
         </div>
-
-
-
+        <br>
         <div class="form-row">
-          <button class="btn btn-sm btn-dark btn-outline-dark mr-2" *ngFor="let tag of inputTags; index as idx"
-            type="button" (click)="this.removeFromTags(idx)">
-            {{ tag?.name || "" }}
+          <button class="btn btn-sm btn-dark btn-outline-dark mr-2 vertical-spacing"
+            *ngFor="let tag of inputTags; index as idx" type="button" (click)="this.removeFromTags(idx)">
+            {{ tag?.name || " " }}
             <i class="fas fa-times"></i>
           </button>
         </div>

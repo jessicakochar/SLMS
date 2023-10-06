@@ -6,4 +6,6 @@ export class IssueModel {
     bookName: string;
     userId: string;
     createdOn: Timestamp;
+    bookReturned: boolean = false;
+    returnD: Date | null = null;
 }

@@ -15,12 +15,20 @@
                     {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
               </div>
             </div>
-            <div class="col-xl-5">
+            <!-- <div class="col-xl-5">
               <input type="text" class="form-control form-control-sm" placeholder="Enter Phone Number"
                 [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange()" />
             </div>
             <div class="col-sm-6 p-0 text-right">
               <button class="btn btn-default btn-sm " (click)="addNewMember(content,member)">
+                Add Member
+              </button>
+            </div> -->
+            <div class="col-sm-6 p-0 d-flex justify-content-end align-items-center">
+              <input type="text" class="form-control form-control-sm mr-2" placeholder="Enter Phone Number"
+                [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange()" />
+              <button class="btn btn-default btn-sm" style="white-space: nowrap;"
+                (click)="addNewMember(content, member)">
                 Add Member
               </button>
             </div>
@@ -123,7 +131,10 @@
 
 <ng-template #content let-modal>
   <div class="modal-header">
-    <h1 class="modal-title" style="margin: 0 auto">Add Member</h1>
+    <h4 class="modal-title">Add Member</h4>
+    <button type="button" class="close" aria-label="Closse" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
     <!-- <button
       type="button"
       class="btn btn-sm icon-shape shadow-none"
@@ -136,16 +147,19 @@
   <div class="modal-body">
     <form [formGroup]="memberForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
       <div class="form-row">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" formControlName="name" />
-
-        <!-- <div class="form-group col-md-6"> -->
-        <label for="age">Age</label>
-        <input type="text" class="form-control" formControlName="age">
-        <!-- </div> -->
+        <label for="name" class="text-sm">Name</label>
+        <input type="text" class="form-control" formControlName="name" placeholder="Enter Name" />
       </div>
 
-      <!-- <div class="form-row">
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <!-- <div class="form-group col-md-6"> -->
+          <label for="age" class="text-sm">Age</label>
+          <input type="text" class="form-control" formControlName="age" placeholder="Enter Age">
+          <!-- </div> -->
+        </div>
+
+        <!-- <div class="form-row">
         <div class="form-group col-md-6">
           <label for="age">Age</label>
           <input type="text" class="form-control" formControlName="age">
@@ -154,30 +168,31 @@
       </div> -->
 
 
-      <div class="form-row">
-        <div class="form-group col-md-12">
-          <label for="subscription">Subscription</label>
+        <div class="form-group col-md-6">
+          <label for="subscription" class="text-sm">Subscription</label>
           <select id="type" class="form-control" formControlName="subscription">
-            <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">{{ subscription.name }}
+
+            <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">
+              {{ subscription.name }}
             </option>
           </select>
         </div>
       </div>
 
       <div class="form-row">
-        <label for="address">Address</label>
-        <input type="text" class="form-control" formControlName="address" />
+        <label for="address" class="text-sm">Address</label>
+        <input type="text" class="form-control" formControlName="address" placeholder="Enter Address" />
       </div>
 
       <div class="form-row">
         <div class="form-group col-md-6">
-          <label for="phone">Phone</label>
-          <input type="phone" class="form-control" formControlName="phone">
+          <label for="phone" class="text-sm">Phone</label>
+          <input type="phone" class="form-control" formControlName="phone" placeholder="Enter Phone">
         </div>
         <div class="form-group col-md-6">
-          <label for="email">Email</label>
+          <label for="email" class="text-sm">Email</label>
           <div class="input-group">
-            <input type="text" class="form-control" formControlName="email" />
+            <input type="text" class="form-control" formControlName="email" placeholder="Enter Email" />
           </div>
         </div>
       </div>

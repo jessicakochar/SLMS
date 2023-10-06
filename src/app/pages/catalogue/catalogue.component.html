@@ -75,6 +75,7 @@
               <th scope="col">Name</th>
               <th scope="col">Status</th>
               <th scope="col">Created On</th>
+              <th scope="col"> Action </th>
             </tr>
           </thead>
           <tbody>
@@ -90,6 +91,11 @@
                 </h4>
               </td>
               <td>{{ catalogue.createdOn?.toDate()| date: 'short' }}</td>
+              <td>
+                <button class="btn btn-dark btn-sm" (click)="openCatalogueModal(content, catalogue)">Edit</button>
+                <button class="btn btn-danger btn-sm"
+                  (click)="this.openDeleteModal(deleteModal, catalogue)">Delete</button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -99,112 +105,34 @@
 </div>
 <ng-template #content let-modal>
   <div class="modal-header">
-    <!-- <h1 class="modal-title" style="margin: 0 auto">Add Book</h1> -->
-    <!-- <button
-        type="button"
-        class="btn btn-sm icon-shape shadow-none"
-        aria-label="Close"
-        (click)="modal.dismiss('Cross click')"
-      >
-        <i class="bi bi-x-circle-fill"></i>
-      </button> -->
   </div>
   <div class="modal-body">
+    <!-- <div class="form-container"> -->
     <form [formGroup]="catalogueForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
-      <div class="form-row">
-        <!-- <div class="form-group col-md-6"> -->
-        <label>Name</label>
-        <input type="text" class="form-control" formControlName="name" />
+      <div class="form-group">
+        <h3 class="form-heading">Add New Catalogue Type</h3>
       </div>
-      <!-- <div class="form-group col-md-6">
-            <label for="author">Author</label>
-            <input type="text" class="form-control" formControlName="author" />
-          </div> -->
-      <!-- </div> -->
-      <!-- <div class="form-group">
-          <label for="cover">Cover Image</label>
-          <div class="custom-file">
-            <input
-              type="file"
-              class="custom-file-input"
-              aria-describedby="inputGroupFileAddon01"
-              id="customFile"
-              (change)="checkImageType($event.target.files)"
-            />
-            <label class="custom-file-label" for="cover"
-              ><span *ngIf="tempFile === null">Choose Image File</span>
-              <span class="text-limit" *ngIf="tempFile !== null">{{
-                tempFile.name
-              }}</span></label
-            >
-          </div>
-        </div> -->
-      <!-- <div class="form-row">
-          <div class="form-group col-md-4">
-            <label for="isbn">ISBN</label>
-            <input type="text" class="form-control" formControlName="isbn" />
-          </div>
-          <div class="form-group col-md-4">
-            <label for="available">Quantity</label>
-            <input
-              type="number"
-              class="form-control"
-              formControlName="available"
-            />
-          </div> -->
-      <!-- <div class="form-group col-md-4">
-            <label for="price">Price</label>
-            <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text">₹</span>
-              </div>
-              <input type="number" class="form-control" formControlName="price" />
-            </div>
-          </div>
-        </div> -->
-      <!-- <div class="form-group">
-          <label for="inputAddress2">Tags</label>
-          <input
-            type="text"
-            class="form-control"
-            list="tags"
-            [formControl]="tagControl"
-            (keyup.enter)="addTag($event)"
-            (change)="addTag($event)"
-          />
-          <datalist id="tags">
-            <option
-              *ngFor="let tag of tagsList"
-              [value]="tag?.name || ''"
-            ></option>
-          </datalist>
-        </div>
-        <div class="form-row"> -->
-      <!-- <button
-            class="btn btn-sm btn-dark btn-outline-dark mr-2"
-            *ngFor="let tag of inputTags; index as idx"
-            type="button"
-            (click)="this.removeFromTags(idx)"
-          >
-            {{ tag?.name || "" }}
-            <i class="fas fa-times"></i>
-          </button>
-        </div> -->
-      <br>
 
-      <div style="float: right">
-        <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
-          Cancel
-        </button>
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter catalogue name" />
+      </div>
+
+      <div class="form-group text-right">
+        <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">Cancel</button>
         <button type="submit" class="btn btn-dark btn-sm">Save</button>
       </div>
     </form>
+    <!-- Your form content goes here -->
+    <!-- </div> -->
+
   </div>
+
 </ng-template>
 
 <ng-template #deleteModal let-modal>
   <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete this book?</h4>
+    <h4 class="modal-title">Are you sure want to delete?</h4>
     <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
       (click)="modal.dismiss('Cross click')">
       <span aria-hidden="true">&times;</span>
@@ -214,7 +142,8 @@
     <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
       NO
     </button>
-    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteBook()" [disabled]="loader">
+    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteCatalogue()"
+      [disabled]="loader">
       YES
       <span *ngIf="loader">&nbsp;</span>
       <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">

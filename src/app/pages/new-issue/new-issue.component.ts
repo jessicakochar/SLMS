@@ -31,6 +31,7 @@ export class NewIssueComponent implements OnInit {
   memberModelList: MemberModel[] = [];
   selectedStartMonth: string = '2023-08';
   issuedBooksList: BookModel[] = [];
+  phoneNumber: string = '';
 
   constructor(
     private db: DbService,
@@ -39,12 +40,12 @@ export class NewIssueComponent implements OnInit {
     private toast: ToastrService,
     private router: Router,
     private firestore: Firestore,
-    // private firestore: AngularFirestore,
+
   ) { }
+
   ngOnInit(): void {
-
-    this.getMembers();
-
+    // this.getMembers();
+    // this.getMembersByMonth();
     // this.db.getBooksList();
     // this.booksSub = this.db.booksSub.subscribe((list) => {
     //   if (list.length !== 0) {
@@ -58,7 +59,15 @@ export class NewIssueComponent implements OnInit {
     //     this.catalogueList = [...list];
     //   }
     // })
+    this.getCurrentMonth();
+    this.getMembersByMonth();
+  }
 
+  getCurrentMonth() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    this.selectedStartMonth = `${year}-${month.toString().padStart(2, '0')}`;
   }
 
   navigateToIssueList() {
@@ -90,13 +99,11 @@ export class NewIssueComponent implements OnInit {
 
   }
 
-  async getMembersByMonth(month: number) {
+  async getMembersByMonth() {
     const firestore = getFirestore();
-    const fromDate = new Date(new Date().getFullYear(), month - 1, 1);
-    const toDate = new Date(new Date().getFullYear(), month, 0);
 
-    // fromDate.setHours(0, 0, 0)
-    // toDate.setHours(23, 59, 59)
+    const fromDate = new Date(this.selectedStartMonth + '-01'); // Start of selected month
+    const toDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 1, 0); // End of selected month
 
     const collectionGroupRef = collectionGroup(firestore, 'issuedBooks');
     const queryRef = query(
@@ -105,103 +112,81 @@ export class NewIssueComponent implements OnInit {
       where('issueDate', '<=', toDate),
       orderBy('issueDate', 'desc')
     );
-    const usersQuerySnapshot = await getDocs(queryRef);
 
-    this.memberModelList = [];
+    onSnapshot(queryRef, (response) => {
+      this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
+      console.log(this.memberModelList);
 
-    for (const userDoc of usersQuerySnapshot.docs) {
-      const userData = userDoc.data() as MemberModel;
-      this.memberModelList.push(userData);
-      console.log(userData);
-    }
-
-    // onSnapshot(queryRef, (response) => {
-    //   this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
-    //   console.log(this.memberModelList);
-
-
-    // })
-
+      const firstMember = this.memberModelList[0];
+      if (firstMember && firstMember.phone) {
+        this.phoneNumber = firstMember.phone;
+      }
+    });
   }
 
-  async returnBooks(book: BookModel) {
+  async returnBooks(book: any, member: any) {
 
     try {
-
-      const issuedBookData = this.issuedBooksList.map((book) => {
-        const { title, isbn, docId, bookId } = book;
-        // const issueDate = Timestamp.now();
-        const issueDate = new Date();
-        const returnDate = new Date(
-          issueDate.getFullYear(),
-          issueDate.getMonth(),
-          // issueDate.getDate() + validity
-        )
-
-        return { title, isbn, docId, bookId, issueDate, returnDate };
+      await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
+        issued: increment(-1),
       });
 
-      for (const book of issuedBookData) {
-        // const docId = doc(colRef).id;
-        // const bookDocRef = doc(colRef, docId);
-
-        // const today = datepipe.transform(new Date(), 'yyyyMMdd');
-
-        // Update the "returns" field in the "Books" collection
-        await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
+      // Update the "returns" field in the "monthlyBookStats" collection
+      const datepipe = new DatePipe('en-US');
+      await setDoc(
+        doc(
+          this.firestore,
+          `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}`
+        ),
+        {
           returns: increment(1),
-        });
+        },
+        { merge: true }
+      );
 
-        // Update the "returns" field in the "monthlyBookStats" collection
-        const datepipe = new DatePipe('en-US');
-        await setDoc(
-          doc(
-            this.firestore,
-            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}`
-          ),
-          {
-            returns: increment(1),
-          },
-          { merge: true }
-        );
+      // Update the "returns" field in the "dailyBookStats" collection for the current date
+      const today = datepipe.transform(new Date(), 'yyyyMMdd');
+      await setDoc(
+        doc(
+          this.firestore,
+          `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}/dailyBookStats/${today}`
+        ),
+        {
+          returns: increment(1),
+        },
+        { merge: true }
+      );
 
-        // Update the "returns" field in the "dailyBookStats" collection for the current date
-        const today = datepipe.transform(new Date(), 'yyyyMMdd');
-        await setDoc(
-          doc(
-            this.firestore,
-            `Books/${book.bookId}/monthlyBookStats/${datepipe.transform(new Date(), 'yyyyMM')}/dailyBookStats/${today}`
-          ),
-          {
-            returns: increment(1),
-          },
-          { merge: true }
-        );
+      await setDoc(
+        doc(
+          this.firestore,
+          `users/${member.memberId}/userStats/${datepipe.transform(new Date(), 'yyyyMM')}`
+        ),
+        {
+          returns: increment(1),
+        },
+        { merge: true }
+      );
 
-        // Update the "returns" field in the "globalStats" collection for the book
-        await setDoc(
-          doc(this.firestore, `globalStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
-          {
-            returns: increment(1),
-          },
-          { merge: true }
-        );
+      // Update the "returns" field in the "globalStats" collection for the book
+      await setDoc(
+        doc(this.firestore, `globalStats/${datepipe.transform(new Date(), 'yyyyMM')}`),
+        {
+          returns: increment(1),
+        },
+        { merge: true }
+      );
 
-        // Update the "returns" field in the "dailyStats" subcollection under "globalStats" for the current date
-        // await updateDoc(
-        //   doc(
-        //     this.firestore,
-        //     `globalStats/${book.bookId}/dailyStats/${today}`
-        //   ),
-        //   {
-        //     returns: increment(1),
-        //   }
-        // );
-
-        // You can also update the "returns" field in the issuedBooks collection for tracking
-        // ...
-      }
-
+      // Update the "returns" field in the "dailyStats" subcollection under "globalStats" for the current date
+      // await updateDoc(
+      //   doc(
+      //     this.firestore,
+      //     `globalStats/${book.bookId}/dailyStats/${today}`
+      //   ),
+      //   {
+      //     returns: increment(1),
+      //   }
+      // );
       this.toast.success('Book returned successfully.', '');
     } catch (error) {
       console.error('Error returning book:', error);
@@ -209,13 +194,60 @@ export class NewIssueComponent implements OnInit {
     }
   }
 
-
-
   onStartMonthSelectionChange() {
-    const selectedMonthValue = parseInt(this.selectedStartMonth.split('-')[1]);
-    this.getMembersByMonth(selectedMonthValue);
-    // this.exportUsersToCSV();
+    this.getMembersByMonth();
   }
+
+  userDetails(phoneNumber: string) {
+    // Check if the phone number is valid (e.g., has 10 digits)
+    // const phoneNumber = this.phoneNumber;
+    if (phoneNumber && phoneNumber.length === 10) {
+      // Navigate to the "/userHistory" component with the phone number as a query parameter
+      this.router.navigate(['/userHistory'], { queryParams: { phone: phoneNumber } });
+    } else {
+      // Handle invalid phone number (e.g., show an error message)
+      console.log('Invalid phone number:', phoneNumber);
+      // You can display an error message or take another action as needed.
+    }
+  }
+
+
+  // async getMembersByMonth(month: number) {
+  //   const firestore = getFirestore();
+  //   const fromDate = new Date(new Date().getFullYear(), month - 1, 1);
+  //   const toDate = new Date(new Date().getFullYear(), month, 0);
+
+  //   // fromDate.setHours(0, 0, 0)
+  //   // toDate.setHours(23, 59, 59)
+
+  //   const collectionGroupRef = collectionGroup(firestore, 'issuedBooks');
+  //   const queryRef = query(
+  //     collectionGroupRef,
+  //     where('issueDate', '>=', fromDate),
+  //     where('issueDate', '<=', toDate),
+  //     orderBy('issueDate', 'desc')
+  //   );
+  //   const usersQuerySnapshot = await getDocs(queryRef);
+
+  //   this.memberModelList = [];
+
+  //   for (const userDoc of usersQuerySnapshot.docs) {
+  //     const userData = userDoc.data() as MemberModel;
+  //     this.memberModelList.push(userData);
+  //     console.log(userData);
+  //   }
+
+  //   // onSnapshot(queryRef, (response) => {
+  //   //   this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
+  //   //   console.log(this.memberModelList);
+
+
+  //   // })
+
+  // }
+
+
+
 
   // async fetchUsersByMonth(month: number) {
   //   const firestore = getFirestore();

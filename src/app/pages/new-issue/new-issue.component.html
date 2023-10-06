@@ -81,7 +81,7 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col">
-            <h3 class="mb-0">Issued Books</h3>
+            <h3 class="mb-0">Issued Books ({{ memberModelList.length }})</h3>
           </div>
           <div class="col text-right">
             <label for="start">Search by month:</label>
@@ -99,25 +99,52 @@
         <table class="table align-items-center table-flush">
           <thead class="thead-light">
             <tr>
-              <th scope="col">User name</th>
-              <th scope="col">phone</th>
-              <th scope="col">book issued</th>
+              <th scope="col">S.No</th>
+              <th scope="col">User</th>
+              <!-- <th scope="col">phone</th> -->
+              <!-- <th scope="col">book issued</th> -->
+              <th scope="col">Book ISBN</th>
               <th scope="col">Issued Date</th>
               <th scope="col">Due Date</th>
+              <th scope="col">Return Date</th>
+              <th scope="col">Status</th>
               <!-- <th scope="col">Return Date</th> -->
               <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let member of memberModelList;">
-              <td class="font-weight-bold">{{ member.memberName }}</td>
-              <td class="font-weight-bold">{{ member.phoneNumber }}</td>
-              <td class="font-weight-bold">{{ member.title }}</td>
-              <td class="font-weight-bold">{{ member.issueDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
-              <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
-              <!-- <td class="f ont-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td> -->
+            <tr *ngFor="let member of memberModelList; index as idx">
+              <td class="font-weight-bold">{{ idx + 1 }}</td>
               <td>
-                <button class="btn btn-sm btn-danger" (click)="returnBooks()">Return</button>
+                <div class="font-weight-bold">{{ member.memberName }}</div>
+                <div class="font-weight-light">{{ member.phoneNumber }}</div>
+              </td>
+              <!-- <td class="font-weight-bold">{{ member.memberName }}</td>
+              <td class="font-weight-bold">{{ member.phoneNumber }}</td> -->
+              <td>
+                <div class="font-weight-bold">{{ member.isbn }}</div>
+                <div class="font-weight-light">{{ member.title }}</div>
+              </td>
+              <!-- <td class="font-weight-bold">{{ member.title }}</td>
+              <td class="font-weight-bold">{{ member.isbn }}</td> -->
+              <td class="font-weight-bold">{{ member.issueDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <td class="font-weight-bold">{{ member.dueDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <td class="font-weight-bold">{{ member.returnDate?.toDate()| date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <h3>
+                  <span class="badge badge-pill" [ngClass]="{
+                          'badge-success': member.returnDate && member.returnDate.toDate() <= member.dueDate?.toDate(),
+                          'badge-danger': member.issueDate && member.issueDate.toDate() > member.dueDate?.toDate(),
+                          'badge-primary': member.issueDate && !member.returnDate
+                        }">
+                    {{ member.returnDate && member.returnDate.toDate() <= member.dueDate?.toDate() ? 'Returned' :
+                      (member.issueDate && member.issueDate.toDate()> member.dueDate?.toDate() ? 'Overdue' : 'Issued')
+                      }}
+                  </span>
+                </h3>
+              </td>
+              <td>
+                <button class="btn btn-sm btn-danger" (click)="userDetails(member.phoneNumber)">Details</button>
               </td>
             </tr>
           </tbody>

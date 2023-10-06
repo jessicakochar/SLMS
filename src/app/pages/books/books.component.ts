@@ -13,15 +13,10 @@ import { Catalogue } from 'src/app/utils/catalogueModel';
 import { privateDecrypt } from 'crypto';
 // import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
-
-
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
   styleUrls: ['./books.component.scss'],
-  //   providers: [
-  //     NgbTabset
-  // ]
 })
 export class BooksComponent implements OnInit {
   tagControl = new FormControl();
@@ -48,6 +43,8 @@ export class BooksComponent implements OnInit {
   booksList: BookModel[] = [];
   booksSub: Subscription;
   tempBookList: BookModel[] = [];
+
+  formComplete: boolean = false;
 
   tagsSub: Subscription;
   catalogueSub: Subscription;
@@ -192,7 +189,6 @@ export class BooksComponent implements OnInit {
       this.tagsList = [...this.tempTagList]
       // this.catalogueList = [...this.tempTypeList]
       this.tempTypeList = [...this.catalogueList];
-      // this.bookForm.patchValue({ type: [] });
     } else {
       this.bookForm = this.fb.group({
         bookId: [obj.bookId],
@@ -210,7 +206,6 @@ export class BooksComponent implements OnInit {
         // type: [obj.catalogue.length > 0 ? obj.catalogue[0] : null]
         type: [obj.type ?? null]
       });
-      // this.bookForm.patchValue({ type: obj.catalogue ?? [] });
       this.inputTags = [...obj?.tags];
       console.log(this.inputTags)
       // this.inputType = [...obj?.catalogue];

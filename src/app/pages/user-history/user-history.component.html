@@ -7,15 +7,15 @@
     <!-- Show the form when userData is not available -->
     <div class="mb-5 mb-xl-0 w-50 mx-auto">
       <div class="card shadow">
-        <div class="card-header border-0">
-          <h2 class="mb-0 align-items-center text-center">Enter Mobile Number</h2>
+        <div class="card-header border-0 text-center">
+          <h1 class="mb-0 ">ENTER MOBILE NUMBER</h1>
         </div>
-        <div class="card-body ">
+        <div class="card-body">
           <form (submit)="getMembers()">
             <div class="form-group">
               <br>
-              <input type="text" class="form-control" [(ngModel)]="phoneNumber" placeholder="Enter mobile number"
-                (input)="onPhoneNumberInput()">
+              <input type="text" class="form-control text-center" [(ngModel)]="phoneNumber"
+                placeholder="Enter mobile number" (input)="onPhoneNumberInput()">
             </div>
             <button type="submit" class="btn btn-dark float-right" [hidden]="true" #submitButton></button>
           </form>
@@ -24,44 +24,44 @@
     </div>
   </ng-container>
 
+
   <!-- Display user data in a card when matched -->
   <ng-template #userDataContent>
     <div class="container-fluid mt--8">
       <div class="row">
         <div class="col">
-
           <div class="card">
             <div class="card-header">
-              <!-- <h3>User Data</h3> -->
               <div class="row">
-                <div class="col-sm-6 p-0">
-                  <div class="d-flex flex-column">
-                    <h3 class="m-0">User Data</h3>
+                <div class="col-sm-6 p-0 align-items-start">
+                  <div class="d-flex flex-column align-items-start">
+                    <h3 class="m-0 align-items-start">User Data</h3>
                     <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
-                          {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+                      {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
                   </div>
-
                 </div>
-                <!-- <div class="text-right">
-                  <button class="btn btn-default btn-sm" (click)="exportMemberToCSV()">Download</button>
-                </div> -->
-                <div class="row align-items-center">
-                  <div class="col d-flex justify-content-end align-items-center">
-                    <form>
-                      <div class="form-row">
-                        <div class="col-auto">
-                          <button type="submit" class="btn btn-sm btn-dark" (click)="exportMemberToCSV()">
-                            Download
-                          </button>
-                          <button type="submit" class="btn btn-sm btn-dark" (click)="navigateToOtherUser($event)">
-                            Other user
-                          </button>
+                <div class="col-sm-6 p-0">
+                  <div class="row justify-content-end">
+                    <div class="col-auto">
+                      <form>
+                        <div class="form-row">
+                          <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-dark" (click)="exportMemberToCSV()">
+                              Download
+                            </button>
+                          </div>
+                          <div class="col-auto">
+                            <button type="submit" class="btn btn-sm btn-dark" (click)="navigateToOtherUser($event)">
+                              Search Again
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </form>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
+
             </div>
             <div class="card-body">
               <div class="row">
@@ -121,7 +121,22 @@
                     </div>
                   </div>
 
-                  <div class="text-sm text-danger">Due Date: {{ book.returnDate?.toDate()| date: 'longDate' }}</div>
+                  <div class="text-sm text-danger">Due Date: {{ book.dueDate?.toDate()| date: 'longDate' }}</div>
+                  <!-- <div>
+                    <button class="btn btn-sm btn-danger" (click)="returnBooks(book)" *ngIf="!book.bookReturned">Return
+                      Book</button>
+                      <span *ngIf="book.bookReturned">Book Returned</span>
+                    </div> -->
+                  <div *ngIf="!book.returnDate">
+                    <button class="btn btn-sm btn-danger" (click)="returnBooks(book)">Return Book</button>
+                  </div>
+                  <div *ngIf="book.returnDate">
+                    <!-- Display a message or icon indicating that the book is returned -->
+                    <div class="text-sm text-purple">Return Date: {{ book.returnDate?.toDate()| date: 'longDate' }}
+                    </div>
+                    <div class="text-success">Book Returned</div>
+                  </div>
+
                   <!-- <div class=""> -->
                   <!-- <div class="text-right m-1">
                     <button type="button" class="btn btn-outline-primary btn-sm">

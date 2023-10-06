@@ -9,13 +9,13 @@ declare interface RouteInfo {
 }
 export const ROUTES: RouteInfo[] = [
   { path: '/members', title: 'Manage Members', icon: 'fas fa-users text-primary', class: '' },
-  { path: '/books', title: 'Manage Books', icon: 'fas fa-book text-primary', class: '' },
-  { path: '/user-profile', title: 'Admin Users', icon: 'fas fa-user text-primary', class: '' },
   { path: '/dashboard', title: 'Dashboard', icon: 'fas fa-chart-line text-primary', class: '' },
+  { path: '/userHistory', title: 'User History', icon: 'fas fa-users text-primary', class: '' },
+  { path: '/user-profile', title: 'Admin Users', icon: 'fas fa-user text-primary', class: '' },
+  { path: '/newIssue', title: 'Issue Book', icon: 'fas fa-plus text-primary', class: '' },
+  { path: '/books', title: 'Manage Books', icon: 'fas fa-book text-primary', class: '' },
   { path: '/catalogue', title: 'Catalogue', icon: 'fas fa-book text-primary', class: '' },
   { path: '/plans', title: 'Edit Membership Plans', icon: 'fas fa-money-check text-primary', class: '' },
-  { path: '/userHistory', title: 'User History', icon: 'fas fa-users text-primary', class: '' },
-  { path: '/newIssue', title: 'Issue Book', icon: 'fas fa-plus text-primary', class: '' },
   // { path: '/issueList', title: 'Issue List', icon: 'fas fa-list-ul text-primary', class: '' },
   { path: '/tags', title: 'Edit Tags', icon: 'fas fa-tags text-primary', class: '' },
   // { path: '/config', title: 'Edit Config', icon: 'fas fa-cog text-primary', class: '' },

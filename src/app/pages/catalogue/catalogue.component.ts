@@ -54,7 +54,7 @@ export class CatalogueComponent implements OnInit {
     private fb: FormBuilder,
     private toast: ToastrService,
     private modalService: NgbModal
-  ) { }
+  ) { this.initializeForm(); }
 
   ngOnInit(): void {
 
@@ -167,6 +167,7 @@ export class CatalogueComponent implements OnInit {
   }
 
   openCatalogueModal(modalRef: any, obj: Catalogue = null) {
+    this.loader = true;
     this.modalService.open(modalRef, { size: 'lg' });
     this.initializeForm(obj);
 
@@ -174,19 +175,12 @@ export class CatalogueComponent implements OnInit {
   }
 
 
+
+
   async saveToFirestore() {
     this.loader = true;
     let values: Catalogue = { ...this.catalogueForm.value };
     // values.tags = this.inputTags.length === 0 ? [] : [...this.inputTags];
-
-    // if (this.tempFile !== null) {
-    //   const file = this.tempFile;
-    //   const FilePath = "media/" + values.fileType + "/" + new Date().getTime() + "_" + this.tempFile.name;;
-    //   const FileRef = ref(this.db.storage, FilePath);
-    //   await uploadBytes(FileRef, this.tempFile);
-    //   values.url = await getDownloadURL(FileRef);
-    // }
-
     let docRef = doc(collection(this.db.firestore, CATALOGUE_COLLECTION), values.catalogueId);
     setDoc(docRef, { ...values }, { merge: true })
       .then(() => {
@@ -202,9 +196,25 @@ export class CatalogueComponent implements OnInit {
       });
   }
 
-  openDeleteModal(modal, imageModal: BookModel) {
-    this.modalService.open(modal, { size: "sm" });
-    this.bookModal = imageModal;
+  openDeleteModal(modal, Catalogue: Catalogue) {
+    this.modalService.open(modal, { size: "sm", centered: false });
+    this.catalogueModal = Catalogue;
+  }
+
+  async deleteCatalogue() {
+    this.loader = true;
+    let docRef = doc(collection(this.db.firestore, CATALOGUE_COLLECTION), this.catalogueModal.catalogueId);
+    deleteDoc(docRef)
+      .then(() => {
+        let idx = this.catalogueList.findIndex(x => x.catalogueId === this.catalogueModal.catalogueId);
+        this.modalService.dismissAll();
+        this.toast.success("Catalogue Deleted Successfully !");
+        this.loader = false
+      }, (error) => {
+        this.loader = false
+        this.toast.warning("Something went wrong ! Please try again.");
+      }
+      );
   }
 
   async deleteBook() {

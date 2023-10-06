@@ -98,19 +98,41 @@ export class DbService {
     }
   }
 
+  // getBooks(selectedAlphabet: string = 'a') {
+  //   if (!this.booksRetrievedBool) {
+  //     let collectionRef = collection(this.firestore, BOOKS_COLLECTION);
+  //     let queryRef = query(collectionRef, where('bookTitleArray', 'array-contains', selectedAlphabet), where("fileType", "==", 0));
+  //     onSnapshot(queryRef, (value) => {
+  //       this.booksSub.next(value.docs.map(e => e.data() as BookModel));
+  //       this.booksRetrievedBool = true;
+  //       // console.log(value.docs)
+  //     }, (error) => {
+  //       console.log(error);
+  //     })
+  //   }
+  // }
+
   getBooks(selectedAlphabet: string = 'a') {
-    if (!this.booksRetrievedBool) {
-      let collectionRef = collection(this.firestore, BOOKS_COLLECTION);
-      let queryRef = query(collectionRef, where('bookTitleArray', 'array-contains', selectedAlphabet), where("fileType", "==", 0));
-      onSnapshot(queryRef, (value) => {
-        this.booksSub.next(value.docs.map(e => e.data() as BookModel));
-        this.booksRetrievedBool = true;
-        // console.log(value.docs)
-      }, (error) => {
-        console.log(error);
-      })
-    }
+    const firstAlphabet = selectedAlphabet.toUpperCase();
+    const collectionRef = collection(this.firestore, BOOKS_COLLECTION);
+
+    const queryRef = query(collectionRef,
+      where('title', '>=', firstAlphabet),
+      where('title', '<=', firstAlphabet + "~"),
+      where("fileType", "==", 0)
+    );
+    // console.log('Query:', queryRef);
+
+    onSnapshot(queryRef, (value) => {
+      // console.log('Query Result:', value.docs.map(e => e.data() as BookModel));
+      this.booksSub.next(value.docs.map(e => e.data() as BookModel));
+      this.booksRetrievedBool = true;
+    }, (error) => {
+      console.log('Firestore Error:', error);
+    });
   }
+
+
 
   getBooksByTitle(selectedTitle: string = 'a') {
     if (!this.booksRetrievedBool) {

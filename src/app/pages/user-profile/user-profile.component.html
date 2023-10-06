@@ -1,4 +1,299 @@
-<!-- <div class="header bg-green pb-8 pt-5 pt-md-8" >
+<div class="header pb-8 pt-5 pt-md-8">
+  <div class="container-fluid"></div>
+</div>
+<div class="container-fluid mt--8">
+  <div class="row">
+    <div class="col">
+      <div class="card" *ngIf="!loader && admins.length != 0">
+        <div class="card-header">
+          <div class="row w-100 m-0">
+            <div class="col-sm-6 p-0">
+              <div class="d-flex flex-column">
+                <h3 class="m-0">Admin ({{admins.length || 0}})</h3>
+                <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+                    {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+              </div>
+            </div>
+            <div class="col-sm-6 p-0">
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-default btn-sm float-right" (click)="openAdminModal(adminModal)">
+                  Add Admin
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Sr. No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <!-- <th scope="col">Added On</th> -->
+                <th scope="col">Status</th>
+                <th scope="col">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let admin of admins; index as idx">
+                <td>{{ idx + 1 }}</td>
+                <td>
+                  <div class="d-flex flex-column font-weight-bold">
+                    <span>{{ admin.name }}</span>
+                    <!-- <span class="text-sm text-muted">{{ admin.mobile }}</span> -->
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex flex-column font-weight-bold">
+                    <span>{{ admin.email }}</span>
+                    <!-- <span class="text-sm text-muted">{{ admin.gender | titlecase }}</span> -->
+                  </div>
+                </td>
+                <!-- <td>{{ admin.createdOn }}</td> -->
+                <td>
+                  <h3>
+                    <span class="badge badge-pill {{ admin.status ? 'badge-success' : 'badge-danger' }}">
+                      {{ admin.status ? "Active" : "In-Active" }}
+                    </span>
+                  </h3>
+                </td>
+                <td>
+                  <button class="btn btn-default btn-sm"
+                    (click)="openAdminRoleModel(roleModal, admin.adminId, admin.roles || null)">Roles</button>
+                  <button class="btn btn-default btn-sm" (click)="viewadminDetails(viewModal, admin)">Details</button>
+                  <button class="btn btn-default btn-sm" (click)="openAdminModal(adminModal, admin)">Edit</button>
+                  <!-- <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, admin)">Delete</button> -->
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer" *ngIf="showLoadMore">
+          <button class="btn btn-sm btn-default pull-right" (click)="loadMoreadmin()">
+            Load More
+          </button>
+        </div>
+      </div>
+      <div class="card" *ngIf="loader && admins.length == 0">
+        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+          <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+          <h2 class="mt-3 d-flex flex-column align-items-center">
+            <span class="text-sm text-muted">Loading Admin Records...</span>
+          </h2>
+          <div class="card-body d-flex flex-column justify-content-center align-items-center">
+            <!-- <img src="./../../../assets/img/empty.svg" class="img-fluid" height="256px" width="256px" alt="No Data"> -->
+            <h2 class="mt-3 d-flex flex-column align-items-center">
+              <span class="text-sm text-muted">No admin Records Found</span>
+              <!-- <span>{{ today | date: 'MMMM yyyy' }}</span> -->
+            </h2>
+            <button *ngIf="canWrite" class="btn btn-default btn-sm float-right mt-5"
+              (click)="openAdminModal(adminModal)">
+              Add admin
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign Role to Admins => Admin Role Modal -->
+  <ng-template #roleModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Admin Roles</h4>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form [formGroup]="roleForm" (ngSubmit)="updateAdminRoles(roleForm)" ngNativeValidate>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Sr. No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container formArrayName="roles" *ngFor="let attr of roleForm.get('roles').controls; index as idx">
+                <tr [formGroupName]="idx">
+                  <td>{{ idx + 1 }}</td>
+                  <td>
+                    <strong>{{ attr.get('title').value }}</strong>
+                  </td>
+                  <td>
+                    <div id="gender" class="btn-group btn-group-toggle" ngbRadioGroup formControlName="selected">
+                      <label ngbButtonLabel class="btn-primary btn-sm">
+                        <input ngbButton type="radio" [value]="0">None
+                      </label>
+                      <label ngbButtonLabel class="btn-primary btn-sm">
+                        <input ngbButton type="radio" [value]="1">Read Only
+                      </label>
+                      <label ngbButtonLabel class="btn-primary btn-sm">
+                        <input ngbButton type="radio" [value]="2">Read & Write
+                      </label>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-sm" (click)="modal.dismiss('')">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-default btn-sm" [disabled]="loader">
+          Save
+          <span *ngIf="loader">&nbsp;</span>
+          <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+
+  <!-- Register new Admin or update existing Admins modal -->
+  <ng-template #adminModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Admin {{ updation ? 'Updation' : 'Registration' }}</h4>
+      <button type="button" class="close" aria-label="Closse" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form [formGroup]="adminForm" (ngSubmit)="registerAdmin(adminForm, roleModal)" ngNativeValidate>
+      <div class="modal-body">
+        <div class="row">
+          <div class="form-group m-0 col-12">
+            <label for="user" class="text-sm">Name</label>
+            <div id="user" class="input-group m-0">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-user"></i>
+                </span>
+              </div>
+              <input type="text" name="name" formControlName="name" class="form-control" placeholder="Enter Name">
+            </div>
+            <div *ngIf="adminForm.controls.name.invalid && adminForm.controls.name.touched "
+              class="text-danger text-sm">
+              <div *ngIf="adminForm.controls.name.errors.required">Name is required.</div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="form-group m-0 col-12">
+            <label for="email" class="text-sm">Email</label>
+            <div id="email" class="input-group m-0">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-envelope"></i>
+                </span>
+              </div>
+              <input type="email" name="email" formControlName="email" class="form-control" placeholder="Enter Email"
+                [readonly]="updation">
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="form-group m-0 col-12">
+            <label for="password" class="text-sm">Password</label>
+            <div id="password" class="input-group m-0">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-plus"></i>
+                </span>
+              </div>
+              <input type="password" name="password" formControlName="password" class="form-control"
+                placeholder="Enter Password" [readonly]="updation">
+            </div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="form-group col-12 m-0">
+            <label for="status" class="text-sm">Admin status</label><br>
+            <div id="status" class="btn-group btn-group-toggle" ngbRadioGroup formControlName="status">
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="true">Enable
+              </label>
+              <label ngbButtonLabel class="btn-primary btn-sm">
+                <input ngbButton type="radio" [value]="false">Disable
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-sm" (click)="modal.dismiss('')">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-default btn-sm" [disabled]="adminForm.invalid || loader">
+          Save
+          <span *ngIf="loader">&nbsp;</span>
+          <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>
+        </button>
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template let-modal #viewModal>
+    <div class="modal-header border-0 d-flex justify-content-between align-items-center">
+      <h3>Admin Details</h3>
+      <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="col-12 d-flex flex-column">
+        <span class="text-sm text-muted">Name</span>
+        <h4>{{ adminModel.name }}</h4>
+      </div>
+      <div class="col-12 d-flex flex-column">
+        <span class="text-sm text-muted">Email</span>
+        <h4>{{ adminModel.email }}</h4>
+      </div>
+      <div class="col-12 d-flex flex-column mt-2">
+        <span class="text-sm text-muted">Roles</span>
+        <h4 class="text-wrap text-sm d-flex justify-content-between align-items-center"
+          *ngFor="let role of adminModel.roles | keyvalue">
+          <span class="text-muted">{{ role.key | uppercase }}</span>
+          <span>{{ ROLES[role.value] }}</span>
+        </h4>
+      </div>
+      <div class="col-12 d-flex flex-column mt-2">
+        <span class="text-sm text-muted">Registered On</span>
+        <h4 class="text-wrap text-sm">{{ adminModel.createdOn.toDate()| date: 'short' }}</h4>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to delete this admin?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteCustomer()">
+        YES
+      </button>
+    </div>
+  </ng-template>
+
+
+  <!-- <div class="header bg-green pb-8 pt-5 pt-md-8" >
 
 <div class="container-fluid">
   <div class="row">
@@ -37,7 +332,7 @@
                 <td class="font-weight-bold">{{ model.name }}</td>
                 <td class="font-weight-bold">{{ model.email }}</td>
                  <td class="font-weight-bold">{{ model.status }}</td> -->
-<!-- <td>
+  <!-- <td>
                   <h4>
                     <span class="badge badge-pill" [ngClass]="{
                       'badge-success': model.status,
@@ -52,10 +347,10 @@
                   </div>
                 </td>
                 <td> -->
-<!-- <button class="btn btn-sm btn-dark"
+  <!-- <button class="btn btn-sm btn-dark"
                                         (click)="viewDetailsDialog(viewDetailsDialogContext,model)">
                                         Details </button> -->
-<!-- <button class="btn btn-sm btn-dark"
+  <!-- <button class="btn btn-sm btn-dark"
                   (click)="openAdminModal(content, model)">
                     Update </button>
                 </td>
@@ -150,8 +445,8 @@
 
 <ng-template #content let-modal>
   <div class="modal-header"> -->
-<!-- <h1 class="modal-title" style="margin: 0 auto">Add Book</h1> -->
-<!-- <button
+  <!-- <h1 class="modal-title" style="margin: 0 auto">Add Book</h1> -->
+  <!-- <button
       type="button"
       class="btn btn-sm icon-shape shadow-none"
       aria-label="Close"
@@ -159,7 +454,7 @@
     >
       <i class="bi bi-x-circle-fill"></i>
     </button> -->
-<!-- </div>
+  <!-- </div>
   <div class="modal-body">
     <form [formGroup]="adminUserForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
       <div class="form-group">
@@ -241,8 +536,8 @@
       </div>
     </form> -->
 
-<!-- </div> -->
-<!-- <div class="modal-footer">
+  <!-- </div> -->
+  <!-- <div class="modal-footer">
     <button
       type="button"
       class="btn btn-danger"
@@ -251,290 +546,4 @@
       Close
     </button>
   </div> -->
-<!-- </ng-template> -->
-
-
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
-</div>
-<div class="container-fluid mt--8">
-  <div class="row">
-    <div class="col">
-      <div class="card" *ngIf="admins.length != 0">
-        <div class="card-header">
-          <div class="row w-100 m-0">
-            <div class="col-sm-6 p-0">
-              <div class="d-flex flex-column">
-                <h3 class="m-0">Admin ({{admins.length || 0}})</h3>
-                <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
-                    {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
-              </div>
-            </div>
-            <div class="col-sm-6 p-0">
-              <div class="d-flex justify-content-end">
-                <button class="btn btn-default btn-sm float-right" (click)="openAdminModal(adminModal)">
-                  Add Admin
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">Sr. No</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <!-- <th scope="col">Added On</th> -->
-                <th scope="col">Status</th>
-                <th scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let admin of admins; index as idx">
-                <td>{{ idx + 1 }}</td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ admin.name }}</span>
-                    <!-- <span class="text-sm text-muted">{{ admin.mobile }}</span> -->
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ admin.email }}</span>
-                    <!-- <span class="text-sm text-muted">{{ admin.gender | titlecase }}</span> -->
-                  </div>
-                </td>
-                <!-- <td>{{ admin.createdOn }}</td> -->
-                <td>
-                  <h3>
-                    <span class="badge badge-pill {{ admin.status ? 'badge-success' : 'badge-danger' }}">
-                      {{ admin.status ? "Active" : "In-Active" }}
-                    </span>
-                  </h3>
-                </td>
-                <td>
-                  <button class="btn btn-default btn-sm"
-                    (click)="openAdminRoleModel(roleModal, admin.adminId, admin.roles || null)">Roles</button>
-                  <button class="btn btn-default btn-sm" (click)="viewadminDetails(viewModal, admin)">Details</button>
-                  <button class="btn btn-default btn-sm" (click)="openAdminModal(adminModal, admin)">Edit</button>
-                  <!-- <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, admin)">Delete</button> -->
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer" *ngIf="showLoadMore">
-          <button class="btn btn-sm btn-default pull-right" (click)="loadMoreadmin()">
-            Load More
-          </button>
-        </div>
-      </div>
-      <div class="card" *ngIf="admins.length == 0">
-        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-          <!-- <img src="./../../../assets/img/empty.svg" class="img-fluid" height="256px" width="256px" alt="No Data"> -->
-          <h2 class="mt-3 d-flex flex-column align-items-center">
-            <span class="text-sm text-muted">No admin Records Found</span>
-            <!-- <span>{{ today | date: 'MMMM yyyy' }}</span> -->
-          </h2>
-          <button *ngIf="canWrite" class="btn btn-default btn-sm float-right mt-5" (click)="openAdminModal(adminModal)">
-            Add admin
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Assign Role to Admins => Admin Role Modal -->
-<ng-template #roleModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Admin Roles</h4>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <form [formGroup]="roleForm" (ngSubmit)="updateAdminRoles(roleForm)" ngNativeValidate>
-    <div class="modal-body p-0">
-      <div class="table-responsive">
-        <table class="table table-flush">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Sr. No</th>
-              <th scope="col">Name</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container formArrayName="roles" *ngFor="let attr of roleForm.get('roles').controls; index as idx">
-              <tr [formGroupName]="idx">
-                <td>{{ idx + 1 }}</td>
-                <td>
-                  <strong>{{ attr.get('title').value }}</strong>
-                </td>
-                <td>
-                  <div id="gender" class="btn-group btn-group-toggle" ngbRadioGroup formControlName="selected">
-                    <label ngbButtonLabel class="btn-primary btn-sm">
-                      <input ngbButton type="radio" [value]="0">None
-                    </label>
-                    <label ngbButtonLabel class="btn-primary btn-sm">
-                      <input ngbButton type="radio" [value]="1">Read Only
-                    </label>
-                    <label ngbButtonLabel class="btn-primary btn-sm">
-                      <input ngbButton type="radio" [value]="2">Read & Write
-                    </label>
-                  </div>
-                </td>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-default btn-sm" (click)="modal.dismiss('')">
-        Cancel
-      </button>
-      <button type="submit" class="btn btn-default btn-sm" [disabled]="loader">
-        Save
-        <span *ngIf="loader">&nbsp;</span>
-        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </button>
-    </div>
-  </form>
-</ng-template>
-
-<!-- Register new Admin or update existing Admins modal -->
-<ng-template #adminModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Admin {{ updation ? 'Updation' : 'Registration' }}</h4>
-    <button type="button" class="close" aria-label="Closse" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <form [formGroup]="adminForm" (ngSubmit)="registerAdmin(adminForm, roleModal)" ngNativeValidate>
-    <div class="modal-body">
-      <div class="row">
-        <div class="form-group m-0 col-12">
-          <label for="user" class="text-sm">Name</label>
-          <div id="user" class="input-group m-0">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-user"></i>
-              </span>
-            </div>
-            <input type="text" name="name" formControlName="name" class="form-control" placeholder="Enter Name">
-          </div>
-          <div *ngIf="adminForm.controls.name.invalid && adminForm.controls.name.touched " class="text-danger text-sm">
-            <div *ngIf="adminForm.controls.name.errors.required">Name is required.</div>
-          </div>
-        </div>
-      </div>
-      <div class="row mt-2">
-        <div class="form-group m-0 col-12">
-          <label for="email" class="text-sm">Email</label>
-          <div id="email" class="input-group m-0">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-envelope"></i>
-              </span>
-            </div>
-            <input type="email" name="email" formControlName="email" class="form-control" placeholder="Enter Email"
-              [readonly]="updation">
-          </div>
-        </div>
-      </div>
-      <div class="row mt-2">
-        <div class="form-group m-0 col-12">
-          <label for="password" class="text-sm">Password</label>
-          <div id="password" class="input-group m-0">
-            <div class="input-group-prepend">
-              <span class="input-group-text">
-                <i class="fa fa-plus"></i>
-              </span>
-            </div>
-            <input type="password" name="password" formControlName="password" class="form-control"
-              placeholder="Enter Password" [readonly]="updation">
-          </div>
-        </div>
-      </div>
-      <div class="row mt-2">
-        <div class="form-group col-12 m-0">
-          <label for="status" class="text-sm">Admin status</label><br>
-          <div id="status" class="btn-group btn-group-toggle" ngbRadioGroup formControlName="status">
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="true">Enable
-            </label>
-            <label ngbButtonLabel class="btn-primary btn-sm">
-              <input ngbButton type="radio" [value]="false">Disable
-            </label>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-default btn-sm" (click)="modal.dismiss('')">
-        Cancel
-      </button>
-      <button type="submit" class="btn btn-default btn-sm" [disabled]="adminForm.invalid || loader">
-        Save
-        <span *ngIf="loader">&nbsp;</span>
-        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </button>
-    </div>
-  </form>
-</ng-template>
-
-<ng-template let-modal #viewModal>
-  <div class="modal-header border-0 d-flex justify-content-between align-items-center">
-    <h3>Admin Details</h3>
-    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss()">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-body">
-    <div class="col-12 d-flex flex-column">
-      <span class="text-sm text-muted">Name</span>
-      <h4>{{ adminModel.name }}</h4>
-    </div>
-    <div class="col-12 d-flex flex-column">
-      <span class="text-sm text-muted">Email</span>
-      <h4>{{ adminModel.email }}</h4>
-    </div>
-    <div class="col-12 d-flex flex-column mt-2">
-      <span class="text-sm text-muted">Roles</span>
-      <h4 class="text-wrap text-sm d-flex justify-content-between align-items-center"
-        *ngFor="let role of adminModel.roles | keyvalue">
-        <span class="text-muted">{{ role.key | uppercase }}</span>
-        <span>{{ ROLES[role.value] }}</span>
-      </h4>
-    </div>
-    <div class="col-12 d-flex flex-column mt-2">
-      <span class="text-sm text-muted">Registered On</span>
-      <h4 class="text-wrap text-sm">{{ adminModel.createdOn.toDate()| date: 'short' }}</h4>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #deleteModal let-modal>
-  <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete this admin?</h4>
-    <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
-      (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
-      NO
-    </button>
-    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteCustomer()">
-      YES
-    </button>
-  </div>
-</ng-template>
+  <!-- </ng-template> -->

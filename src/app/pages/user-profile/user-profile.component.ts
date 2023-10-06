@@ -36,16 +36,6 @@ export class UserProfileComponent implements OnInit {
   updation: boolean = false;
   canWrite: boolean;
 
-  // loader: boolean = false;
-  // adminUserForm: FormGroup;
-  // tempFile: any = null;
-
-  // roleTypeArray = ["No", "Yes"];
-  // roleModelList: RoleModel[] = [];
-  // roleModelListSub: Subscription;
-
-  // paramRouteSub: Subscription;
-
   constructor(
 
     private db: DbService,
@@ -165,9 +155,16 @@ export class UserProfileComponent implements OnInit {
 
   async getAdmins() {
     const collectionRef = collection(this.db.firestore, ADMIN_USERS_COLLECTION);
-    const docs: any = await getDocs(collectionRef);
-    this.admins = docs.docs.map((admin) => admin.data());
+    try {
+      const docs: any = await getDocs(collectionRef);
+      this.admins = docs.docs.map((admin) => admin.data());
+    } catch (error) {
+      console.error('Error fetching admins:', error);
+    } finally {
+      this.loader = false; // Set loader to false when data is fetched (or error occurs)
+    }
   }
+
   // async fetchAdminsFromAdminCollection() {
   //   const firestore = getFirestore();
 
