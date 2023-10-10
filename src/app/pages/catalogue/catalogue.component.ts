@@ -4,7 +4,7 @@ import { BOOKS_COLLECTION, CATALOGUE_COLLECTION } from './../../utils/constants'
 import { ToastrService } from 'ngx-toastr';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from './../../utils/BookModel';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl, } from '@angular/forms';
 import { ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { NgbModal, NgbTypeahead, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, OperatorFunction, Subject, Subscription, Observable, filter, merge, map } from 'rxjs';

@@ -1,0 +1,39 @@
+.menu-item {
+    cursor: pointer;
+    transition: all 0.5s ease;
+    font-size: 1rem;
+}
+
+.menu-item:hover {
+    font-weight: 600;
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 3px rgba(255, 255, 255, 0.1);
+}
+
+.font-heading-one {
+    font-size: 0.9rem;
+    color: #7c7c7c;
+}
+
+.statsCardGrid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.statsCard {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.statsCard span:first-child {
+    font-size: 14px;
+}
+
+.statsCard:not(:last-child) {
+    border: 1px solid transparent;
+    border-right-color: #eee;
+}

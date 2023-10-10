@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { DocumentData, Firestore, Timestamp, collection, collectionGroup, doc, getDocs, getFirestore, increment, onSnapshot, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -32,6 +32,10 @@ export class NewIssueComponent implements OnInit {
   selectedStartMonth: string = '2023-08';
   issuedBooksList: BookModel[] = [];
   phoneNumber: string = '';
+  selectedISBN: string = '';
+  searchForm = new FormGroup({
+    param: new FormControl(''),
+  });
 
   constructor(
     private db: DbService,
@@ -70,9 +74,9 @@ export class NewIssueComponent implements OnInit {
     this.selectedStartMonth = `${year}-${month.toString().padStart(2, '0')}`;
   }
 
-  navigateToIssueList() {
-    this.router.navigate(['/issueList']);
-  }
+  // navigateToIssueList() {
+  //   this.router.navigate(['/issueList']);
+  // }
 
   async getMembers() {
     const firestore = getFirestore();
@@ -199,18 +203,20 @@ export class NewIssueComponent implements OnInit {
   }
 
   userDetails(phoneNumber: string) {
-    // Check if the phone number is valid (e.g., has 10 digits)
-    // const phoneNumber = this.phoneNumber;
     if (phoneNumber && phoneNumber.length === 10) {
-      // Navigate to the "/userHistory" component with the phone number as a query parameter
       this.router.navigate(['/userHistory'], { queryParams: { phone: phoneNumber } });
     } else {
-      // Handle invalid phone number (e.g., show an error message)
       console.log('Invalid phone number:', phoneNumber);
       // You can display an error message or take another action as needed.
     }
   }
 
+  filterBooksByISBN() {
+    this.selectedISBN = this.searchForm.controls.param.value;
+    this.db.booksRetrievedBool = false
+    this.db.getBooksByISBN(this.searchForm.controls.param.value);
+    console.log(this.searchForm.controls.param.value);
+  }
 
   // async getMembersByMonth(month: number) {
   //   const firestore = getFirestore();
@@ -298,7 +304,5 @@ export class NewIssueComponent implements OnInit {
   // } catch (error) {
   //   console.error('Error fetching members data:', error);
   // }
-
-
 
 }

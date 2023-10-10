@@ -2,7 +2,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FieldValue, Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, increment, getFirestore } from '@angular/fire/firestore';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { privateDecrypt } from 'crypto';
 import { ToastrService } from 'ngx-toastr';
 import { Subscription } from 'rxjs';
@@ -30,6 +30,8 @@ export class IssueListComponent implements OnInit {
   issuedBooksList: BookModel[] = [];
   userData: MemberModel;
   memberData: MemberModel[] = [];
+  numberParam: string = '';
+  phoneNumber: string = '';
 
   constructor(
     private db: DbService,
@@ -37,6 +39,7 @@ export class IssueListComponent implements OnInit {
     private firestore: Firestore,
     private toast: ToastrService,
     private formBuilder: FormBuilder,
+    private toastr: ToastrService,
   ) {
     this.searchForm = this.fb.group({
       phoneNumber: [''],
@@ -98,6 +101,56 @@ export class IssueListComponent implements OnInit {
     }
   }
 
+  async onPhoneNumberChange(phoneNumber: string) {
+    if (!this.phoneNumber || this.phoneNumber.length < 10) {
+      // Check if the phoneNumber is not provided or is incomplete
+      return;
+    }
+
+    // Show a loading indicator while fetching data
+    // this.loading = true;
+
+    const firestore = getFirestore();
+    const memberCollectionRef = collection(firestore, 'users');
+
+    const queryRef = query(memberCollectionRef,
+      where('phone', '==', this.phoneNumber)
+    );
+
+    try {
+      const querySnapshot = await getDocs(queryRef);
+
+      if (!querySnapshot.empty) {
+        const memberDoc = querySnapshot.docs[0];
+        const memberData = memberDoc.data() as MemberModel;
+
+        // Fetch data from the subcollection
+        // const subCollectionQuerySnapshot = await getDocs(
+        //   collection(memberDoc.ref, 'issuedBooks')
+        // );
+
+        // memberData.subcollectionData = subCollectionQuerySnapshot.docs.map(subDoc => subDoc.data());
+
+        // this.memberModelList = [memberData];
+        // this.userData = memberData;
+        // console.log('User data:', this.userData);
+      } else {
+        this.toastr.warning("No member found", "Add new Member");
+        console.log('No user found with phone number:', this.phoneNumber);
+        // this.memberModelList = [];
+        // this.userData = null;
+      }
+    } catch (error) {
+      console.error('Error fetching members data:', error);
+    } finally {
+      // Hide the loading indicator when done
+      // this.loading = false;
+    }
+  }
+
+  // ... Other class methods ...
+
+
   filterBooksByISBN() {
     this.selectedISBN = this.searchForm.controls.param.value;
     this.db.booksRetrievedBool = false
@@ -141,7 +194,8 @@ export class IssueListComponent implements OnInit {
               issueDate.getFullYear(),
               issueDate.getMonth(),
               issueDate.getDate() + validity
-            )
+            );
+            // const returnDate = null;
 
             return { title, isbn, docId, bookId, issueDate, dueDate, memberId: userId, memberName: userName, phoneNumber };
           });
@@ -227,6 +281,11 @@ export class IssueListComponent implements OnInit {
         this.toast.warning("Something went wrong! Please try again.", "");
       }
     }
+  }
+
+  removeBook(index: number): void {
+    this.issuedBooksList.splice(index, 1);
+    console.log(this.issuedBooksList);
   }
 
 

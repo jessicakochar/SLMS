@@ -64,7 +64,7 @@ export class AuthService {
         // Access Denied for the user
         if (!adminModel.status) return reject('Access Denied');
 
-        if (adminModel.authId.length === 0) {
+        if (adminModel.authId && adminModel.authId.length === 0) {
           // Register New User
           this.addUserToAuthentication(value, adminModel.adminId)
             .then((registerResponse) => {

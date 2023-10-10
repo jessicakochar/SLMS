@@ -111,6 +111,7 @@
                   <th scope="col">S.No.</th>
                   <th scope="col">Title</th>
                   <th scope="col">ISBN</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -118,6 +119,11 @@
                   <td>{{ i + 1 }}</td>
                   <td>{{ book.title }}</td>
                   <td>{{ book.isbn }}</td>
+                  <td>
+                    <button type="button" class="close" aria-label="Close" (click)="removeBook(i)">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>

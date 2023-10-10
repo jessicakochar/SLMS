@@ -1,15 +1,15 @@
 /* In your component's SCSS file */
 .custom-navbar {
-    background-color: rgb(110, 173, 255);
+    background-color: rgb(255, 255, 255);
     color: white;
 
     /* Example: Style for the links inside the navbar */
     a.nav-link {
-        color: rgb(255, 255, 255);
+        color: rgb(39, 39, 39);
         text-decoration: none;
 
         &:hover {
-            color: #0e1d49;
+            color: #747373;
             /* Change the hover color if desired */
         }
 
@@ -18,13 +18,13 @@
 
     /* Example: Style for the active link */
     a.nav-link.active {
-        background-color: #133290;
+        background-color: #2f2f30;
         /* Change the active link background color if desired */
         color: white;
     }
 
     .icon-color {
-        color: #ffffff !important;
+        color: rgb(39, 39, 39) !important;
     }
 
     a.nav-link.active .icon-color {

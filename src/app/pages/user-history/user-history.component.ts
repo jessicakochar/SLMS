@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { DocumentData, Firestore, collection, doc, getDocs, getFirestore, increment, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, Timestamp, collection, doc, getDocs, getFirestore, increment, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
@@ -89,6 +89,7 @@ export class UserHistoryComponent implements OnInit {
   currentDate: Date = new Date();
   // @ViewChild('submitButton') submitButton: any;
   @ViewChild('submitButton', { read: ElementRef }) submitButton: ElementRef;
+  loading: boolean = false;
   // bookReturned: boolean = false;
 
 
@@ -130,6 +131,7 @@ export class UserHistoryComponent implements OnInit {
     const phoneNumber = this.phoneNumber;
 
     if (phoneNumber && phoneNumber.length === 10) {
+      this.loading = true;
       this.submitButton.nativeElement.click();
       // this.renderer.selectRootElement('#submitButton').click();
     }
@@ -166,11 +168,13 @@ export class UserHistoryComponent implements OnInit {
         this.memberModelList = [memberData];
         this.userData = memberData;
         console.log('User data:', this.userData);
+        this.loading = false;
       } else {
         this.toastr.warning("No member found", "Add new Member");
         console.log('No user found with phone number:', this.phoneNumber);
         this.memberModelList = [];
         this.userData = null;
+        this.loading = false;
       }
     } catch (error) {
       console.error('Error fetching members data:', error);
@@ -194,13 +198,13 @@ export class UserHistoryComponent implements OnInit {
         book.bookReturned = true;
 
         // Set the returnDate property for the specific book to the current date
-        book.returnDate = new Date();
+        // book.returnDate = new D;
 
         await setDoc(
           doc(this.firestore, `users/${book.memberId}/issuedBooks/${book.docId}`
           ),
           {
-            returnDate: book.returnDate,
+            returnDate: Timestamp.now(),
           },
           {
             merge: true

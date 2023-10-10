@@ -109,7 +109,7 @@ export class MembersComponent implements OnInit {
   //   return !querySnapshot.empty;
   // }
 
-  initializeForm(obj: MemberModel = null) {
+  initializeForm(obj: MemberModel | null) {
     if (obj === null) {
       this.memberForm = this.fb.group({
         authId: [doc(collection(this.db.firestore, MEMBERS_COLLECTION)).id],
@@ -164,7 +164,7 @@ export class MembersComponent implements OnInit {
     this.initializeForm(obj);
   }
 
-  onPhoneNumberChange() {
+  onPhoneNumberChange(content) {
     // Get the current value of the input field
     const phone = this.numberParam;
 
@@ -183,7 +183,21 @@ export class MembersComponent implements OnInit {
         this.toast.error(`Member with phone number ${phone} does not exist.`, "Add new Member")
         console.log(`User with phone number ${phone} does not exist.`);
         // For example, you can display an error message or take another action.
+        this.modalService.open(content, { size: "md", centered: false });
+        this.initializeForm(null);
       }
+    }
+  }
+
+  onRowClick(member: MemberModel) {
+    const phone = member.phone; // Get the phone number from the clicked row's data
+
+    if (phone) {
+      // If a phone number exists in the row data, navigate to the desired route
+      this.router.navigate(['/userHistory'], {
+        queryParams: { phone: phone },
+      });
+    } else {
     }
   }
 

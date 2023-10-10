@@ -3,14 +3,15 @@ import { BOOKS_COLLECTION } from './../../utils/constants';
 import { ToastrService } from 'ngx-toastr';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from './../../utils/BookModel';
-import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 import { Component, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { NgbModal, NgbTypeahead, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, OperatorFunction, Subject, Subscription, Observable, filter, merge, map } from 'rxjs';
-import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, query as firestoreQuery, orderBy, startAt, endAt, where, query, getDocs } from '@angular/fire/firestore';
+import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, query as firestoreQuery, orderBy, startAt, endAt, where, query, getDocs, increment } from '@angular/fire/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
 import { privateDecrypt } from 'crypto';
+import { DatePipe } from '@angular/common';
 // import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -272,19 +273,40 @@ export class BooksComponent implements OnInit {
     values.bookTitleArray = bookTitleArray;
 
     let docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), values.bookId);
-    setDoc(docRef, { ...values }, { merge: true })
-      .then(() => {
-        this.inputTags = []
-        this.inputType = []
-        this.loader = false;
-        this.modalService.dismissAll();
-        // delete this.tempFile;
-        this.toast.success("Book Saved Successfully", "")
-      }, (error) => {
-        console.log(error);
-        this.loader = false;
-        this.toast.warning("Something went wrong! Please try again.", "");
-      });
+    try {
+      setDoc(docRef, { ...values }, { merge: true })
+      // Save the book to Firestore
+      await setDoc(docRef, { ...values }, { merge: true });
+
+      // const docSnapshot = await getDoc(docRef);
+      // const quantity = docSnapshot.data()?.quantity || 0;
+
+      // After saving the book, increment "totalBooks" in the "globalStats" collection
+      const firestore = this.db.firestore;
+      const datepipe = new DatePipe('en-US');
+      const currentMonthYear = datepipe.transform(new Date(), 'yyyyMM');
+
+      await setDoc(
+        doc(firestore, `globalStats/${currentMonthYear}`),
+        { totalBooks: increment(1) },
+        { merge: true }
+      );
+      await setDoc(
+        doc(firestore, `globalStats/${currentMonthYear}`),
+        { Quantity: increment(values.total) },
+        { merge: true }
+      );
+
+      this.inputTags = [];
+      this.inputType = [];
+      this.loader = false;
+      this.modalService.dismissAll();
+      this.toast.success("Book Saved Successfully", "");
+    } catch (error) {
+      console.error(error);
+      this.loader = false;
+      this.toast.warning("Something went wrong! Please try again.", "");
+    };
   }
 
   openDeleteModal(modal, imageModal: BookModel) {
@@ -340,7 +362,7 @@ export class BooksComponent implements OnInit {
   //     book.isbn.toLowerCase().includes(this.searchText.toLowerCase())
   //   );
   //   console.log(this.filteredData);
-  // }
+  // }  
   // onSearchChange(): void {
   //   this.filterData();
   // }

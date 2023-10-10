@@ -24,6 +24,12 @@
     </div>
   </ng-container>
 
+  <div class="d-flex justify-content-center align-items-center" style="min-height: 20vh;">
+    <div *ngIf="loading" class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+
 
   <!-- Display user data in a card when matched -->
   <ng-template #userDataContent>
@@ -132,7 +138,9 @@
                   </div>
                   <div *ngIf="book.returnDate">
                     <!-- Display a message or icon indicating that the book is returned -->
-                    <div class="text-sm text-purple">Return Date: {{ book.returnDate?.toDate()| date: 'longDate' }}
+                    <div class="text-sm text-purple">Return Date: {{ (book?.returnDate?.toDate()| date: 'longDate') ||
+                      ''
+                      }}
                     </div>
                     <div class="text-success">Book Returned</div>
                   </div>

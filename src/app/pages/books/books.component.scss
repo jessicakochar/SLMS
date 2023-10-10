@@ -27,3 +27,15 @@
 .vertical-spacing {
   margin-bottom: 10px;
 }
+
+.selected-tag {
+  white-space: nowrap;
+  /* Prevents the tag from wrapping to the next line */
+}
+
+.btn.selected {
+  background-color: #343a40;
+  /* Choose your desired background color */
+  color: #ffffff;
+  /* Choose your desired text color */
+}

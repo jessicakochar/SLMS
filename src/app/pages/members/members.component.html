@@ -26,10 +26,10 @@
             </div> -->
             <div class="col-sm-6 p-0 d-flex justify-content-end align-items-center">
               <input type="text" class="form-control form-control-sm mr-2" placeholder="Enter Phone Number"
-                [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange()" />
+                [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange(content)" />
               <button class="btn btn-default btn-sm" style="white-space: nowrap;"
                 (click)="addNewMember(content, member)">
-                Add Member
+                Add New Member
               </button>
             </div>
             <!-- <div class="col-sm-6 p-0">
@@ -53,11 +53,12 @@
                 <th scope="col">Age</th>
                 <!-- <th scope="col">Address</th> -->
                 <th scope="col">Membership</th>
-
+                <th scope="col">Created On</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let member of memberModelList; index as idx">
+              <tr *ngFor="let member of memberModelList; index as idx" class="clickable-row"
+                (click)="onRowClick(member)">
                 <td>
                   <div class="d-flex flex-column font-weight-bold">
                     <span>{{ idx + 1 }}</span>
@@ -87,6 +88,11 @@
                 <td>
                   <div class="d-flex flex-column font-weight-bold">
                     <span>{{ member?.subscription?.name }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex flex-column font-weight-bold">
+                    <span>{{ member.createdOn.toDate()| date: 'dd/MM/yyyy' }}</span>
                   </div>
                 </td>
                 <!-- <td>
