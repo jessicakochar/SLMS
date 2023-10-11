@@ -1,20 +1,16 @@
 import { SubscriptionModel } from '../utils/subscriptionModel';
-import { FirebaseApp } from '@angular/fire/app';
-import { NgZone } from '@angular/core';
 import { TagsModel } from 'src/app/utils/TagsModel';
-import { CATALOGUE_COLLECTION, MEMBERS_COLLECTION, ROLE_COLLECTION, TAGS_COLLECTION } from 'src/app/utils/constants';
+import { CATALOGUE_COLLECTION, TAGS_COLLECTION } from 'src/app/utils/constants';
 import { BookModel } from './../utils/BookModel';
 import { BOOKS_COLLECTION, PLANS_COLLECTION } from './../utils/constants';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { Firestore, getFirestore, collection, where, query, onSnapshot, getDocs, orderBy, limit, collectionGroup, QuerySnapshot } from '@angular/fire/firestore';
-import { FirebaseStorage, getStorage } from '@angular/fire/storage';
+import { Firestore, collection, where, query, onSnapshot } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { BehaviorSubject, of, map, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { Catalogue } from '../utils/catalogueModel';
 import { RoleModel } from '../utils/RoleModel';
 import * as util from 'src/app/utils/constants';
-import { error } from 'console';
 import { MemberModel } from '../utils/MemberModel';
 // import { Firestore } from '@angular/fire/firestore';
 
@@ -24,8 +20,6 @@ import { MemberModel } from '../utils/MemberModel';
   providedIn: 'root'
 })
 export class DbService {
-
-  storage: FirebaseStorage = getStorage(this.auth.app);
 
   booksSub: BehaviorSubject<BookModel[]> = new BehaviorSubject<BookModel[]>([]);
   booksRetrievedBool: boolean = false;
@@ -49,8 +43,6 @@ export class DbService {
 
   constructor(
     public firestore: Firestore,
-    private auth: AuthService,
-    private db: Firestore,
     private router: Router,
   ) {
     this.getTagsList();
@@ -113,6 +105,7 @@ export class DbService {
   // }
 
   getBooks(selectedAlphabet: string = 'a') {
+    debugger;
     const firstAlphabet = selectedAlphabet.toUpperCase();
     const collectionRef = collection(this.firestore, BOOKS_COLLECTION);
 

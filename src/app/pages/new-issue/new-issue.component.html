@@ -96,7 +96,7 @@
                 <label for="start">Search by month:</label>
                 <input type="month" id="start" name="start" [(ngModel)]="selectedStartMonth"
                   (change)="onStartMonthSelectionChange()" min="2023-03" value="2023-08"
-                  class="form-control d-inline-block"
+                  class="form-control d-inline-block" formControlName="date"
                   style="width: auto; height: 30px; cursor: pointer; margin-right: 10px; margin-bottom: 10px;" />
                 <!-- <button type="submit" (click)="navigateToIssueList()" class="btn btn-sm btn-dark">
               New Issue

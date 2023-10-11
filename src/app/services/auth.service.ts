@@ -16,7 +16,7 @@ import { ADMIN_USERS_COLLECTION, USERS_COLLECTION } from '../utils/constants';
 export class AuthService {
 
   user$: Observable<IdTokenResult | null>;
-  app: FirebaseApp = initializeApp(environment.firebase);
+  // app: FirebaseApp = initializeApp(environment.firebase, 'customapp');
 
   constructor(
     private router: Router,

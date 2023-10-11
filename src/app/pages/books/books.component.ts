@@ -4,13 +4,12 @@ import { ToastrService } from 'ngx-toastr';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from './../../utils/BookModel';
 import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
-import { Component, OnInit, ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
-import { NgbModal, NgbTypeahead, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
-import { debounceTime, distinctUntilChanged, OperatorFunction, Subject, Subscription, Observable, filter, merge, map } from 'rxjs';
-import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, onSnapshot, query as firestoreQuery, orderBy, startAt, endAt, where, query, getDocs, increment } from '@angular/fire/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
+import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subscription } from 'rxjs';
+import { setDoc, collection, doc, Timestamp, deleteDoc, Firestore, query, increment } from '@angular/fire/firestore';
+import { ref, uploadBytes, getDownloadURL, Storage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
-import { privateDecrypt } from 'crypto';
 import { DatePipe } from '@angular/common';
 // import { NgbTabset } from '@ng-bootstrap/ng-bootstrap';
 
@@ -82,7 +81,8 @@ export class BooksComponent implements OnInit {
     private fb: FormBuilder,
     private toast: ToastrService,
     private modalService: NgbModal,
-    private fireStore: Firestore
+    private firestore: Firestore,
+    private storage: Storage
   ) {
 
   }
@@ -93,30 +93,30 @@ export class BooksComponent implements OnInit {
     this.booksSub = this.db.booksSub.subscribe((list) => {
       if (list.length !== 0) {
         this.booksList = [...list];
-      }
-      this.tempBookList = [...this.booksList];
-      this.filteredData = [...this.booksList];
-    })
-
-    this.db.getTagsList();
-    this.tagsSub = this.db.tagsSub.subscribe((list) => {
-      if (list.length !== 0) {
-        this.tagsList = [...list];
-        this.tempTagList = [...list];
+        this.tempBookList = [...this.booksList];
+        this.filteredData = [...this.booksList];
       }
     })
-    this.tags = this.tagsList
 
-    this.db.getCatalogueList();
-    this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
-      // console.log(list);
+    // this.db.getTagsList();
+    // this.tagsSub = this.db.tagsSub.subscribe((list) => {
+    //   if (list.length !== 0) {
+    //     this.tagsList = [...list];
+    //     this.tempTagList = [...list];
+    //     this.tags = this.tagsList
+    //   }
+    // })
 
-      if (list !== null) {
-        this.catalogueList = [...list];
-        this.tempTypeList = [...list];
-      }
-    })
-    this.type = this.catalogueList
+    // this.db.getCatalogueList();
+    // this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
+    //   // console.log(list);
+
+    //   if (list !== null) {
+    //     this.catalogueList = [...list];
+    //     this.tempTypeList = [...list];
+    //     this.type = this.catalogueList
+    //   }
+    // })
   }
 
   removeFromCatalogue(idx: number) {
@@ -250,7 +250,7 @@ export class BooksComponent implements OnInit {
     if (this.tempFile !== null) {
       const file = this.tempFile;
       const FilePath = "media/" + values.fileType + "/" + new Date().getTime() + "_" + this.tempFile.name;;
-      const FileRef = ref(this.db.storage, FilePath);
+      const FileRef = ref(this.storage, FilePath);
       await uploadBytes(FileRef, this.tempFile);
       values.url = await getDownloadURL(FileRef);
     }
@@ -319,7 +319,7 @@ export class BooksComponent implements OnInit {
 
     // if (this.bookModal.docId) {
     //   try {
-    //     const storageRef = ref(this.db.storage, this.bookModal.docId);
+    //     const storageRef = ref(this.storage, this.bookModal.docId);
     //     await deleteObject(storageRef);
     //   } catch (error) {
     //     console.error("Error deleting object from storage:", error);

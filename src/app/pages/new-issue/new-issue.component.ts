@@ -35,6 +35,7 @@ export class NewIssueComponent implements OnInit {
   selectedISBN: string = '';
   searchForm = new FormGroup({
     param: new FormControl(''),
+    date: new FormControl(''),
   });
 
   constructor(

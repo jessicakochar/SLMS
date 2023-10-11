@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import Chart from 'chart.js';
 import { CHART_OPTIONS } from './../../variables/charts';
+import Chart from 'chart.js';
 // import { CHART_OPTIONS, CHART_OPTIONS_2, GlobalDailyStatsCollection, GlobalMonthlyStatsCollection } from 'src/app/Utils/util';
 // import { Color, Label } from 'ng2-charts';
 
@@ -46,6 +46,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   totalBooksSum: number = 0;
   totalBooksIssued: number = 0;
   totalBooksAvailable: number = 0;
+  yearStatModel: { [key: string]: any } = {};
 
   monthlyData: number[] = Array(12).fill(0);
 
@@ -57,7 +58,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private firestore: Firestore
-    // private dbRef: AngularFirestore,
   ) {
 
   }
@@ -328,6 +328,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   renderMonthlyTrendChart() {
     if (this.monthlyTrendChartRef !== undefined) this.monthlyTrendChartRef.destroy();
     let ctx = this.monthlyTrendChart.nativeElement.getContext("2d") ?? null;
+
     this.monthlyTrendChartRef = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -335,19 +336,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         datasets: [
           {
             label: 'Issued Books',
-            // data: Object.values(this.issuedData),
-            data: Object.values(this.issuedData),
-            // fill: false,
-            // borderColor: '#D99C2B',
+            data: this.monthsArray.map(date => {
+              const yearMonthId = this.datepipe.transform(date, 'yyyyMM');
+              const monthData = this.yearStatModel[yearMonthId];
+              return monthData?.issued || 0;
+            }),
             yAxisID: 'B',
             backgroundColor: '#f59a00'
           },
           {
             label: 'Returned Books',
-            // data: Object.values(this.returnedData),
-            data: Object.values(this.returnedData),
-            // fill: false,
-            // borderColor: '#124559',
+            data: this.monthsArray.map(date => {
+              const yearMonthId = this.datepipe.transform(date, 'yyyyMM');
+              const monthData = this.yearStatModel[yearMonthId];
+              return monthData?.returns || 0;
+            }),
             yAxisID: 'B',
             backgroundColor: '#004545'
           },

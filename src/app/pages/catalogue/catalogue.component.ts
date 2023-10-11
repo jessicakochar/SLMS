@@ -9,7 +9,7 @@ import { ViewChild, ViewEncapsulation, ElementRef } from '@angular/core';
 import { NgbModal, NgbTypeahead, NgbTypeaheadModule } from '@ng-bootstrap/ng-bootstrap';
 import { debounceTime, distinctUntilChanged, OperatorFunction, Subject, Subscription, Observable, filter, merge, map } from 'rxjs';
 import { setDoc, collection, doc, Timestamp, deleteDoc, getFirestore, getDocs } from '@angular/fire/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage } from '@angular/fire/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject, FirebaseStorage, Storage } from '@angular/fire/storage';
 import { Catalogue } from 'src/app/utils/catalogueModel';
 
 @Component({
@@ -53,7 +53,8 @@ export class CatalogueComponent implements OnInit {
     private db: DbService,
     private fb: FormBuilder,
     private toast: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private storage: Storage
   ) { this.initializeForm(); }
 
   ngOnInit(): void {
@@ -220,7 +221,7 @@ export class CatalogueComponent implements OnInit {
   async deleteBook() {
     this.loader = true;
     if (this.bookModal.url != "") {
-      let storageRef = ref(this.db.storage, this.bookModal.url);
+      let storageRef = ref(this.storage, this.bookModal.url);
       await deleteObject(storageRef);
     }
 
