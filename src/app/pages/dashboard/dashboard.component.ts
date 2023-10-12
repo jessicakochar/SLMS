@@ -202,9 +202,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       collection(this.firestore, 'globalStats'),
       where(documentId(), 'in', monthId)
     ));
-    // return this.dbRef.firestore.collection('globalStats')
-    //   .where(firebase.firestore.FieldPath.documentId(), 'in', monthId)
-    //   .get()
   }
 
   fetchGlobalStats(year?) {
@@ -213,7 +210,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       yearStart.setMonth(idx)
       return new DatePipe('en-US').transform(yearStart, 'yyyyMM')
     });
-    console.log(docIds);
 
     let halfIdx = docIds.length / 2;
     Promise.all([
@@ -221,109 +217,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       this.getDocs(docIds.slice(halfIdx))
     ]).then((resp) => {
       let statsModelList = resp.flatMap(ele => ele.docs.map(e => e.data()));
-      let yearStatModel = docIds.reduce((prev, nextMonthYearId) => {
+      this.yearStatModel = docIds.reduce((prev, nextMonthYearId) => {
         let statIdx = statsModelList.findIndex(x => x.monthID === nextMonthYearId);
         return {
           ...prev,
           [nextMonthYearId]: statsModelList[statIdx] ?? {}
         }
       }, {});
-
-      console.log(yearStatModel);
+      this.renderMonthlyTrendChart()
 
     });
   }
-
-  processData(statsData: any[]) {
-    // Organize data by month and year.
-    statsData.forEach((dataPoint) => {
-      const label = `${this.getMonthName(dataPoint.month)} ${dataPoint.year}`;
-      this.chartLabels.push(label);
-      this.monthlyData.push(dataPoint.issued || 0);
-    });
-  }
-
-  // processData(statsData: any[]) {
-  //   // Clear previous data if needed.
-  //   this.chartLabels = [];
-  //   this.issuedData = [];
-  //   this.returnedData = [];
-
-  //   // Iterate through the statsData array and populate the chart data arrays.
-  //   statsData.forEach((dataPoint) => {
-  //     // Create a label string for the X-axis, e.g., "Sep 2023".
-  //     const label = `${this.getMonthName(dataPoint.month)} ${dataPoint.year}`;
-  //     this.chartLabels.push(label);
-
-  //     // Add data to the issued and returned datasets.
-  //     this.issuedData.push(dataPoint.issued || 0);
-  //     this.returnedData.push(dataPoint.returns || 0);
-  //   });
-  // // this.renderChart();
-  //   this.renderMonthlyTrendChart();
-  // }
-
-  getMonthName(month: number): string {
-    const monthNames: string[] = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December'
-    ];
-
-    // Ensure the month parameter is within a valid range (0 to 11).
-    if (month >= 0 && month <= 11) {
-      return monthNames[month];
-    } else {
-      // Handle the case where the month parameter is out of range.
-      return 'Invalid Month';
-    }
-  }
-
-
-  // renderChart() {
-  //   const ctx = document.getElementById('myBarChart') as HTMLCanvasElement;
-  //   const myBarChart = new Chart(ctx, {
-  //     type: 'bar',
-  //     data: {
-  //       labels: this.chartLabels,
-  //       datasets: [
-  //         {
-  //           label: 'Issued Books',
-  //           backgroundColor: 'rgba(75, 192, 192, 0.2)', // Customize the color.
-  //           borderColor: 'rgba(75, 192, 192, 1)', // Customize the border color.
-  //           borderWidth: 1, // Customize the border width.
-  //           data: this.issuedData,
-  //         },
-  //         {
-  //           label: 'Returned Books',
-  //           backgroundColor: 'rgba(255, 99, 132, 0.2)', // Customize the color.
-  //           borderColor: 'rgba(255, 99, 132, 1)', // Customize the border color.
-  //           borderWidth: 1, // Customize the border width.
-  //           data: this.returnedData,
-  //         },
-  //       ],
-  //     },
-  //     options: {
-  //       scales: {
-  //         x: {
-  //           beginAtZero: true,
-  //         },
-  //         y: {
-  //           beginAtZero: true,
-  //         },
-  //       },
-  //     },
-  //   });
-  // }
 
   renderMonthlyTrendChart() {
     if (this.monthlyTrendChartRef !== undefined) this.monthlyTrendChartRef.destroy();
@@ -336,45 +240,16 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         datasets: [
           {
             label: 'Issued Books',
-            data: this.monthsArray.map(date => {
-              const yearMonthId = this.datepipe.transform(date, 'yyyyMM');
-              const monthData = this.yearStatModel[yearMonthId];
-              return monthData?.issued || 0;
-            }),
+            data: Object.values(this.yearStatModel).map((ele) => ele?.issued ?? 0),
             yAxisID: 'B',
             backgroundColor: '#f59a00'
           },
           {
             label: 'Returned Books',
-            data: this.monthsArray.map(date => {
-              const yearMonthId = this.datepipe.transform(date, 'yyyyMM');
-              const monthData = this.yearStatModel[yearMonthId];
-              return monthData?.returns || 0;
-            }),
+            data: Object.values(this.yearStatModel).map((ele) => ele?.returns ?? 0),
             yAxisID: 'B',
             backgroundColor: '#004545'
           },
-          // {
-          //   label: 'Initial Session Count',
-          //   data: Object.values(this.yearStatsModel).map((ele: any) => ele?.initialSessionCount ?? 0),
-          //   // fill: false,
-          //   // borderColor: '#124559',
-          //   backgroundColor: '#00a3a3'
-          // },
-          // {
-          //   label: 'Regular Session Count',
-          //   data: Object.values(this.yearStatsModel).map((ele: any) => ele?.regularSessionCount ?? 0),
-          //   // fill: false,
-          //   // borderColor: '#124559',
-          //   backgroundColor: '#F1CA89'
-          // },
-          // {
-          //   label: 'OneTime Session Count',
-          //   data: Object.values(this.yearStatsModel).map((ele: any) => ele?.oneTimeSessionCount ?? 0),
-          //   // fill: false,
-          //   // borderColor: '#124559',
-          //   backgroundColor: '#124559E6'
-          // }
         ],
       },
       options: { ...CHART_OPTIONS }

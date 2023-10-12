@@ -98,25 +98,25 @@ export class BooksComponent implements OnInit {
       }
     })
 
-    // this.db.getTagsList();
-    // this.tagsSub = this.db.tagsSub.subscribe((list) => {
-    //   if (list.length !== 0) {
-    //     this.tagsList = [...list];
-    //     this.tempTagList = [...list];
-    //     this.tags = this.tagsList
-    //   }
-    // })
+    this.db.getTagsList();
+    this.tagsSub = this.db.tagsSub.subscribe((list) => {
+      if (list.length !== 0) {
+        this.tagsList = [...list];
+        this.tempTagList = [...list];
+        this.tags = this.tagsList
+      }
+    })
 
-    // this.db.getCatalogueList();
-    // this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
-    //   // console.log(list);
+    this.db.getCatalogueList();
+    this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
+      // console.log(list);
 
-    //   if (list !== null) {
-    //     this.catalogueList = [...list];
-    //     this.tempTypeList = [...list];
-    //     this.type = this.catalogueList
-    //   }
-    // })
+      if (list !== null) {
+        this.catalogueList = [...list];
+        this.tempTypeList = [...list];
+        this.type = this.catalogueList
+      }
+    })
   }
 
   removeFromCatalogue(idx: number) {
@@ -353,19 +353,6 @@ export class BooksComponent implements OnInit {
   ngOnDestroy(): void {
     if (this.booksSub !== undefined) this.booksSub.unsubscribe();
   }
-
-  // filterData(): void {
-  //   this.filteredData = this.booksList.filter(book =>
-  //     book.title.toLowerCase().includes(this.searchText.toLowerCase()) ||
-  //     // book.tags.some(tag => tag.name.toLowerCase().includes(this.searchText.toLowerCase())) ||
-  //     // book.author.toLowerCase().includes(this.searchText.toLowerCase()) ||
-  //     book.isbn.toLowerCase().includes(this.searchText.toLowerCase())
-  //   );
-  //   console.log(this.filteredData);
-  // }  
-  // onSearchChange(): void {
-  //   this.filterData();
-  // }
 
   filterBooksByAlphabet(alphabet: string) {
     this.selectedAlphabet = alphabet;

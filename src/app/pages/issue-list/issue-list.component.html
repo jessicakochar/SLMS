@@ -13,16 +13,16 @@
         <div class="card-body">
           <form [formGroup]="searchForm">
             <div class="row">
-              <div class="col-md-10 form-group">
+              <div class="col-md-12 form-group">
                 <input type="text" id="phoneNumber" placeholder="Enter Phone Number" formControlName="phoneNumber"
-                  class="form-control">
+                  class="form-control" (input)="onPhoneNumberChange($event.target.value)">
               </div>
-              <div class="col-md-2 form-group ">
-                <button class="btn btn-primary "
-                  (click)="getMember(searchForm.controls.phoneNumber.value)">Search</button>
+              <div class="col-md-2 form-group">
+                <!-- Remove the button as it's no longer needed -->
               </div>
             </div>
           </form>
+
           <!-- Member Data Table -->
           <div class="table-responsive">
             <table class="table align-items-center table-flush">
@@ -61,10 +61,12 @@
           <form [formGroup]="searchForm">
             <div class="row">
               <div class="col-md-10 form-group">
-                <input type="text" class="form-control custom-input" placeholder="Enter ISBN" formControlName="param" />
+                <input type="text" id="selectedIsbn" placeholder="Enter ISBN" formControlName="selectedIsbn"
+                  class="form-control" />
               </div>
               <div class="col-md-2 form-group">
-                <button type="button" class="btn btn-primary" (click)="filterBooksByISBN()">Search</button>
+                <button type="button" class="btn btn-primary"
+                  (click)="getBookByISBN(searchForm.controls.selectedIsbn.value)">Search</button>
               </div>
             </div>
           </form>
@@ -85,7 +87,7 @@
                   <td>{{ book.title }}</td>
                   <td>{{ book.isbn }}</td>
                   <td>
-                    <button class="btn btn-sm btn-dark" (click)="issueBook(book)">Issue Book</button>
+                    <button class="btn btn-sm btn-dark" (click)="issueBook(book)">Select</button>
                   </td>
                 </tr>
               </tbody>
@@ -130,7 +132,7 @@
           </div>
         </div>
         <div class="card-footer text-right">
-          <button type="submit" class="btn btn-primary" (click)="saveDataToFirestore()">Submit</button>
+          <button type="submit" class="btn btn-primary" (click)="saveDataToFirestore()">Issue Books</button>
         </div>
       </div>
     </div>

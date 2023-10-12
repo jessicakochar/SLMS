@@ -1,0 +1,18 @@
+<div class="modal-header m-0">
+    <div class="d-flex justify-content-between align-items-start w-100">
+        <div class="d-flex flex-column align-items-start flex-grow-1">
+            <span class="modal-title font-weight-bold mb-1">Are you sure to return the Book?</span>
+            <span class="text-sm text-muted" *ngIf="additionalMessage !== ''">
+                {{ additionalMessage }}
+            </span>
+        </div>
+        <button type="button" class="close" aria-label="Close" id="closeAddNewStaffModal" #closeAddNewStaffModal
+            (click)="modal.dismiss('Cross click')">
+            <i class="bi bi-x"></i>
+        </button>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-sm btn-outline-dark" (click)="modal.close(true)">Yes</button>
+    <button class="btn btn-sm btn-dark" (click)="modal.close(false)">No</button>
+</div>

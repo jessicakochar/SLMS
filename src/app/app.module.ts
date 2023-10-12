@@ -18,6 +18,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { AuthService } from './services/auth.service';
 import { DbService } from './services/db.service';
 import { ToastrModule } from 'ngx-toastr';
+import { ConfirmationDialogComponent } from './pages/confirmation-dialog/confirmation-dialog.component';
 // import { CatalogueComponent } from './pages/catalogue/catalogue.component';
 
 
@@ -43,6 +44,7 @@ import { ToastrModule } from 'ngx-toastr';
     AppComponent,
     AdminLayoutComponent,
     AuthLayoutComponent,
+    ConfirmationDialogComponent,
     // CatalogueComponent
   ],
   providers: [AuthService, DbService],

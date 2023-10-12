@@ -1,7 +1,7 @@
 // import { query } from '@angular/animations';
 import { DatePipe } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FieldValue, Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, increment, getFirestore } from '@angular/fire/firestore';
+import { FieldValue, Firestore, Timestamp, addDoc, collection, doc, getDoc, getDocs, query, setDoc, updateDoc, where, increment, getFirestore, onSnapshot } from '@angular/fire/firestore';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { privateDecrypt } from 'crypto';
 import { ToastrService } from 'ngx-toastr';
@@ -9,6 +9,7 @@ import { Subscription } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
 import { BookModel } from 'src/app/utils/BookModel';
 import { MemberModel } from 'src/app/utils/MemberModel';
+import { BOOKS_COLLECTION } from 'src/app/utils/constants';
 
 @Component({
   selector: 'app-issue-list',
@@ -22,7 +23,7 @@ export class IssueListComponent implements OnInit {
   form: FormGroup;
   selectedISBN: string = '';
   searchForm = new FormGroup({
-    param: new FormControl(''),
+    selectedIsbn: new FormControl(''),
     phoneNumber: new FormControl('')
   });
   filteredData: BookModel[] = [];
@@ -30,8 +31,11 @@ export class IssueListComponent implements OnInit {
   issuedBooksList: BookModel[] = [];
   userData: MemberModel;
   memberData: MemberModel[] = [];
+  bookData: BookModel[] = [];
   numberParam: string = '';
   phoneNumber: string = '';
+  bookModal: BookModel;
+  booksRetrievedBool: boolean = false;
 
   constructor(
     private db: DbService,
@@ -43,121 +47,88 @@ export class IssueListComponent implements OnInit {
   ) {
     this.searchForm = this.fb.group({
       phoneNumber: [''],
-      param: [''],
+      selectedIsbn: [''],
     });
   }
 
   ngOnInit(): void {
 
-    this.db.getBooksList();
-    this.booksSub = this.db.booksSub.subscribe((list) => {
-      if (list.length !== 0) {
-        this.booksList = [...list];
-      }
-    })
-    this.tempBookList = [...this.booksList];
-    this.filteredData = [...this.booksList];
+    // this.db.getBooksList();
+    // this.booksSub = this.db.booksSub.subscribe((list) => {
+    //   if (list.length !== 0) {
+    //     this.booksList = [...list];
+    //   }
+    // })
+    // this.tempBookList = [...this.booksList];
+    // this.filteredData = [...this.booksList];
   }
 
-  // initializeForm(obj: TagsModel = null) {
-  //   if (obj === null) {
-  //     this.searchForm = this.fb.group({
-  //       // tagID: [doc(collection(this.db.firestore, TAGS_COLLECTION)).id],
-  //       phone: [null],
-  //       description: [null],
-  //       active: [true],
-  //       createdOn: [Timestamp.now()],
-  //     });
-  //   } else {
-  //     this.searchForm = this.fb.group({
-  //       tagID: [obj.tagID],
-  //       name: [obj.name],
-  //       description: [obj.description],
-  //       active: [obj.active],
-  //       createdOn: [obj.createdOn],
-  //     });
-  //   }
+  // async fetchBooksByISBN() {
+  //   const isbn = this.searchForm.get('isbn').value;
+  //   let collectionRef = collection(this.firestore, BOOKS_COLLECTION);
+  //   let queryRef = query(collectionRef, where("isbn", "==", isbn));
+  //   const userQuerySnapshot = await getDocs(queryRef);
+  //   // Make sure 'Books' is the correct collection name in your Firestore database
+
   // }
 
-  async getMember(phoneNumber: string) {
+  async getBookByISBN(selectedIsbn: string) {
+
     const firestore = getFirestore();
-
     try {
-      const userCollectionRef = collection(firestore, 'users');
-      const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+      const userCollectionRef = collection(firestore, 'Books');
+      const userQueryRef = query(userCollectionRef, where('isbn', '==', selectedIsbn));
       const userQuerySnapshot = await getDocs(userQueryRef);
-
       if (!userQuerySnapshot.empty) {
-
-        const userData = userQuerySnapshot.docs[0].data() as MemberModel;
-        this.memberData.push(userData);
-
-        // console.log('Data:', this.memberData);
+        const reqData = userQuerySnapshot.docs[0].data() as BookModel;
+        this.filteredData.push(reqData);
+        console.log(this.bookData);
       } else {
-        console.log('User not found with phone number:', phoneNumber);
+        this.toast.error('Book not Found', 'Wrong ISBN');
+        console.log('Book not found with ISBN:', selectedIsbn);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      console.error('Error fetching book data:', error);
     }
   }
+
+
 
   async onPhoneNumberChange(phoneNumber: string) {
-    if (!this.phoneNumber || this.phoneNumber.length < 10) {
-      // Check if the phoneNumber is not provided or is incomplete
-      return;
-    }
+    if (phoneNumber.length === 10) {
+      const firestore = getFirestore();
 
-    // Show a loading indicator while fetching data
-    // this.loading = true;
+      try {
+        const userCollectionRef = collection(firestore, 'users');
+        const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+        const userQuerySnapshot = await getDocs(userQueryRef);
 
-    const firestore = getFirestore();
-    const memberCollectionRef = collection(firestore, 'users');
-
-    const queryRef = query(memberCollectionRef,
-      where('phone', '==', this.phoneNumber)
-    );
-
-    try {
-      const querySnapshot = await getDocs(queryRef);
-
-      if (!querySnapshot.empty) {
-        const memberDoc = querySnapshot.docs[0];
-        const memberData = memberDoc.data() as MemberModel;
-
-        // Fetch data from the subcollection
-        // const subCollectionQuerySnapshot = await getDocs(
-        //   collection(memberDoc.ref, 'issuedBooks')
-        // );
-
-        // memberData.subcollectionData = subCollectionQuerySnapshot.docs.map(subDoc => subDoc.data());
-
-        // this.memberModelList = [memberData];
-        // this.userData = memberData;
-        // console.log('User data:', this.userData);
-      } else {
-        this.toastr.warning("No member found", "Add new Member");
-        console.log('No user found with phone number:', this.phoneNumber);
-        // this.memberModelList = [];
-        // this.userData = null;
+        if (!userQuerySnapshot.empty) {
+          const userData = userQuerySnapshot.docs[0].data() as MemberModel;
+          this.memberData.push(userData);
+          // console.log('Data:', this.memberData);
+        } else {
+          this.toast.error('Member not Found', 'Wrong Number');
+          console.log('User not found with phone number:', phoneNumber);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
-    } catch (error) {
-      console.error('Error fetching members data:', error);
-    } finally {
-      // Hide the loading indicator when done
-      // this.loading = false;
+    } else {
+      // Optionally, you can clear the memberData or handle other cases when phone number doesn't have 10 digits.
     }
   }
 
-  // ... Other class methods ...
 
 
-  filterBooksByISBN() {
-    this.selectedISBN = this.searchForm.controls.param.value;
-    this.db.booksRetrievedBool = false
-    this.db.getBooksByISBN(this.searchForm.controls.param.value);
-    // console.log("nopee");
-    this.filteredData = this.booksList.filter(book => book.isbn === this.selectedISBN);
-  }
+
+  // filterBooksByISBN() {
+  //   this.selectedISBN = this.searchForm.controls.param.value;
+  //   this.db.booksRetrievedBool = false
+  //   this.db.getBooksByISBN(this.searchForm.controls.param.value);
+  //   // console.log("nopee");
+  //   this.filteredData = this.booksList.filter(book => book.isbn === this.selectedISBN);
+  // }
 
   issueBook(book: BookModel) {
     const alreadyIssued = this.issuedBooksList.find(issuedBook => issuedBook.isbn === book.isbn);

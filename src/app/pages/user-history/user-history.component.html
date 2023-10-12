@@ -133,10 +133,19 @@
                       Book</button>
                       <span *ngIf="book.bookReturned">Book Returned</span>
                     </div> -->
-                  <div *ngIf="!book.returnDate">
+                  <!-- <div *ngIf="!book.returnDate">
                     <button class="btn btn-sm btn-danger" (click)="returnBooks(book)">Return Book</button>
+                  </div> -->
+                  <div *ngIf="!book.returnDate">
+                    <button class="btn btn-sm btn-danger" (click)="openConfirmationDialog(book)">Return Book</button>
                   </div>
-                  <div *ngIf="book.returnDate">
+
+                  <!-- <div *ngIf="!book.returnDate">
+                    <button class="btn btn-sm btn-danger" (click)="openConfirmationModal(confirmModal, book)">Return
+                      Book</button>
+                  </div> -->
+
+                  <div *ngIf="book.returnDate !== null">
                     <!-- Display a message or icon indicating that the book is returned -->
                     <div class="text-sm text-purple">Return Date: {{ (book?.returnDate?.toDate()| date: 'longDate') ||
                       ''
@@ -156,43 +165,6 @@
               </div>
             </div>
 
-            <!-- <div class="col">
-              <div class="d-flex flex-row">
-                <div class="d-inline-flex flex-column align-items-center date-tag-container">
-                  <div class="flex-grow-1 bg-primary" style="width: 0.08rem;"></div>
-                <div class="d-flex flex-column justify-content-center align-items-center date-tag"
-                  style="border-color: #9fbbf7; background-color: #5383ec;">
-                  <div class="text-white font-weight-bolder date-tag-main">26</div>
-                  <div class="text-white mt--2 date-tag-sub">Aug</div>
-                </div>
-                <div class="flex-grow-1 bg-primary" style="width: 0.08rem;"></div>
-              </div>
-              <div class="flex-grow-1 d-flex flex-column align-items-start my-3">
-                <div class="text-sm text-left" style="color: #5383ec;">
-                  Enquiry: Open by Staff 1
-                </div>
-                <div class="text-sm text-left">
-                  Interest Level: High in Course 1 Service 2
-                </div>
-                <div class="text-sm mt-2 text-left">
-                  John made enquiry On: 26, August 2023
-                </div>
-                <div class="font-weight-bold d-flex flex-row text-left">
-                  <div>Tag 1, Tag 2</div>
-                </div>
-                <div class="font-weight-bold text-sm text-left">
-                  FollowUp on 27, August 2023
-                </div>
-                <div class="">
-                  <div class="text-right m-1">
-                    <button type="button" class="btn btn-outline-primary btn-sm">
-                      Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> -->
 
             <div class="d-flex flex-column align-items-start justify-content-start">
               <button type="button" class="btn btn-outline-primary btn-sm">
@@ -202,6 +174,29 @@
           </div>
         </div>
       </div>
+    </div>
+  </ng-template>
+
+  <ng-template #confirmModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to Return?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="returnBooks(book)"
+        [disabled]="loader">
+        YES
+        <span *ngIf="loader">&nbsp;</span>
+        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
     </div>
   </ng-template>
 

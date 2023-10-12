@@ -61,12 +61,12 @@ export class CatalogueComponent implements OnInit {
 
     // this.fetchCatalogueFromCatalogue();
     // this.canWrite = this.db.canWriteCheck() || false;
-    this.db.getBooks();
-    this.booksSub = this.db.booksSub.subscribe((list) => {
-      if (list.length !== 0) {
-        this.booksList = [...list];
-      }
-    })
+    // this.db.getBooks();
+    // this.booksSub = this.db.booksSub.subscribe((list) => {
+    //   if (list.length !== 0) {
+    //     this.booksList = [...list];
+    //   }
+    // })
 
     this.db.getCatalogue();
     this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
@@ -75,13 +75,13 @@ export class CatalogueComponent implements OnInit {
       }
     })
 
-    this.db.getTagsList();
-    this.tagsSub = this.db.tagsSub.subscribe((list) => {
-      if (list.length !== 0) {
-        this.tagsList = [...list];
-        this.tempTagList = [...list];
-      }
-    })
+    // this.db.getTagsList();
+    // this.tagsSub = this.db.tagsSub.subscribe((list) => {
+    //   if (list.length !== 0) {
+    //     this.tagsList = [...list];
+    //     this.tempTagList = [...list];
+    //   }
+    // })
 
     this.tags = this.tagsList
   }

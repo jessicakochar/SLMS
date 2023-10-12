@@ -32,10 +32,10 @@ export class NewIssueComponent implements OnInit {
   selectedStartMonth: string = '2023-08';
   issuedBooksList: BookModel[] = [];
   phoneNumber: string = '';
-  selectedISBN: string = '';
+  selectedIsbn: string = '';
   searchForm = new FormGroup({
-    param: new FormControl(''),
-    date: new FormControl(''),
+    selectedIsbn: new FormControl(''),
+    // date: new FormControl(''),
   });
 
   constructor(
@@ -45,8 +45,12 @@ export class NewIssueComponent implements OnInit {
     private toast: ToastrService,
     private router: Router,
     private firestore: Firestore,
-
-  ) { }
+  ) {
+    this.searchForm = this.fb.group({
+      // phoneNumber: [''],
+      selectedIsbn: [''],
+    });
+  }
 
   ngOnInit(): void {
     // this.getMembers();
@@ -115,6 +119,28 @@ export class NewIssueComponent implements OnInit {
       collectionGroupRef,
       where('issueDate', '>=', fromDate),
       where('issueDate', '<=', toDate),
+      orderBy('issueDate', 'desc')
+    );
+
+    onSnapshot(queryRef, (response) => {
+      this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
+      console.log(this.memberModelList);
+
+      const firstMember = this.memberModelList[0];
+      if (firstMember && firstMember.phone) {
+        this.phoneNumber = firstMember.phone;
+      }
+    });
+  }
+
+  async getMembersByISBN(selectedIsbn: string) {
+    console.log(selectedIsbn);
+    const firestore = getFirestore();
+
+    const collectionGroupRef = collectionGroup(firestore, 'issuedBooks');
+    const queryRef = query(
+      collectionGroupRef,
+      where('isbn', '==', selectedIsbn),
       orderBy('issueDate', 'desc')
     );
 
@@ -212,12 +238,12 @@ export class NewIssueComponent implements OnInit {
     }
   }
 
-  filterBooksByISBN() {
-    this.selectedISBN = this.searchForm.controls.param.value;
-    this.db.booksRetrievedBool = false
-    this.db.getBooksByISBN(this.searchForm.controls.param.value);
-    console.log(this.searchForm.controls.param.value);
-  }
+  // filterBooksByISBN() {
+  //   this.selectedISBN = this.searchForm.controls.param.value;
+  //   this.db.booksRetrievedBool = false
+  //   this.db.getBooksByISBN(this.searchForm.controls.param.value);
+  //   console.log(this.searchForm.controls.param.value);
+  // }
 
   // async getMembersByMonth(month: number) {
   //   const firestore = getFirestore();

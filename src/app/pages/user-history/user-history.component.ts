@@ -1,13 +1,15 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { DocumentData, Firestore, Timestamp, collection, doc, getDocs, getFirestore, increment, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { DocumentData, Firestore, Timestamp, collection, doc, getDocs, getFirestore, increment, orderBy, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { DbService } from 'src/app/services/db.service';
+import { BookModel } from 'src/app/utils/BookModel';
 import { IssueModel } from 'src/app/utils/IssueModel';
 import { MemberModel } from 'src/app/utils/MemberModel';
 import { SubscriptionModel } from 'src/app/utils/subscriptionModel';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 
 export class CsvFormat {
 
@@ -90,8 +92,8 @@ export class UserHistoryComponent implements OnInit {
   // @ViewChild('submitButton') submitButton: any;
   @ViewChild('submitButton', { read: ElementRef }) submitButton: ElementRef;
   loading: boolean = false;
+  BookModal: typeof BookModel;
   // bookReturned: boolean = false;
-
 
   constructor(
 
@@ -126,6 +128,11 @@ export class UserHistoryComponent implements OnInit {
 
   }
 
+  openConfirmationModal(modal) {
+    this.modalService.open(modal, { size: "sm", centered: false });
+    this.BookModal = BookModel;
+  }
+
   onPhoneNumberInput() {
 
     const phoneNumber = this.phoneNumber;
@@ -149,7 +156,6 @@ export class UserHistoryComponent implements OnInit {
     const queryRef = query(memberCollectionRef,
       where('phone', '==', this.phoneNumber)
     );
-
     try {
       const querySnapshot = await getDocs(queryRef);
 
@@ -160,7 +166,7 @@ export class UserHistoryComponent implements OnInit {
 
         // Fetch data from the subcollection
         const subCollectionQuerySnapshot = await getDocs(
-          collection(memberDoc.ref, 'issuedBooks')
+          query(collection(memberDoc.ref, 'issuedBooks'), orderBy('issueDate', 'desc'))
         );
 
         memberData.subcollectionData = subCollectionQuerySnapshot.docs.map(subDoc => subDoc.data());
@@ -187,10 +193,24 @@ export class UserHistoryComponent implements OnInit {
     });
   }
 
+  async openConfirmationDialog(book: any) {
+    const modalRef = this.modalService.open(ConfirmationDialogComponent);
+    modalRef.componentInstance.additionalMessage = '';
+
+    modalRef.result.then((result) => {
+      if (result) {
+        // User confirmed, return the book
+        this.returnBooks(book);
+      }
+    });
+  }
+
+
   async returnBooks(book: any) {
+    console.log(book);
 
     try {
-      if (!book.returnDate) {
+      if (!book.returnDate || book.returnDate == null) {
         await updateDoc(doc(this.firestore, `Books/${book.bookId}`), {
           issued: increment(-1),
         });
