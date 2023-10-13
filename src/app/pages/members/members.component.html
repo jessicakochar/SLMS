@@ -53,7 +53,9 @@
                 <th scope="col">Age</th>
                 <!-- <th scope="col">Address</th> -->
                 <th scope="col">Membership</th>
-                <th scope="col">Created On</th>
+                <th scope="col">Joined On</th>
+                <th scope="col">Expiry</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -95,6 +97,23 @@
                     <span>{{ member.createdOn.toDate()| date: 'dd/MM/yyyy' }}</span>
                   </div>
                 </td>
+                <td>
+                  <div class="d-flex flex-column font-weight-bold">
+                    <span>{{ member.expiryDate }}</span>
+                  </div>
+                </td>
+                <!-- <td>
+                  <h4>
+                    <span class="badge badge-pill" [ngClass]="{
+                            'badge-success': isStatusActive(catalogue),
+                            'badge-warning': isExpiringSoon(catalogue),
+                            'badge-danger': isExpired(catalogue)
+                          }">
+                      {{ getBadgeText(catalogue) }}
+                    </span>
+                  </h4>
+                </td> -->
+
                 <!-- <td>
                     <div class="d-flex flex-column">
                       <span>{{ member.address }}</span>
@@ -109,9 +128,18 @@
                   <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, admin)">Delete</button>
                 </td> -->
               </tr>
+              <!-- Pagination controls -->
             </tbody>
           </table>
         </div>
+        <div class="pagination-controls">
+          <button class="btn btn-primary" (click)="previousPage()" [disabled]="currentPage === 1">
+            Previous
+          </button>
+          <span class="page-number">Page {{ currentPage }}</span>
+          <button class="btn btn-primary" (click)="nextPage()">Next</button>
+        </div>
+
         <div class="card-footer" *ngIf="showLoadMore">
           <button class="btn btn-sm btn-default pull-right" (click)="loadMoreadmin()">
             Load More

@@ -156,6 +156,7 @@ export class IssueListComponent implements OnInit {
           const userId = userDoc.id;
           const userName = userDoc.data().name;
           const validity = userDoc.data().subscription.validity;
+          const issuePeriod = userDoc.data().subscription.issuePeriod;
 
           const issuedBookData = this.issuedBooksList.map((book) => {
             const { title, isbn, docId, bookId } = book;
@@ -164,7 +165,7 @@ export class IssueListComponent implements OnInit {
             const dueDate = new Date(
               issueDate.getFullYear(),
               issueDate.getMonth(),
-              issueDate.getDate() + validity
+              issueDate.getDate() + issuePeriod
             );
             // const returnDate = null;
 

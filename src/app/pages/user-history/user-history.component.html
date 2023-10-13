@@ -137,7 +137,9 @@
                     <button class="btn btn-sm btn-danger" (click)="returnBooks(book)">Return Book</button>
                   </div> -->
                   <div *ngIf="!book.returnDate">
-                    <button class="btn btn-sm btn-danger" (click)="openConfirmationDialog(book)">Return Book</button>
+                    <button class="btn btn-sm btn-danger" (click)="openConfirmationDialog(book)"
+                      *ngIf="!book.bookReturned">Return Book</button>
+                    <span *ngIf="book.bookReturned" class="text-success">Book Returned</span>
                   </div>
 
                   <!-- <div *ngIf="!book.returnDate">
@@ -145,7 +147,7 @@
                       Book</button>
                   </div> -->
 
-                  <div *ngIf="book.returnDate !== null">
+                  <div *ngIf="book.returnDate ">
                     <!-- Display a message or icon indicating that the book is returned -->
                     <div class="text-sm text-purple">Return Date: {{ (book?.returnDate?.toDate()| date: 'longDate') ||
                       ''

@@ -42,7 +42,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   selectedMonth: Date = this.currentDate;
 
   totalBooksCount: number = 0;
-
+  totalMembersCount: number = 0;
   totalBooksSum: number = 0;
   totalBooksIssued: number = 0;
   totalBooksAvailable: number = 0;
@@ -131,6 +131,18 @@ export class DashboardComponent implements OnInit, AfterViewInit {
       const booksCollectionRef = collection(firestore, 'globalStats');
       const querySnapshot = await getDocs(booksCollectionRef);
 
+      let totalMembers = 0;
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data && data.members) {
+          totalMembers += data.members;
+        }
+      });
+
+      // Update the totalMembers variable with the total number of members from all documents in the collection.
+      this.totalMembersCount = totalMembers;
+
       // Update the totalBooksCount variable with the count of documents
       let count = 0;
       querySnapshot.forEach((doc) => {
@@ -166,7 +178,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
           returns += data.returns;
         }
       });
-      this.totalBooksAvailable = returns;
+      this.totalBooksAvailable = this.totalBooksSum - this.totalBooksIssued;
 
     } catch (error) {
       console.error('Error fetching total books count:', error);

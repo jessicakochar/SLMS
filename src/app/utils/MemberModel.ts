@@ -1,5 +1,6 @@
 import { Timestamp } from "@angular/fire/firestore";
 import { IssueModel } from "./IssueModel";
+import { SubscriptionModel } from "./subscriptionModel";
 
 export class MemberModel {
 
@@ -11,10 +12,11 @@ export class MemberModel {
   phone: string;
   password: string;
   userId: string;
-  subscription: string;
+  subscription: SubscriptionModel;
   subcollectionData: any[];
-  createdOn: Timestamp
+  createdOn: Timestamp;
   issueBooks: IssueModel[] = [];
+  expiryDate: Timestamp;
 
   // token: string;
   // password: string;

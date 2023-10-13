@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TagsModel } from 'src/app/utils/TagsModel';
-import { collection, doc, setDoc, Firestore, deleteDoc, query, onSnapshot, getDocs, getFirestore, Timestamp, where } from "@angular/fire/firestore";
+import { collection, doc, setDoc, Firestore, deleteDoc, query, onSnapshot, getDocs, getFirestore, Timestamp, where, collectionGroup, orderBy, increment } from "@angular/fire/firestore";
 import { DbService } from 'src/app/services/db.service';
 import { ToastrService } from 'ngx-toastr';
 import { MEMBERS_COLLECTION, TAGS_COLLECTION } from 'src/app/utils/constants';
@@ -11,6 +11,7 @@ import { MemberModel } from 'src/app/utils/MemberModel';
 import { SubscriptionModel } from 'src/app/utils/subscriptionModel';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-members',
@@ -32,6 +33,37 @@ export class MembersComponent implements OnInit {
   subscriptionSub: Subscription;
   subscription: SubscriptionModel[] = [];
   loader: boolean;
+  currentPage: number = 1;
+  membersPerPage: number = 9;
+  // isStatusActive(catalogue) {
+  //   return catalogue.status;
+  // }
+  // isExpiringSoon(catalogue) {
+  //   const expiryDate = new Date(catalogue.expiryDate);
+  //   const sevenDaysFromNow = new Date();
+  //   sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
+  //   return expiryDate <= sevenDaysFromNow && expiryDate >= new Date();
+  // }
+
+  // // Function to check if the catalogue is expired
+  // isExpired(catalogue) {
+  //   const expiryDate = new Date(catalogue.expiryDate);
+  //   const currentDate = new Date();
+  //   return expiryDate < currentDate;
+  // }
+
+  // // Function to get the text for the badge based on the conditions
+  // getBadgeText(catalogue) {
+  //   if (this.isStatusActive(catalogue)) {
+  //     return 'Active';
+  //   } else if (this.isExpiringSoon(catalogue)) {
+  //     return 'Expiring Soon';
+  //   } else if (this.isExpired(catalogue)) {
+  //     return 'Expired';
+  //   } else {
+  //     return 'Inactive';
+  //   }
+  // }
 
   // searchForm = new FormGroup({
   //   param: new FormControl(''),
@@ -49,6 +81,7 @@ export class MembersComponent implements OnInit {
     private toast: ToastrService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
+
     // private toast
   ) {
     // this.searchForm = this.fb.group({
@@ -60,6 +93,16 @@ export class MembersComponent implements OnInit {
     // this.getTagsList();
     this.getMembers();
 
+    this.activatedRoute.queryParams.subscribe((params) => {
+      const planName = params['planName'];
+      if (planName) {
+        this.getMembersByPlanName(planName);
+        // You now have access to the planName parameter
+        // console.log('Plan Name:', planName);
+
+        // Use planName in your component logic
+      }
+    });
     // this.activatedRoute.queryParams.subscribe(params => {
     //   const phoneNumber = params['phone'];
     //   if (phoneNumber) {
@@ -131,7 +174,7 @@ export class MembersComponent implements OnInit {
         email: [obj.email],
         age: [obj.age],
         phone: [obj.phone],
-        subcription: [obj.subscription.length > 0 ? obj.subscription[0] : null, Validators.required],
+        subcription: [obj.subscription],
         createdOn: [obj.createdOn],
       });
       // this.tempTypeList = this.SubscriptionList.filter(
@@ -140,23 +183,91 @@ export class MembersComponent implements OnInit {
     }
   }
 
+  nextPage() {
+    this.currentPage++;
+    this.getMembers();
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.getMembers();
+    }
+  }
+
+  // async getMembers() {
+  //   const firestore = getFirestore();
+
+  //   try {
+  //     const memberCollectionRef = collection(firestore, 'users');
+  //     const memberQuerySnapshot = await getDocs(memberCollectionRef);
+
+  //     this.memberModelList = [];
+
+  //     for (const memberDoc of memberQuerySnapshot.docs) {
+  //       const memberData = memberDoc.data() as MemberModel;
+  //       this.memberModelList.push(memberData);
+  //     }
+  //     // console.log('Admin Data:', this.memberModelList);
+  //   } catch (error) {
+  //     console.error('Error fetching members data:', error);
+  //   }
+  // }
+
   async getMembers() {
     const firestore = getFirestore();
 
     try {
+      // Calculate the start and end indexes for the current page
+      const startIndex = (this.currentPage - 1) * this.membersPerPage;
+      const endIndex = this.currentPage * this.membersPerPage;
+
       const memberCollectionRef = collection(firestore, 'users');
       const memberQuerySnapshot = await getDocs(memberCollectionRef);
 
       this.memberModelList = [];
 
+      let memberIndex = 0;
+
       for (const memberDoc of memberQuerySnapshot.docs) {
+        // Skip members until the start index is reached
+        if (memberIndex < startIndex) {
+          memberIndex++;
+          continue;
+        }
+
         const memberData = memberDoc.data() as MemberModel;
         this.memberModelList.push(memberData);
+
+        // Break the loop when we've reached the end index
+        if (memberIndex >= endIndex) {
+          break;
+        }
+
+        memberIndex++;
       }
+
       // console.log('Admin Data:', this.memberModelList);
     } catch (error) {
       console.error('Error fetching members data:', error);
     }
+  }
+
+
+  async getMembersByPlanName(planName: string) {
+    const firestore = getFirestore();
+
+    const collectionGroupRef = collectionGroup(firestore, 'users');
+    const queryRef = query(
+      collectionGroupRef,
+      where('subscription.name', '==', planName),
+      // orderBy('issueDate', 'desc')
+    );
+
+    onSnapshot(queryRef, (response) => {
+      this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
+      console.log(this.memberModelList);
+    })
   }
 
   addNewMember(modalRef: any, obj: MemberModel = null) {
@@ -165,12 +276,10 @@ export class MembersComponent implements OnInit {
   }
 
   onPhoneNumberChange(content) {
-    // Get the current value of the input field
     const phone = this.numberParam;
 
-    // Check if the input value has 10 digits
     if (phone.length === 10) {
-      // Find a user with the provided phone number
+
       const matchingUser = this.memberModelList.find(user => user.phone === phone);
 
       if (matchingUser) {
@@ -201,25 +310,53 @@ export class MembersComponent implements OnInit {
     }
   }
 
-
-
   async saveToFirestore() {
     this.loader = true;
     let values: MemberModel = { ...this.memberForm.value };
-    let docRef = doc(collection(this.db.firestore, 'users'), values.authId);
-    setDoc(docRef, { ...values }, { merge: true })
-      .then(() => {
-        this.loader = true;
-        // console.log(values);
-        this.modalService.dismissAll();
-        this.toast.success("Member Added Successfully", "")
-      }, (error) => {
-        console.log(error);
-        this.loader = false;
-        this.toast.warning("Something went wrong! Please try again.", "");
-      });
+    console.log(values);
 
+    const selectedSubscription = this.subscription.find(sub => sub.planID === values.subscription.planID);
+    console.log(selectedSubscription);
+
+    if (selectedSubscription) {
+      const createdOn = new Date();
+      const expiryDate = new Date(
+        createdOn.getFullYear(),
+        createdOn.getMonth(),
+        createdOn.getDate() + selectedSubscription.validity
+      );
+      // return { expiryDate };
+
+
+      // Ensure that expiryDate is of type Timestamp
+      values.expiryDate = Timestamp.fromDate(expiryDate);
+
+      const docRef = doc(collection(this.db.firestore, 'users'), values.authId);
+
+      setDoc(docRef, { ...values }, { merge: true })
+        .then(async () => {
+          const firestore = this.db.firestore;
+          const datepipe = new DatePipe('en-US');
+          const currentMonthYear = datepipe.transform(new Date(), 'yyyyMM');
+
+          await setDoc(
+            doc(firestore, `globalStats/${currentMonthYear}`),
+            { members: increment(1) },
+            { merge: true }
+          );
+
+          this.loader = false;
+          this.modalService.dismissAll();
+          this.toast.success("Member Added Successfully", "");
+        })
+        .catch((error) => {
+          console.error("Error saving member:", error);
+          this.loader = false;
+          this.toast.warning("Something went wrong! Please try again.", "");
+        });
+    }
   }
+
 
   // addNewTagModal(modalRef: any, obj: TagsModel = null) {
   //   this.modalService.open(modalRef, { size: "md", centered: false });
@@ -275,3 +412,4 @@ export class MembersComponent implements OnInit {
   //     });
   // }
 }
+

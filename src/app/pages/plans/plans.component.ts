@@ -8,6 +8,7 @@ import { FormArray, FormBuilder, FormGroup } from "@angular/forms";
 import { DbService } from "src/app/services/db.service";
 import { setDoc } from "@angular/fire/firestore";
 import { ToastrService } from "ngx-toastr";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-plans',
@@ -32,6 +33,7 @@ export class PlansComponent implements OnInit {
     private toast: ToastrService,
     private change: ChangeDetectorRef,
     private zone: NgZone,
+    private router: Router,
   ) {
   }
 
@@ -120,6 +122,31 @@ export class PlansComponent implements OnInit {
         this.toast.warning("Something went wrong! Please try again.", "");
       });
   }
+
+  memberDetails(planName: string) {
+    if (planName) {
+      this.router.navigate(['/members'], {
+        queryParams: {
+          planName: planName
+        },
+      });
+    } else {
+      // Handle the case when planName is not provided.
+    }
+  }
+
+  // memberDetails(planID: string) {
+  //   if (planID) {
+  //     this.router.navigate(['/members'], {
+  //       queryParams: {
+  //         planID: planID
+  //       },
+  //     });
+  //   } else {
+  //     // Handle the case when planName is not provided.
+  //   }
+  // }
+
 
   // addDescriptionItem() {
   //   const descriptionArray = this.plansForm.get('description') as FormArray;
