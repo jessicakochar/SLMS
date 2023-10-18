@@ -29,6 +29,7 @@ export class TagsComponent implements OnInit {
   loader: boolean = false;
   tagsSub: Subscription;
   tagsModal: TagsModel
+  loading: boolean = false;
 
   tagsForm: FormGroup;
 
@@ -44,10 +45,12 @@ export class TagsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.db.getTagsList();
     this.tagsSub = this.db.tagsSub.subscribe((list) => {
       if (list.length !== 0) {
         this.tagsList = [...list];
+        this.loading = false;
       }
     })
   }

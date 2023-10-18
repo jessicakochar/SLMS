@@ -1,98 +1,106 @@
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" *ngIf="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
-<div class="container-fluid mt--8 ">
-  <div class="mb-5 mb-xl-0">
-    <div class="card shadow">
-      <div class="card-header border-0">
-        <div class="row align-items-center">
-          <div class="d-flex flex-column">
-            <h3 class="m-0">Tags ({{ tagsList.length || 0}})</h3>
-            <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+
+<div class="content-container" *ngIf="!loading">
+
+  <div class="header pb-8 pt-5 pt-md-8">
+    <div class="container-fluid"></div>
+  </div>
+  <div class="container-fluid mt--8 ">
+    <div class="mb-5 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="d-flex flex-column">
+              <h3 class="m-0">Tags ({{ tagsList.length || 0}})</h3>
+              <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
                   {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
-          </div>
-          <div class="col d-flex justify-content-end align-items-center">
-            <form>
-              <div class="form-row">
-                <div class="col-auto">
-                  <button type="submit" (click)="addNewTagModal(content)" class="btn btn-sm btn-dark">
-                    Add new
-                  </button>
+            </div>
+            <div class="col d-flex justify-content-end align-items-center">
+              <form>
+                <div class="form-row">
+                  <div class="col-auto">
+                    <button type="submit" (click)="addNewTagModal(content)" class="btn btn-sm btn-dark">
+                      Add new
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="table-responsive">
-        <!-- Projects table -->
-        <table class="table align-items-center table-flush">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">S.No</th>
-              <th scope="col">Tag</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let tag of tagsList; let i = index">
-              <td class="font-weight-bold">{{ i + 1 }}</td>
-              <td class="font-weight-bold">{{ tag.name }}</td>
-              <td>
-                <button class="btn btn-sm btn-dark" (click)="this.addNewTagModal(content, tag)">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, tag)">
-                  Delete
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">S.No</th>
+                <th scope="col">Tag</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let tag of tagsList; let i = index">
+                <td class="font-weight-bold">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ tag.name }}</td>
+                <td>
+                  <button class="btn btn-sm btn-dark" (click)="this.addNewTagModal(content, tag)">
+                    Edit
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, tag)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<ng-template #deleteModal let-modal>
-  <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete this tag?</h4>
-    <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
-      (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
-      NO
-    </button>
-    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteTag()" [disabled]="loader">
-      YES
-      <span *ngIf="loader">&nbsp;</span>
-      <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </button>
-  </div>
-</ng-template>
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to delete this tag?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteTag()" [disabled]="loader">
+        YES
+        <span *ngIf="loader">&nbsp;</span>
+        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </ng-template>
 
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Add Tag</h4>
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="tagsForm" class="form">
-      <div class="form-group">
-        <label for="name">Tag Name</label>
-        <input formControlName="name" id="name" type="text" class="form-control" />
-      </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input formControlName="description" id="description" type="text" class="form-control" />
-      </div>
-      <div class="text-right">
-        <button type="button" class="btn btn-sm btn-danger" (click)="modal.close('Close click')">Cancel</button>
-        <button type="button" class="btn btn-sm btn-dark" (click)="saveToFirestore()">Save</button>
-      </div>
-    </form>
-  </div>
-</ng-template>
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Add Tag</h4>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="tagsForm" class="form">
+        <div class="form-group">
+          <label for="name">Tag Name</label>
+          <input formControlName="name" id="name" type="text" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <input formControlName="description" id="description" type="text" class="form-control" />
+        </div>
+        <div class="text-right">
+          <button type="button" class="btn btn-sm btn-danger" (click)="modal.close('Close click')">Cancel</button>
+          <button type="button" class="btn btn-sm btn-dark" (click)="saveToFirestore()">Save</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>

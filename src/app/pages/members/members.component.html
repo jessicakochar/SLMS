@@ -1,21 +1,29 @@
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" *ngIf="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
 
-<div class="container-fluid mt--8">
-  <div class="row">
-    <div class="col">
-      <div class="card" *ngIf="memberModelList.length != 0">
-        <div class="card-header">
-          <div class="row w-100 m-0">
-            <div class="col-sm-6 p-0">
-              <div class="d-flex flex-column">
-                <h3 class="m-0">Members ({{memberModelList.length || 0}})</h3>
-                <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+<div class="content-container" *ngIf="!loading">
+
+  <div class="header pb-8 pt-5 pt-md-8">
+    <div class="container-fluid"></div>
+  </div>
+
+  <div class="container-fluid mt--8">
+    <div class="row">
+      <div class="col">
+        <div class="card" *ngIf="memberModelList.length != 0">
+          <div class="card-header">
+            <div class="row w-100 m-0">
+              <div class="col-sm-6 p-0">
+                <div class="d-flex flex-column">
+                  <h3 class="m-0">Members ({{memberModelList.length || 0}})</h3>
+                  <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
                     {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+                </div>
               </div>
-            </div>
-            <!-- <div class="col-xl-5">
+              <!-- <div class="col-xl-5">
               <input type="text" class="form-control form-control-sm" placeholder="Enter Phone Number"
                 [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange()" />
             </div>
@@ -24,152 +32,142 @@
                 Add Member
               </button>
             </div> -->
-            <div class="col-sm-6 p-0 d-flex justify-content-end align-items-center">
-              <input type="text" class="form-control form-control-sm mr-2" placeholder="Enter Phone Number"
-                [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange(content)" />
-              <button class="btn btn-default btn-sm" style="white-space: nowrap;"
-                (click)="addNewMember(content, member)">
-                Add New Member
-              </button>
-            </div>
-            <!-- <div class="col-sm-6 p-0">
+              <div class="col-sm-6 p-0 d-flex justify-content-end align-items-center">
+                <input type="text" class="form-control form-control-sm mr-2" placeholder="Enter Phone Number"
+                  [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange(content)" />
+                <button class="btn btn-default btn-sm" style="white-space: nowrap;"
+                  (click)="addNewMember(content, member)">
+                  Add New Member
+                </button>
+              </div>
+              <!-- <div class="col-sm-6 p-0">
               <div class="d-flex justify-content-end">
                 <button  class="btn btn-default btn-sm float-right" (click)="openAdminModal(adminModal)">
                   Add Admin
                 </button>
               </div>
             </div> -->
+            </div>
           </div>
-        </div>
-        <div class="table-responsive">
-          <table class="table table-flush">
-            <thead class="thead-light">
-              <tr>
-                <th scope="col">Sr. No</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Phone</th>
-                <!-- <th scope="col">Added On</th> -->
-                <th scope="col">Age</th>
-                <!-- <th scope="col">Address</th> -->
-                <th scope="col">Membership</th>
-                <th scope="col">Joined On</th>
-                <th scope="col">Expiry</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let member of memberModelList; index as idx" class="clickable-row"
-                (click)="onRowClick(member)">
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ idx + 1 }}</span>
-                  </div>
-                </td>
-                <!-- class="dark-bold-column">{{ idx + 1 }}</td> -->
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.name }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.email }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.phone }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.age }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member?.subscription?.name }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.createdOn.toDate()| date: 'dd/MM/yyyy' }}</span>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex flex-column font-weight-bold">
-                    <span>{{ member.expiryDate }}</span>
-                  </div>
-                </td>
-                <!-- <td>
-                  <h4>
-                    <span class="badge badge-pill" [ngClass]="{
-                            'badge-success': isStatusActive(catalogue),
-                            'badge-warning': isExpiringSoon(catalogue),
-                            'badge-danger': isExpired(catalogue)
-                          }">
-                      {{ getBadgeText(catalogue) }}
-                    </span>
-                  </h4>
-                </td> -->
-
-                <!-- <td>
-                    <div class="d-flex flex-column">
-                      <span>{{ member.address }}</span>
-                      <span class="text-sm text-muted">{{ admin.gender | titlecase }}</span>
+          <div class="table-responsive">
+            <table class="table table-flush">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">Sr. No</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Email</th>
+                  <th scope="col">Phone</th>
+                  <!-- <th scope="col">Added On</th> -->
+                  <th scope="col">Age</th>
+                  <!-- <th scope="col">Address</th> -->
+                  <th scope="col">Membership</th>
+                  <th scope="col">Joined On</th>
+                  <th scope="col">Expiry</th>
+                  <th scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let member of memberModelList; index as idx" class="clickable-row"
+                  (click)="onRowClick(member)">
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ idx + 1 }}</span>
                     </div>
-                </td> -->
-                <!-- <td>
-                  <button  class="btn btn-default btn-sm"
-                    (click)="openAdminRoleModel(roleModal, admin.adminId, admin.roles || null)">Roles</button>
-                  <button class="btn btn-default btn-sm" (click)="viewadminDetails(viewModal, admin)">Details</button>
-                  <button  class="btn btn-default btn-sm" (click)="openAdminModal(adminModal, admin)">Edit</button>
-                  <button class="btn btn-danger btn-sm" (click)="openDeleteModal(deleteModal, admin)">Delete</button>
-                </td> -->
-              </tr>
-              <!-- Pagination controls -->
-            </tbody>
-          </table>
-        </div>
-        <div class="pagination-controls">
-          <button class="btn btn-primary" (click)="previousPage()" [disabled]="currentPage === 1">
-            Previous
-          </button>
-          <span class="page-number">Page {{ currentPage }}</span>
-          <button class="btn btn-primary" (click)="nextPage()">Next</button>
-        </div>
+                  </td>
+                  <!-- class="dark-bold-column">{{ idx + 1 }}</td> -->
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.name }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.email }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.phone }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.age }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member?.subscription?.name }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.createdOn.toDate()| date: 'dd/MM/yyyy' }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div *ngIf="member.expiryDate !== undefined" class="d-flex flex-column font-weight-bold">
+                      <span>{{ member.expiryDate.toDate()| date: 'dd/MM/yyyy' }}</span>
+                    </div>
+                    <div *ngIf="member.expiryDate === undefined" class="d-flex flex-column font-weight-bold">
+                      <span>-</span>
+                    </div>
+                  </td>
+                  <td>
+                    <h4>
+                      <span class="badge badge-pill" [ngClass]="{
+                          'badge-success': isMemberActive(member.createdOn.toDate(), member.expiryDate?.toDate()),
+                          'badge-warning': !isMemberActive(member.createdOn.toDate(), member.expiryDate?.toDate()) && member.expiryDate !== undefined
+                        }">
+                        {{ getStatusText(member.createdOn.toDate(), member.expiryDate?.toDate()) }}
+                      </span>
+                    </h4>
+                  </td>
 
-        <div class="card-footer" *ngIf="showLoadMore">
-          <button class="btn btn-sm btn-default pull-right" (click)="loadMoreadmin()">
-            Load More
-          </button>
-        </div>
-      </div>
-      <div class="card" *ngIf="memberModelList.length == 0">
-        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-          <!-- <img src="./../../../assets/img/empty.svg" class="img-fluid" height="256px" width="256px" alt="No Data"> -->
-          <h2 class="mt-3 d-flex flex-column align-items-center">
-            <span class="text-sm text-muted">No members Records Found</span>
-            <!-- <span>{{ today | date: 'MMMM yyyy' }}</span> -->
-          </h2>
-          <!-- <button *ngIf="canWrite" class="btn btn-default btn-sm float-right mt-5" (click)="openAdminModal(adminModal)">
-            Add admin
-          </button> -->
+
+
+
+                </tr>
+                <!-- Pagination controls -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
+    <div class="card" *ngIf="memberModelList.length == 0">
+      <div class="card-body d-flex flex-column justify-content-center align-items-center">
+        <!-- <img src="./../../../assets/img/empty.svg" class="img-fluid" height="256px" width="256px" alt="No Data"> -->
+        <h2 class="mt-3 d-flex flex-column align-items-center">
+          <span class="text-sm text-muted">No members Records Found</span>
+          <!-- <span>{{ today | date: 'MMMM yyyy' }}</span> -->
+        </h2>
+        <!-- <button *ngIf="canWrite" class="btn btn-default btn-sm float-right mt-5" (click)="openAdminModal(adminModal)">
+            Add admin
+          </button> -->
+      </div>
+    </div>
   </div>
-</div>
+  <div class="footer" style="text-align: center; margin: 0 auto">
+    <div class="pagination-controls">
+      <button class="btn btn-link" (click)="previousPage()" [disabled]="currentPage === 1">
+        &lt;&lt;
+      </button>
+      <span class="page-number">Page {{ currentPage }}</span>
+      <button class="btn btn-link" (click)="nextPage()"> &gt;&gt; </button>
+    </div>
+  </div>
+  <!-- </div> -->
+  <!-- </div> -->
 
 
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title">Add Member</h4>
-    <button type="button" class="close" aria-label="Closse" (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-    <!-- <button
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Add Member</h4>
+      <button type="button" class="close" aria-label="Closse" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <!-- <button
       type="button"
       class="btn btn-sm icon-shape shadow-none"
       aria-label="Close"
@@ -177,23 +175,23 @@
     >
       <i class="bi bi-x-circle-fill"></i>
     </button> -->
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="memberForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
-      <div class="form-row">
-        <label for="name" class="text-sm">Name</label>
-        <input type="text" class="form-control" formControlName="name" placeholder="Enter Name" />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <!-- <div class="form-group col-md-6"> -->
-          <label for="age" class="text-sm">Age</label>
-          <input type="text" class="form-control" formControlName="age" placeholder="Enter Age">
-          <!-- </div> -->
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="memberForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
+        <div class="form-row">
+          <label for="name" class="text-sm">Name</label>
+          <input type="text" class="form-control" formControlName="name" placeholder="Enter Name" />
         </div>
 
-        <!-- <div class="form-row">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <!-- <div class="form-group col-md-6"> -->
+            <label for="age" class="text-sm">Age</label>
+            <input type="text" class="form-control" formControlName="age" placeholder="Enter Age">
+            <!-- </div> -->
+          </div>
+
+          <!-- <div class="form-row">
         <div class="form-group col-md-6">
           <label for="age">Age</label>
           <input type="text" class="form-control" formControlName="age">
@@ -202,42 +200,42 @@
       </div> -->
 
 
-        <div class="form-group col-md-6">
-          <label for="subscription" class="text-sm">Subscription</label>
-          <select id="type" class="form-control" formControlName="subscription">
+          <div class="form-group col-md-6">
+            <label for="subscription" class="text-sm">Category</label>
+            <select id="type" class="form-control" formControlName="subscription">
 
-            <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">
-              {{ subscription.name }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <label for="address" class="text-sm">Address</label>
-        <input type="text" class="form-control" formControlName="address" placeholder="Enter Address" />
-      </div>
-
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="phone" class="text-sm">Phone</label>
-          <input type="phone" class="form-control" formControlName="phone" placeholder="Enter Phone">
-        </div>
-        <div class="form-group col-md-6">
-          <label for="email" class="text-sm">Email</label>
-          <div class="input-group">
-            <input type="text" class="form-control" formControlName="email" placeholder="Enter Email" />
+              <option *ngFor="let subscription of subscriptionList" [ngValue]="subscription">
+                {{ subscription.name }}
+              </option>
+            </select>
           </div>
         </div>
-      </div>
 
-      <div style="float: right">
-        <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-dark btn-sm">Save</button>
-      </div>
-    </form>
-  </div>
+        <div class="form-row">
+          <label for="address" class="text-sm">Address</label>
+          <input type="text" class="form-control" formControlName="address" placeholder="Enter Address" />
+        </div>
 
-</ng-template>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="phone" class="text-sm">Phone</label>
+            <input type="phone" class="form-control" formControlName="phone" placeholder="Enter Phone">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="email" class="text-sm">Email</label>
+            <div class="input-group">
+              <input type="text" class="form-control" formControlName="email" placeholder="Enter Email" />
+            </div>
+          </div>
+        </div>
+
+        <div style="float: right">
+          <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-dark btn-sm">Save</button>
+        </div>
+      </form>
+    </div>
+
+  </ng-template>

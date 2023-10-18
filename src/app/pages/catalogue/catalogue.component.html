@@ -1,16 +1,24 @@
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" *ngIf="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
 
-<div class="container-fluid mt--8">
-  <div class="mb-5 mb-xl-0">
-    <div class="card shadow">
-      <!-- <div class="card-header border-0">
+<div class="content-container" *ngIf="!loading">
+
+  <div class="header pb-8 pt-5 pt-md-8">
+    <div class="container-fluid"></div>
+  </div>
+
+  <div class="container-fluid mt--8">
+    <div class="mb-5 mb-xl-0">
+      <div class="card shadow">
+        <!-- <div class="card-header border-0">
           <div class="d-flex flex-column">
             <h3 class="m-0">Catlogue ({{catalogueList.length || 0}})</h3> -->
-      <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+        <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
                 {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
-      <!-- </div>
+        <!-- </div>
           <div class="row align-items-center">
             <div class="col d-flex justify-content-end align-items-center">
               <div class="col-sm-6 p-0">
@@ -18,7 +26,7 @@
               <form>
                 <div class="form-row"> -->
 
-      <!-- <div class="col-xl-4">
+        <!-- <div class="col-xl-4">
                     <select class="custom-select custom-select-sm">
                       <option selected>Search by</option>
                       <option value="1">Title</option>
@@ -26,19 +34,19 @@
                       <option value="3">ISBN</option>
                     </select>
                   </div> -->
-      <!-- <div class="col-xl-5">
+        <!-- <div class="col-xl-5">
                     <input
                       type="text"
                       class="form-control form-control-sm"
                       placeholder="Enter keyword"
                     />
                   </div> -->
-      <!-- <div class="col-auto">
+        <!-- <div class="col-auto">
                     <button type="submit" class="btn btn-sm btn-primary">
                       Search
                     </button>
                   </div> -->
-      <!-- <div class="col-auto">
+        <!-- <div class="col-auto">
                     <button (click)="openCatalogueModal(content, null)" type="submit" class="btn btn-sm btn-primary">
                       Add New
                     </button>
@@ -48,107 +56,107 @@
             </div>
           </div>
         </div> -->
-      <div class="card-header">
-        <div class="row w-100 m-0">
-          <div class="col-sm-6 p-0">
-            <div class="d-flex flex-column">
-              <h3 class="m-0">Catalogue ({{catalogueList.length || 0}})</h3>
-              <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
+        <div class="card-header">
+          <div class="row w-100 m-0">
+            <div class="col-sm-6 p-0">
+              <div class="d-flex flex-column">
+                <h3 class="m-0">Catalogue ({{catalogueList.length || 0}})</h3>
+                <!-- <span class="text-sm text-muted" *ngIf="searching == 2">From: {{ fromDate | date: 'dd-MM-yyyy' }} Till:
                     {{ toDate | date: 'dd-MM-yyyy' }}</span> -->
+              </div>
             </div>
-          </div>
-          <div class="col-sm-6 p-0">
-            <div class="d-flex justify-content-end">
-              <button class="btn btn-default btn-sm float-right" (click)="openCatalogueModal(content, null)">
-                Add New
-              </button>
+            <div class="col-sm-6 p-0">
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-default btn-sm float-right" (click)="openCatalogueModal(content, null)">
+                  Add New
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="table-responsive">
-        <!-- Projects table -->
-        <table class="table align-items-center table-flush">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">Sr. No.</th>
-              <th scope="col">Name</th>
-              <th scope="col">Status</th>
-              <th scope="col">Created On</th>
-              <th scope="col"> Action </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let catalogue of catalogueList; let i = index">
-              <td class="font-weight-bold">{{ i + 1 }}</td>
-              <td class="font-weight-bold">{{ catalogue.name }}</td>
-              <td>
-                <h4>
-                  <span class="badge badge-pill" [ngClass]="{
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">Sr. No.</th>
+                <th scope="col">Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Created On</th>
+                <th scope="col"> Action </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let catalogue of catalogueList; let i = index">
+                <td class="font-weight-bold">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ catalogue.name }}</td>
+                <td>
+                  <h4>
+                    <span class="badge badge-pill" [ngClass]="{
                         'badge-success': catalogue.status,
                         'badge-danger': !catalogue.status
                       }">{{ catalogue.status ? "Active" : "Inactive" }}</span>
-                </h4>
-              </td>
-              <td>{{ catalogue.createdOn?.toDate()| date: 'short' }}</td>
-              <td>
-                <button class="btn btn-dark btn-sm" (click)="openCatalogueModal(content, catalogue)">Edit</button>
-                <button class="btn btn-danger btn-sm"
-                  (click)="this.openDeleteModal(deleteModal, catalogue)">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  </h4>
+                </td>
+                <td>{{ catalogue.createdOn?.toDate()| date: 'short' }}</td>
+                <td>
+                  <button class="btn btn-dark btn-sm" (click)="openCatalogueModal(content, catalogue)">Edit</button>
+                  <button class="btn btn-danger btn-sm"
+                    (click)="this.openDeleteModal(deleteModal, catalogue)">Delete</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<ng-template #content let-modal>
-  <div class="modal-header">
-  </div>
-  <div class="modal-body">
-    <!-- <div class="form-container"> -->
-    <form [formGroup]="catalogueForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
-      <div class="form-group">
-        <h3 class="form-heading">Add New Catalogue Type</h3>
-      </div>
+  <ng-template #content let-modal>
+    <div class="modal-header">
+    </div>
+    <div class="modal-body">
+      <!-- <div class="form-container"> -->
+      <form [formGroup]="catalogueForm" (keydown.enter)="$event.preventDefault()" (ngSubmit)="saveToFirestore()">
+        <div class="form-group">
+          <h3 class="form-heading">Add New Catalogue Type</h3>
+        </div>
 
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter catalogue name" />
-      </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" formControlName="name" placeholder="Enter catalogue name" />
+        </div>
 
-      <div class="form-group text-right">
-        <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">Cancel</button>
-        <button type="submit" class="btn btn-dark btn-sm">Save</button>
-      </div>
-    </form>
-    <!-- Your form content goes here -->
-    <!-- </div> -->
+        <div class="form-group text-right">
+          <button type="button" class="btn btn-danger btn-sm" (click)="modal.close('Close click')">Cancel</button>
+          <button type="submit" class="btn btn-dark btn-sm">Save</button>
+        </div>
+      </form>
+      <!-- Your form content goes here -->
+      <!-- </div> -->
 
-  </div>
+    </div>
 
-</ng-template>
+  </ng-template>
 
-<ng-template #deleteModal let-modal>
-  <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete?</h4>
-    <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
-      (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
-      NO
-    </button>
-    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteCatalogue()"
-      [disabled]="loader">
-      YES
-      <span *ngIf="loader">&nbsp;</span>
-      <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </button>
-  </div>
-</ng-template>
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to delete?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deleteCatalogue()"
+        [disabled]="loader">
+        YES
+        <span *ngIf="loader">&nbsp;</span>
+        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </button>
+    </div>
+  </ng-template>

@@ -1,11 +1,19 @@
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" *ngIf="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
 
-<div class="container-fluid mt--8">
-  <!-- <div class="header-body"> -->
-  <!-- Card stats -->
-  <!-- <div class="row">
+<div class="content-container" *ngIf="!loading">
+
+  <div class="header pb-8 pt-5 pt-md-8">
+    <div class="container-fluid"></div>
+  </div>
+
+  <div class="container-fluid mt--8">
+    <!-- <div class="header-body"> -->
+    <!-- Card stats -->
+    <!-- <div class="row">
       <div class="col-xl-3 col-lg-6">
         <div class="card card-stats mb-4 mb-xl-0">
           <div class="card-body">
@@ -70,41 +78,42 @@
         </div>
       </div>
     </div> -->
-  <!-- </div> -->
-  <!-- </div> -->
-  <!-- <div class="container-fluid mt--2"> -->
+    <!-- </div> -->
+    <!-- </div> -->
+    <!-- <div class="container-fluid mt--2"> -->
 
 
-  <!-- <div class="row mt-5"> -->
-  <div class="mb-5 mb-xl-0">
-    <div class="card shadow">
-      <div class="card-header border-0">
-        <div class="row align-items-center">
-          <div class="col">
-            <h3 class="mb-0">Issued Books ({{ memberModelList.length }})</h3>
-          </div>
-          <form [formGroup]="searchForm">
-            <div class="col text-right">
-              <div class="row">
-                <div class="col-xl-5">
-                  <input type="text" id="selectedIsbn" placeholder="Enter ISBN" formControlName="selectedIsbn"
-                    class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-sm btn-primary"
-                  (click)="getMembersByISBN(searchForm.controls.selectedIsbn.value)">
-                  Search
-                </button>
-                <label for="start">Search by month:</label>
-                <input type="month" id="start" name="start" [(ngModel)]="selectedStartMonth"
-                  (change)="onStartMonthSelectionChange()" min="2023-03" value="2023-08"
-                  class="form-control d-inline-block" formControlName="date"
-                  style="width: auto; height: 30px; cursor: pointer; margin-bottom: 10px;" />
-                <!-- <button type="submit" (click)="navigateToIssueList()" class="btn btn-sm btn-dark">
+    <!-- <div class="row mt-5"> -->
+    <div class="mb-5 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0">Issued Books ({{ memberModelList.length }})</h3>
+            </div>
+            <form [formGroup]="searchForm">
+              <div class="col text-right">
+                <div class="row">
+                  <label for="start">Search by month: </label>
+                  <input type="month" id="start" name="start" [(ngModel)]="selectedStartMonth"
+                    (change)="onStartMonthSelectionChange()" min="2023-03" value="2023-08"
+                    class="form-control d-inline-block" formControlName="date"
+                    style="width: auto; height: 30px; cursor: pointer; margin-bottom: 10px;" />
+                  <!-- <button type="submit" (click)="navigateToIssueList()" class="btn btn-sm btn-dark">
               New Issue
               </button> -->
+                  <div class="col-sm">
+                    <input type="text" id="selectedIsbn" placeholder="Enter ISBN" formControlName="selectedIsbn"
+                      class="form-control" style="height: 30px;" />
+                  </div>
+                  <button type="submit" class="btn btn-sm btn-dark" style="height: 30px;"
+                    (click)="getMembersByISBN(searchForm.controls.selectedIsbn.value)">
+                    Search
+                  </button>
+                </div>
               </div>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
         <div class="table-responsive">
           <!-- Projects table -->

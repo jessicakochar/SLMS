@@ -15,22 +15,23 @@ import { PlansComponent } from 'src/app/pages/plans/plans.component';
 import { MembersComponent } from 'src/app/pages/members/members.component';
 import { CatalogueComponent } from 'src/app/pages/catalogue/catalogue.component';
 import { UserHistoryComponent } from 'src/app/pages/user-history/user-history.component';
+import { AuthGuard } from 'src/app/guards/auth.guard';
 
 export const AdminLayoutRoutes: Routes = [
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'user-profile', component: UserProfileComponent },
-    { path: 'catalogue', component: CatalogueComponent },
-    { path: 'tables', component: TablesComponent },
+    { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+    { path: 'user-profile', component: UserProfileComponent, canActivate: [AuthGuard] },
+    { path: 'catalogue', component: CatalogueComponent, canActivate: [AuthGuard] },
+    { path: 'tables', component: TablesComponent, canActivate: [AuthGuard] },
     { path: 'icons', component: IconsComponent },
     { path: 'maps', component: MapsComponent },
-    { path: 'books', component: BooksComponent },
+    { path: 'books', component: BooksComponent, canActivate: [AuthGuard] },
     { path: 'staff', component: StaffComponent },
-    { path: 'members', component: MembersComponent },
-    { path: 'userHistory', component: UserHistoryComponent },
-    { path: 'plans', component: PlansComponent },
-    { path: 'newIssue', component: NewIssueComponent },
-    { path: 'issueList', component: IssueListComponent },
-    { path: 'tags', component: TagsComponent },
+    { path: 'members', component: MembersComponent, canActivate: [AuthGuard] },
+    { path: 'userHistory', component: UserHistoryComponent, canActivate: [AuthGuard] },
+    { path: 'plans', component: PlansComponent, canActivate: [AuthGuard] },
+    { path: 'newIssue', component: NewIssueComponent, canActivate: [AuthGuard] },
+    { path: 'issueList', component: IssueListComponent, canActivate: [AuthGuard] },
+    { path: 'tags', component: TagsComponent, canActivate: [AuthGuard] },
     { path: 'config', component: ConfigComponent },
     { path: 'search-user', component: UserHistoryComponent }
 

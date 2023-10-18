@@ -15,6 +15,7 @@ import { ADMIN_USERS_COLLECTION, USERS_COLLECTION } from '../utils/constants';
 })
 export class AuthService {
 
+  private isAuthenticated = false;
   user$: Observable<IdTokenResult | null>;
   // app: FirebaseApp = initializeApp(environment.firebase, 'customapp');
 
@@ -33,6 +34,20 @@ export class AuthService {
     }, (authStateError) => {
       console.log(authStateError);
     });
+  }
+
+  login() {
+    this.isAuthenticated = true;
+  }
+
+  // Simulate a logout process by setting the isAuthenticated variable to false
+  // logout() {
+  //   this.isAuthenticated = false;
+  // }
+
+  // Check if the user is logged in
+  isLoggedIn(): boolean {
+    return this.auth.currentUser !== null;
   }
 
   fetchUserDocFromFirestore(authId) {
@@ -88,12 +103,36 @@ export class AuthService {
     });
   }
 
+  // loginUser(value: { email?: string; password?: string }) {
+  //   return new Promise<any>((resolve, reject) => {
+  //     signInWithEmailAndPassword(this.auth, value.email.trim(), value.password.trim())
+  //       .then((response) => {
+  //         this.user$ = from(response.user.getIdTokenResult());
+  //         this.router.navigate(['/']);
+  //         resolve(response);
+  //       }, (authError) => {
+  //         if (authError.code === 'auth/user-not-found') {
+  //           reject('user does not exist, please check email !');
+  //         } else if (authError.code === 'auth/user-disabled') {
+  //           reject('user is disabled, please contact admin !');
+  //         } else if (authError.code === 'auth/wrong-password') {
+  //           reject('Incorrect password !!!');
+  //         } else {
+  //           reject('Error Occurred, please try again !');
+  //         }
+  //       })
+  //   })
+  // }
+
   loginUser(value: { email?: string; password?: string }) {
     return new Promise<any>((resolve, reject) => {
       signInWithEmailAndPassword(this.auth, value.email.trim(), value.password.trim())
         .then((response) => {
           this.user$ = from(response.user.getIdTokenResult());
-          this.router.navigate(['/']);
+
+          // Use replaceUrl to replace the current URL with the new one
+          this.router.navigate(['/'], { replaceUrl: true });
+
           resolve(response);
         }, (authError) => {
           if (authError.code === 'auth/user-not-found') {
@@ -105,8 +144,8 @@ export class AuthService {
           } else {
             reject('Error Occurred, please try again !');
           }
-        })
-    })
+        });
+    });
   }
 
   addUserToAuthentication(value: { email?: string; password?: string }, adminId: string) {

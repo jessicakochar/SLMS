@@ -38,6 +38,7 @@ export class BooksComponent implements OnInit {
 
   bookForm: FormGroup;
   loader: boolean = false;
+  loading: boolean = false;
 
   bookModal: BookModel;
   booksList: BookModel[] = [];
@@ -88,13 +89,14 @@ export class BooksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    this.loading = true;
     this.db.getBooks();
     this.booksSub = this.db.booksSub.subscribe((list) => {
       if (list.length !== 0) {
         this.booksList = [...list];
         this.tempBookList = [...this.booksList];
         this.filteredData = [...this.booksList];
+        this.loading = false;
       }
     })
 

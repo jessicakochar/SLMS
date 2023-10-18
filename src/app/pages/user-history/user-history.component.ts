@@ -40,6 +40,7 @@ export class CsvFormat {
         "Book Name",
         "Issue Date",
         "Due Date",
+        "Return Date"
       ];
       csvRows.push(mainRow.join(','));
 
@@ -48,6 +49,7 @@ export class CsvFormat {
           // Create a row for each item in subcollectionData
           const issueBooks = subData.title || ''; // Replace 'title' with the correct property name
           const issueDate = subData.issueDate.toDate();
+          const dueDate = subData.dueDate.toDate();
           const returnDate = subData.returnDate.toDate();
           const subRow = [
             '',
@@ -58,6 +60,7 @@ export class CsvFormat {
             '',
             issueBooks || '',
             issueDate ? issueDate.getDate() + " " + issueDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', weekday: 'long' }) : '',
+            dueDate ? dueDate.getDate() + " " + dueDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', weekday: 'long' }) : '',
             returnDate ? returnDate.getDate() + " " + returnDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric', weekday: 'long' }) : '',
           ];
 

@@ -44,7 +44,7 @@ export class CatalogueComponent implements OnInit {
   booksSub: Subscription;
   catalogueSub: Subscription;
   tagsSub: Subscription;
-
+  loading: boolean = false;
 
   tempFile: any = null;
   canWrite: boolean;
@@ -58,7 +58,7 @@ export class CatalogueComponent implements OnInit {
   ) { this.initializeForm(); }
 
   ngOnInit(): void {
-
+    this.loading = true;
     // this.fetchCatalogueFromCatalogue();
     // this.canWrite = this.db.canWriteCheck() || false;
     // this.db.getBooks();
@@ -72,6 +72,7 @@ export class CatalogueComponent implements OnInit {
     this.catalogueSub = this.db.catalogueSub.subscribe((list) => {
       if (list.length !== 0) {
         this.catalogueList = [...list];
+        this.loading = false;
       }
     })
 

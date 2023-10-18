@@ -36,6 +36,7 @@ export class IssueListComponent implements OnInit {
   phoneNumber: string = '';
   bookModal: BookModel;
   booksRetrievedBool: boolean = false;
+  phoneNumberError: boolean = false;
 
   constructor(
     private db: DbService,
@@ -95,27 +96,32 @@ export class IssueListComponent implements OnInit {
 
 
   async onPhoneNumberChange(phoneNumber: string) {
-    if (phoneNumber.length === 10) {
-      const firestore = getFirestore();
-
-      try {
-        const userCollectionRef = collection(firestore, 'users');
-        const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
-        const userQuerySnapshot = await getDocs(userQueryRef);
-
-        if (!userQuerySnapshot.empty) {
-          const userData = userQuerySnapshot.docs[0].data() as MemberModel;
-          this.memberData.push(userData);
-          // console.log('Data:', this.memberData);
-        } else {
-          this.toast.error('Member not Found', 'Wrong Number');
-          console.log('User not found with phone number:', phoneNumber);
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
+    if (phoneNumber.length > 10) {
+      this.phoneNumberError = true;
     } else {
-      // Optionally, you can clear the memberData or handle other cases when phone number doesn't have 10 digits.
+      this.phoneNumberError = false;
+      if (phoneNumber.length === 10) {
+        const firestore = getFirestore();
+
+        try {
+          const userCollectionRef = collection(firestore, 'users');
+          const userQueryRef = query(userCollectionRef, where('phone', '==', phoneNumber));
+          const userQuerySnapshot = await getDocs(userQueryRef);
+
+          if (!userQuerySnapshot.empty) {
+            const userData = userQuerySnapshot.docs[0].data() as MemberModel;
+            this.memberData.push(userData);
+            // console.log('Data:', this.memberData);
+          } else {
+            this.toast.error('Member not Found', 'Wrong Number');
+            console.log('User not found with phone number:', phoneNumber);
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      } else {
+        // Optionally, you can clear the memberData or handle other cases when phone number doesn't have 10 digits.
+      }
     }
   }
 

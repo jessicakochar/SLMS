@@ -22,6 +22,7 @@ export class PlansComponent implements OnInit {
   loader: boolean = false;
   subscriptionsSub: Subscription;
   plansModel: SubscriptionModel
+  loading: boolean = false;
 
   plansForm: FormGroup;
 
@@ -38,10 +39,12 @@ export class PlansComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.db.getPlansList();
     this.subscriptionsSub = this.db.subscriptionsSub.subscribe((list) => {
       if (list.length !== 0) {
         this.plansList = [...list];
+        this.loading = false;
       }
     })
     console.log(this.plansList)

@@ -35,6 +35,7 @@ export class UserProfileComponent implements OnInit {
   loader: boolean = false;
   updation: boolean = false;
   canWrite: boolean;
+  loading: boolean = false;
 
   constructor(
 
@@ -48,6 +49,7 @@ export class UserProfileComponent implements OnInit {
   ngOnInit() {
     // this.fetchAdminsFromAdminCollection();
     // this.canWrite = this.db.canWriteCheck() || false;
+    this.loading = true;
     this.getRoles();
     this.getAdmins();
   }
@@ -158,6 +160,7 @@ export class UserProfileComponent implements OnInit {
     try {
       const docs: any = await getDocs(collectionRef);
       this.admins = docs.docs.map((admin) => admin.data());
+      this.loading = false;
     } catch (error) {
       console.error('Error fetching admins:', error);
     } finally {

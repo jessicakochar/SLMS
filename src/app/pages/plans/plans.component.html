@@ -1,152 +1,160 @@
-<div class="header pb-8 pt-5 pt-md-8">
-  <div class="container-fluid"></div>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;" *ngIf="loading">
+  <div class="spinner-border" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>
 </div>
-<div class="container-fluid mt--8">
-  <div class="mb-5 mb-xl-0">
-    <div class="card shadow">
-      <div class="card-header border-0">
-        <div class="row align-items-center">
-          <div class="col">
-            <h3 class="mb-0">No. of Plans: {{ plansList.length }} </h3>
-          </div>
-          <div class="col d-flex justify-content-end align-items-center">
-            <div class="col-6">
+
+<div class="content-container" *ngIf="!loading">
+
+  <div class="header pb-8 pt-5 pt-md-8">
+    <div class="container-fluid"></div>
+  </div>
+  <div class="container-fluid mt--8">
+    <div class="mb-5 mb-xl-0">
+      <div class="card shadow">
+        <div class="card-header border-0">
+          <div class="row align-items-center">
+            <div class="col">
+              <h3 class="mb-0">No. of Plans: {{ plansList.length }} </h3>
             </div>
-            <form>
-              <div class="form-row">
-                <div class="col-auto">
-                  <button type="submit" (click)="addNewPlanModal(content)" class="btn btn-sm btn-dark">
-                    Add new
-                  </button>
-                </div>
+            <div class="col d-flex justify-content-end align-items-center">
+              <div class="col-6">
               </div>
-            </form>
+              <form>
+                <div class="form-row">
+                  <div class="col-auto">
+                    <button type="submit" (click)="addNewPlanModal(content)" class="btn btn-sm btn-dark">
+                      Add new
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="table-responsive">
-        <!-- Projects table -->
-        <table class="table align-items-center table-flush">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">S.No</th>
-              <th scope="col">Plan Name</th>
-              <th scope="col">Books Issue Limit</th>
-              <th scope="col">Book Return Period</th>
-              <th scope="col">price</th>
-              <th scope="col">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let plan of plansList; let i = index">
-              <td class="font-weight-bold">{{ i + 1 }}</td>
-              <td class="font-weight-bold">{{ plan.name }}</td>
-              <td class="font-weight-bold">{{ plan.maxBooks }}</td>
-              <td class="font-weight-bold">{{ plan.issuePeriod }}</td>
-              <td class="font-weight-bold">
-                {{ plan.price | currency : "INR" : "symbol" : "1.0" }}
-              </td>
-              <td>
-                <button class="btn btn-sm btn-dark" (click)="this.addNewPlanModal(content, plan)">
-                  Edit
-                </button>
-                <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, plan)">
-                  Delete
-                </button>
-                <button class="btn btn-sm btn-primary" (click)="memberDetails(plan.name)">
-                  Members
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <!-- Projects table -->
+          <table class="table align-items-center table-flush">
+            <thead class="thead-light">
+              <tr>
+                <th scope="col">S.No</th>
+                <th scope="col">Plan Name</th>
+                <th scope="col">Books Issue Limit</th>
+                <th scope="col">Book Return Period</th>
+                <th scope="col">price</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of plansList; let i = index">
+                <td class="font-weight-bold">{{ i + 1 }}</td>
+                <td class="font-weight-bold">{{ plan.name }}</td>
+                <td class="font-weight-bold">{{ plan.maxBooks }}</td>
+                <td class="font-weight-bold">{{ plan.issuePeriod }}</td>
+                <td class="font-weight-bold">
+                  {{ plan.price | currency : "INR" : "symbol" : "1.0" }}
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-dark" (click)="this.addNewPlanModal(content, plan)">
+                    Edit
+                  </button>
+                  <button class="btn btn-sm btn-danger" (click)="this.openDeleteModal(deleteModal, plan)">
+                    Delete
+                  </button>
+                  <button class="btn btn-sm btn-primary" (click)="memberDetails(plan.name)">
+                    Members
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
-</div>
-<ng-template #deleteModal let-modal>
-  <div class="modal-header d-flex justify-content-between align-items-center">
-    <h4 class="modal-title">Are you sure want to delete this plan?</h4>
-    <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
-      (click)="modal.dismiss('Cross click')">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
-      NO
-    </button>
-    <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deletePlan()" [disabled]="loader">
-      YES
-      <span *ngIf="loader">&nbsp;</span>
-      <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </button>
-  </div>
-</ng-template>
-
-<ng-template #content let-modal>
-  <div class="modal-header">
-    <h1 class="modal-title" style="margin: 0 auto">Membership Plan</h1>
-  </div>
-  <div class="modal-body">
-    <form [formGroup]="this.plansForm">
-      <div class="form-group">
-        <label for="name" class="text-sm">Plan Name</label>
-        <input type="text" class="form-control" formControlName="name" />
-      </div>
-      <div class="form-group">
-        <label for="description" class="text-sm">Description</label>
-        <div class="input-group">
-          <input type="text" class="form-control" formControlName="descriptionTitle"
-            placeholder="Enter Description Title" />
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h4 class="modal-title">Are you sure want to delete this plan?</h4>
+      <button type="button" class="close" aria-label="Close" id="closeModal" #closeModal
+        (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-sm btn-default float-right mr-2" (click)="modal.dismiss('Cross click')">
+        NO
+      </button>
+      <button type="submit" class="btn btn-sm btn-danger float-right mr-2" (click)="deletePlan()" [disabled]="loader">
+        YES
+        <span *ngIf="loader">&nbsp;</span>
+        <div *ngIf="loader" class="spinner-border spinner-border-sm text-white" role="status">
+          <span class="sr-only">Loading...</span>
         </div>
-        <br>
-        <div class="input-group">
-          <input type="text" class="form-control" formControlName="description" placeholder="Enter Description" />
-        </div>
-      </div>
+      </button>
+    </div>
+  </ng-template>
 
-      <div class="form-row">
-        <div class="form-group m-0 col-6">
-          <label for="price" class="text-sm">Price (per month)</label>
+  <ng-template #content let-modal>
+    <div class="modal-header">
+      <h1 class="modal-title" style="margin: 0 auto">Membership Plan</h1>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="this.plansForm">
+        <div class="form-group">
+          <label for="name" class="text-sm">Plan Name</label>
+          <input type="text" class="form-control" formControlName="name" />
+        </div>
+        <div class="form-group">
+          <label for="description" class="text-sm">Description</label>
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span class="input-group-text">₹</span>
-            </div>
-            <input type="number" class="form-control" formControlName="price" />
+            <input type="text" class="form-control" formControlName="descriptionTitle"
+              placeholder="Enter Description Title" />
+          </div>
+          <br>
+          <div class="input-group">
+            <input type="text" class="form-control" formControlName="description" placeholder="Enter Description" />
           </div>
         </div>
-        <div class="form-group m-0 col-6">
-          <div class="form-group">
-            <label for="validity" class="text-sm">Plan Validity</label>
-            <div class="input-group">
-              <input type="number" class="form-control" formControlName="validity" />
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group m-0 col-6">
-          <label for="maxBooks" class="text-sm">Book Issue Limit</label>
-          <input type="number" class="form-control" formControlName="maxBooks" />
+        <div class="form-row">
+          <div class="form-group m-0 col-6">
+            <label for="price" class="text-sm">Price (per month)</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">₹</span>
+              </div>
+              <input type="number" class="form-control" formControlName="price" />
+            </div>
+          </div>
+          <div class="form-group m-0 col-6">
+            <div class="form-group">
+              <label for="validity" class="text-sm">Plan Validity (in days)</label>
+              <div class="input-group">
+                <input type="number" class="form-control" formControlName="validity" />
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="form-group m-0 col-6">
-          <label for="issuePeriod" class="text-sm">Book Issue Period (in days)</label>
-          <input type="number" class="form-control" formControlName="issuePeriod" />
-        </div>
-      </div><br>
-      <!-- <div class="form-group">
+
+        <div class="form-row">
+          <div class="form-group m-0 col-6">
+            <label for="maxBooks" class="text-sm">Book Issue Limit</label>
+            <input type="number" class="form-control" formControlName="maxBooks" />
+          </div>
+          <div class="form-group m-0 col-6">
+            <label for="issuePeriod" class="text-sm">Book Issue Period (in days)</label>
+            <input type="number" class="form-control" formControlName="issuePeriod" />
+          </div>
+        </div><br>
+        <!-- <div class="form-group">
         <label for="validity">Description</label>
         <div class="input-group">
           <input type="text" class="form-control" formControlName="description" />
         </div>
       </div> -->
-      <!-- Existing form fields... -->
+        <!-- Existing form fields... -->
 
-      <!-- <div class="form-group">
+        <!-- <div class="form-group">
         <label for="description">Description</label>
         <div formArrayName="description">
           <div *ngFor="let descCtrl of plansForm.get('description').controls; let i = index">
@@ -158,18 +166,18 @@
         </div>
       </div> -->
 
-      <!-- Buttons to cancel and save... -->
+        <!-- Buttons to cancel and save... -->
 
 
-      <div style="float: right">
-        <button type="button" class="btn btn-sm btn-danger" (click)="modal.close('Close click')">
-          Cancel
-        </button>
-        <button type="submit" class="btn btn-sm btn-dark" (click)="this.saveToFirestore()">
-          Save
-        </button>
-      </div>
-    </form>
-  </div>
+        <div style="float: right">
+          <button type="button" class="btn btn-sm btn-danger" (click)="modal.close('Close click')">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-sm btn-dark" (click)="this.saveToFirestore()">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
 
-</ng-template>
+  </ng-template>

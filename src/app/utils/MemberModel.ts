@@ -8,7 +8,7 @@ export class MemberModel {
   name: string;
   email: string;
   address: string;
-  age: string;
+  age: number;
   phone: string;
   password: string;
   userId: string;

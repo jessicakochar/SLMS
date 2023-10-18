@@ -29,14 +29,15 @@ export class NewIssueComponent implements OnInit {
   filteredData: BookModel[] = [];
   searchText: string = '';
   memberModelList: MemberModel[] = [];
-  selectedStartMonth: string = '2023-08';
+  selectedStartMonth: string = '2023-09';
   issuedBooksList: BookModel[] = [];
   phoneNumber: string = '';
   selectedIsbn: string = '';
   searchForm = new FormGroup({
     selectedIsbn: new FormControl(''),
-    // date: new FormControl(''),
+    date: new FormControl(''),
   });
+  loading: boolean = false;
 
   constructor(
     private db: DbService,
@@ -46,13 +47,14 @@ export class NewIssueComponent implements OnInit {
     private router: Router,
     private firestore: Firestore,
   ) {
-    this.searchForm = this.fb.group({
-      // phoneNumber: [''],
-      selectedIsbn: [''],
-    });
+    // this.searchForm = this.fb.group({
+    //   // phoneNumber: [''],
+    //   selectedIsbn: [''],
+    // });
   }
 
   ngOnInit(): void {
+    this.loading = true;
     // this.getMembers();
     // this.getMembersByMonth();
     // this.db.getBooksList();
@@ -113,6 +115,10 @@ export class NewIssueComponent implements OnInit {
 
     const fromDate = new Date(this.selectedStartMonth + '-01'); // Start of selected month
     const toDate = new Date(fromDate.getFullYear(), fromDate.getMonth() + 1, 0); // End of selected month
+    console.log(this.selectedStartMonth);
+    console.log('fromDate:', fromDate);
+    console.log('toDate:', toDate);
+
 
     const collectionGroupRef = collectionGroup(firestore, 'issuedBooks');
     const queryRef = query(
@@ -125,6 +131,7 @@ export class NewIssueComponent implements OnInit {
     onSnapshot(queryRef, (response) => {
       this.memberModelList = response.docs.map((doc) => doc.data() as MemberModel);
       console.log(this.memberModelList);
+      this.loading = false;
 
       const firstMember = this.memberModelList[0];
       if (firstMember && firstMember.phone) {

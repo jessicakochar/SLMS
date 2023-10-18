@@ -20,11 +20,6 @@ import { DatePipe } from '@angular/common';
 })
 export class MembersComponent implements OnInit {
 
-  // closeResult: string;
-  // tagsList: TagsModel[];
-  // loader: boolean = false;
-  // tagsModal: TagsModel
-
   members: MemberModel[] = [];
   memberModel: MemberModel;
   memberModelList: MemberModel[] = [];
@@ -34,44 +29,10 @@ export class MembersComponent implements OnInit {
   subscription: SubscriptionModel[] = [];
   loader: boolean;
   currentPage: number = 1;
-  membersPerPage: number = 9;
-  // isStatusActive(catalogue) {
-  //   return catalogue.status;
-  // }
-  // isExpiringSoon(catalogue) {
-  //   const expiryDate = new Date(catalogue.expiryDate);
-  //   const sevenDaysFromNow = new Date();
-  //   sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
-  //   return expiryDate <= sevenDaysFromNow && expiryDate >= new Date();
-  // }
-
-  // // Function to check if the catalogue is expired
-  // isExpired(catalogue) {
-  //   const expiryDate = new Date(catalogue.expiryDate);
-  //   const currentDate = new Date();
-  //   return expiryDate < currentDate;
-  // }
-
-  // // Function to get the text for the badge based on the conditions
-  // getBadgeText(catalogue) {
-  //   if (this.isStatusActive(catalogue)) {
-  //     return 'Active';
-  //   } else if (this.isExpiringSoon(catalogue)) {
-  //     return 'Expiring Soon';
-  //   } else if (this.isExpired(catalogue)) {
-  //     return 'Expired';
-  //   } else {
-  //     return 'Inactive';
-  //   }
-  // }
-
-  // searchForm = new FormGroup({
-  //   param: new FormControl(''),
-  // });
+  membersPerPage: number = 49;
+  loading: boolean = false;
 
   numberParam: string = '';
-
-  // tagsForm: FormGroup;
 
   constructor(
     private firestore: Firestore,
@@ -82,7 +43,6 @@ export class MembersComponent implements OnInit {
     private router: Router,
     private activatedRoute: ActivatedRoute,
 
-    // private toast
   ) {
     // this.searchForm = this.fb.group({
     //   param: [''],
@@ -91,6 +51,7 @@ export class MembersComponent implements OnInit {
 
   ngOnInit(): void {
     // this.getTagsList();
+    this.loading = true;
     this.getMembers();
 
     this.activatedRoute.queryParams.subscribe((params) => {
@@ -103,33 +64,6 @@ export class MembersComponent implements OnInit {
         // Use planName in your component logic
       }
     });
-    // this.activatedRoute.queryParams.subscribe(params => {
-    //   const phoneNumber = params['phone'];
-    //   if (phoneNumber) {
-    //     this.numberParam = phoneNumber;
-    //   }
-    // }
-    // );
-    // this.activatedRoute.queryParams.subscribe(async (params) => {
-    //   const phoneNumber = params['phone'];
-
-    //   if (phoneNumber) {
-    //     this.numberParam = phoneNumber;
-
-    //     // Check if a user with the provided phone number exists
-    //     const userExists = await this.checkUserExists(phoneNumber);
-
-    //     if (userExists) {
-    //       // If the user exists, navigate to the desired route
-    //       this.router.navigate(['/userHistory'], {
-    //         queryParams: { phone: phoneNumber },
-    //       });
-    //     } else {
-    //       // If the user doesn't exist, you can show a message or handle it accordingly
-    //       console.log(`User with phone number ${phoneNumber} does not exist.`);
-    //     }
-    //   }
-    // });
 
     this.db.getPlansList();
     this.subscriptionSub = this.db.subscriptionsSub.subscribe((list) => {
@@ -140,8 +74,9 @@ export class MembersComponent implements OnInit {
         // this.tempTypeList = [...list];
       }
     })
-    this.subscription = this.subscriptionList;
+    // this.subscription = this.subscriptionList;
   }
+
 
   // async checkUserExists(phoneNumber: string): Promise<boolean> {
   //   // Check if a user with the provided phone number exists
@@ -182,6 +117,23 @@ export class MembersComponent implements OnInit {
       // );
     }
   }
+
+  isMemberActive(createdOn: Date, expiryDate: Date): boolean {
+    if (!expiryDate) {
+      return true; // No expiryDate, so consider it active.
+    }
+    const currentDate = new Date();
+    return currentDate <= expiryDate;
+  }
+
+  getStatusText(createdOn: Date, expiryDate: Date | undefined): string {
+    if (!expiryDate) {
+      return 'Active';
+    }
+    const currentDate = new Date();
+    return currentDate <= expiryDate ? 'Active' : 'Inactive';
+  }
+
 
   nextPage() {
     this.currentPage++;
@@ -238,6 +190,7 @@ export class MembersComponent implements OnInit {
 
         const memberData = memberDoc.data() as MemberModel;
         this.memberModelList.push(memberData);
+        this.loading = false;
 
         // Break the loop when we've reached the end index
         if (memberIndex >= endIndex) {
@@ -251,6 +204,7 @@ export class MembersComponent implements OnInit {
     } catch (error) {
       console.error('Error fetching members data:', error);
     }
+
   }
 
 
@@ -310,12 +264,14 @@ export class MembersComponent implements OnInit {
     }
   }
 
+
   async saveToFirestore() {
     this.loader = true;
     let values: MemberModel = { ...this.memberForm.value };
     console.log(values);
+    console.log(this.subscriptionList);
 
-    const selectedSubscription = this.subscription.find(sub => sub.planID === values.subscription.planID);
+    const selectedSubscription = this.subscriptionList.find(sub => sub.planID === values.subscription.planID);
     console.log(selectedSubscription);
 
     if (selectedSubscription) {
