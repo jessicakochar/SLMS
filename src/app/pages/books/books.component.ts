@@ -328,11 +328,11 @@ export class BooksComponent implements OnInit {
     //   }
     // }
 
-    const docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), this.bookModal.docId);
+    const docRef = doc(collection(this.db.firestore, BOOKS_COLLECTION), this.bookModal.bookId);
 
     try {
       await deleteDoc(docRef);
-      const idx = this.booksList.findIndex(x => x.docId === this.bookModal.docId);
+      const idx = this.booksList.findIndex(x => x.bookId === this.bookModal.bookId);
       this.toast.show("Book Deleted Successfully !");
       this.modalService.dismissAll();
 

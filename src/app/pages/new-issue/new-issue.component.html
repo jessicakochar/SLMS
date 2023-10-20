@@ -94,7 +94,7 @@
             <form [formGroup]="searchForm">
               <div class="col text-right">
                 <div class="row">
-                  <label for="start">Search by month: </label>
+                  <label for="start" style="margin-right: 10px;">Search by month </label>
                   <input type="month" id="start" name="start" [(ngModel)]="selectedStartMonth"
                     (change)="onStartMonthSelectionChange()" min="2023-03" value="2023-08"
                     class="form-control d-inline-block" formControlName="date"
@@ -106,7 +106,7 @@
                     <input type="text" id="selectedIsbn" placeholder="Enter ISBN" formControlName="selectedIsbn"
                       class="form-control" style="height: 30px;" />
                   </div>
-                  <button type="submit" class="btn btn-sm btn-dark" style="height: 30px;"
+                  <button type="submit" class="btn btn-sm btn-default" style="height: 30px;"
                     (click)="getMembersByISBN(searchForm.controls.selectedIsbn.value)">
                     Search
                   </button>

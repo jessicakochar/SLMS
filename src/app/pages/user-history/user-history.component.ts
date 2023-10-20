@@ -190,6 +190,21 @@ export class UserHistoryComponent implements OnInit {
     }
   }
 
+  isMemberActive(createdOn: Date, expiryDate: Date): boolean {
+    if (!expiryDate) {
+      return true; // No expiryDate, so consider it active.
+    }
+    const currentDate = new Date();
+    return currentDate <= expiryDate;
+  }
+  getStatusText(createdOn: Date, expiryDate: Date | undefined): string {
+    if (!expiryDate) {
+      return 'Active';
+    }
+    const currentDate = new Date();
+    return currentDate <= expiryDate ? 'Active' : 'Inactive';
+  }
+
   navigateToOtherUser() {
     this.router.navigate(['/dummy-route'], { skipLocationChange: true }).then(() => {
       this.router.navigate(['/search-user'], { skipLocationChange: true });

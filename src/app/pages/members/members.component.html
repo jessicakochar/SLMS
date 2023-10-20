@@ -33,11 +33,12 @@
               </button>
             </div> -->
               <div class="col-sm-6 p-0 d-flex justify-content-end align-items-center">
-                <input type="text" class="form-control form-control-sm mr-2" placeholder="Enter Phone Number"
-                  [(ngModel)]="this.numberParam" (ngModelChange)="onPhoneNumberChange(content)" />
+                <input type="text" class="form-control form-control-sm mr-2" style="width: auto;"
+                  placeholder="Enter Phone Number" [(ngModel)]="this.numberParam"
+                  (ngModelChange)="onPhoneNumberChange(content)" />
                 <button class="btn btn-default btn-sm" style="white-space: nowrap;"
                   (click)="addNewMember(content, member)">
-                  Add New Member
+                  Add New
                 </button>
               </div>
               <!-- <div class="col-sm-6 p-0">
